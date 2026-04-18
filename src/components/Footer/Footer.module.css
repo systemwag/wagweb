@@ -1,0 +1,208 @@
+.footer {
+  border-top: 1px solid var(--glass-border);
+  position: relative;
+}
+
+/* ── Top contact bar ──────────────────── */
+.topBar {
+  background: rgba(212, 168, 67, 0.05);
+  border-bottom: 1px solid rgba(212,168,67,0.12);
+  padding: var(--space-md) 0;
+}
+
+.topBarInner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xl);
+  flex-wrap: wrap;
+}
+
+.contactItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.contactItem svg { color: var(--gold); flex-shrink: 0; }
+
+.contactItem a {
+  color: var(--text-secondary);
+  transition: var(--t-fast);
+}
+
+.contactItem a:hover { color: var(--gold); }
+
+/* ── Main footer ──────────────────────── */
+.main {
+  padding: var(--space-2xl) 0;
+  background: var(--bg-secondary);
+}
+
+.mainInner {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: var(--space-xl);
+  align-items: start;
+}
+
+/* ── Brand ────────────────────────────── */
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logoMark {
+  filter: drop-shadow(0 0 10px rgba(212,168,67,0.35));
+}
+
+.logoMain {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.logoSub {
+  font-family: var(--font-heading);
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.brandDesc {
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+  max-width: 280px;
+}
+
+.socials {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.socialBtn {
+  width: 38px; height: 38px;
+  border-radius: var(--radius-sm);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--t-base);
+}
+
+.socialBtn:hover {
+  background: var(--gold-dim);
+  border-color: rgba(212,168,67,0.3);
+  transform: translateY(-2px);
+}
+
+.socialIcon {
+  font-family: var(--font-heading);
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+  letter-spacing: 0;
+}
+
+.socialBtn:hover .socialIcon { color: var(--gold); }
+
+/* ── Nav col ──────────────────────────── */
+.navCol {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.colTitle {
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+
+.colList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.colLink {
+  font-size: 0.83rem;
+  color: var(--text-muted);
+  transition: var(--t-fast);
+  line-height: 1.4;
+}
+
+.colLink:hover {
+  color: var(--gold);
+}
+
+/* ── Bottom bar ───────────────────────── */
+.bottomBar {
+  background: var(--bg-primary);
+  border-top: 1px solid var(--glass-border);
+  padding: var(--space-md) 0;
+}
+
+.bottomInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.bottomLinks {
+  display: flex;
+  gap: var(--space-lg);
+}
+
+.bottomLinks a {
+  color: var(--text-muted);
+  transition: var(--t-fast);
+}
+
+.bottomLinks a:hover { color: var(--gold); }
+
+/* ── Responsive ───────────────────────── */
+@media (max-width: 1100px) {
+  .mainInner {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .brand {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--space-2xl);
+  }
+
+  .brandDesc { max-width: 340px; }
+}
+
+@media (max-width: 768px) {
+  .topBarInner { gap: var(--space-md); }
+  .mainInner { grid-template-columns: 1fr 1fr; }
+  .brand { flex-direction: column; grid-column: 1 / -1; }
+  .bottomInner { flex-direction: column; align-items: flex-start; gap: var(--space-sm); }
+}
+
+@media (max-width: 480px) {
+  .mainInner { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,336 @@
+.main {
+  padding-top: var(--header-height);
+}
+
+/* ── Hero ─────────────────────────────── */
+.hero {
+  position: relative;
+  min-height: 440px;
+  padding: var(--space-3xl) 0 var(--space-2xl);
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 80% 50%, rgba(212,168,67,0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 10% 80%, rgba(0,196,167,0.03) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 2;
+}
+
+.heroTitle {
+  margin: var(--space-md) 0 var(--space-lg);
+  max-width: 800px;
+}
+
+.heroDesc {
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  font-weight: 400;
+  color: var(--text-secondary);
+  max-width: 620px;
+  line-height: 1.75;
+}
+
+.heroGlow {
+  position: absolute;
+  top: -80px;
+  right: -100px;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,168,67,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ── Shared section ───────────────────── */
+.section {
+  padding: var(--space-2xl) 0;
+  border-top: none;
+}
+
+.body {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  margin-bottom: var(--space-md);
+  max-width: 600px;
+}
+
+/* ── Mission ──────────────────────────── */
+.missionGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2xl);
+  align-items: start;
+}
+
+.missionText h2 { margin: var(--space-md) 0 var(--space-lg); }
+
+.missionStats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.miniStat {
+  padding: var(--space-xl) var(--space-lg);
+  text-align: center;
+  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.miniStat:hover {
+  transform: translateY(-4px);
+  border-color: rgba(212,168,67,0.25);
+}
+
+.miniStatValue {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: var(--space-xs);
+}
+
+.miniStatLabel {
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* ── Values ───────────────────────────── */
+.valuesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+}
+
+.valueCard {
+  padding: var(--space-xl) var(--space-lg);
+  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.valueCard:hover {
+  transform: translateY(-6px);
+  border-color: rgba(212,168,67,0.25);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(212,168,67,0.15);
+}
+
+.valueIndex {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--gold);
+  opacity: 0.6;
+  margin-bottom: var(--space-sm);
+}
+
+.valueTitle { margin-bottom: var(--space-sm); }
+
+.valueDesc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* ── Team ─────────────────────────────── */
+.teamGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-md);
+}
+
+.teamCard {
+  padding: var(--space-xl) var(--space-lg);
+  text-align: center;
+  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.teamCard:hover {
+  transform: translateY(-6px);
+  border-color: rgba(212,168,67,0.25);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(212,168,67,0.15);
+}
+
+.teamCount {
+  font-family: var(--font-heading);
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: var(--gold-light);
+  letter-spacing: -0.04em;
+  margin-bottom: var(--space-xs);
+}
+
+.teamRole {
+  font-family: var(--font-heading);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.teamName {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* ── Licenses ─────────────────────────── */
+.licensesGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2xl);
+  align-items: start;
+}
+
+.licenseList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-xl);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+}
+
+.licenseItem {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.licenseCheck {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--gold-dim);
+  border: 1px solid rgba(212,168,67,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: var(--gold);
+  font-weight: 700;
+  margin-top: 1px;
+}
+
+/* ── Partners ─────────────────────────── */
+.partnersGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+}
+
+.partnerCard { padding: var(--space-xl); }
+
+.partnerName {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.partnerRole {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* ── Equipment ────────────────────────── */
+.equipmentGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-sm);
+  margin-top: var(--space-xl);
+}
+
+.equipmentCard {
+  padding: var(--space-md) var(--space-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+  transition: transform 0.3s, border-color 0.3s;
+}
+
+.equipmentCard:hover {
+  transform: translateY(-3px);
+  border-color: rgba(212,168,67,0.2);
+}
+
+.equipmentName {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.equipmentCount {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--gold);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── CTA ──────────────────────────────── */
+.ctaSection {
+  padding: var(--space-3xl) 0;
+  border-top: none;
+}
+
+.ctaBox {
+  background: linear-gradient(135deg, rgba(212,168,67,0.07) 0%, rgba(0,196,167,0.04) 100%);
+  border: 1px solid rgba(212,168,67,0.18);
+  border-radius: var(--radius-xl);
+  padding: var(--space-2xl) var(--space-xl);
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.ctaDesc {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: var(--space-md) 0 var(--space-xl);
+}
+
+.ctaActions {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+/* ── Responsive ───────────────────────── */
+@media (max-width: 1024px) {
+  .valuesGrid     { grid-template-columns: repeat(2, 1fr); }
+  .teamGrid       { grid-template-columns: repeat(2, 1fr); }
+  .equipmentGrid  { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .missionGrid   { grid-template-columns: 1fr; }
+  .licensesGrid  { grid-template-columns: 1fr; }
+  .partnersGrid  { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 540px) {
+  .valuesGrid     { grid-template-columns: 1fr; }
+  .teamGrid       { grid-template-columns: repeat(2, 1fr); }
+  .equipmentGrid  { grid-template-columns: 1fr; }
+}

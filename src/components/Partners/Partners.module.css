@@ -1,0 +1,192 @@
+.section {
+  padding: var(--space-3xl) 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.section::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(to bottom, #04060C 0%, #04060C 5%, rgba(4,6,12,0.6) 35%, rgba(4,6,12,0.6) 65%, #04060C 95%, #04060C 100%), url('/images/6.webp');
+  background-size: cover;
+  background-position: center;
+  width: 120%;
+  left: -10%;
+  animation: bgPan 33s ease-in-out infinite -18s;
+}
+
+@keyframes bgPan {
+  0%   { transform: translateX(0); }
+  50%  { transform: translateX(-8%); }
+  100% { transform: translateX(0); }
+}
+
+/* ── Header ───────────────────────────── */
+.header { margin-bottom: var(--space-2xl); }
+.title  { margin-bottom: var(--space-md); }
+
+.subtitle {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  line-height: 1.8;
+  opacity: 0.82;
+  max-width: 520px;
+}
+
+/* ── Marquee ──────────────────────────── */
+.marqueeWrap {
+  position: relative;
+  overflow-x: clip;   /* clips horizontally without creating a scroll context */
+  overflow-y: visible; /* lets scaled cards breathe vertically */
+  padding: 56px 0;    /* room for 2× scale on 88px circle: extra ~44px each side */
+  margin: -28px 0 calc(var(--space-3xl) - 28px);
+}
+
+
+
+.track {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 8px 0 14px;
+  will-change: transform;
+}
+
+/* ── Single logo card ─────────────────── */
+.logoCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  width: 120px;
+}
+
+/* Circular white container */
+.logoBox {
+  width: 88px;
+  height: 88px;
+  flex-shrink: 0;
+  background: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 2px 12px rgba(0,0,0,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.9);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Soft vignette — fades logo edges into the white background */
+.logoBox::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, transparent 52%, rgba(255,255,255,0.55) 72%, rgba(255,255,255,0.95) 90%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.logoCard:hover .logoBox {
+  transform: translateY(-3px);
+  box-shadow:
+    0 8px 24px rgba(0,0,0,0.45),
+    0 0 0 2px rgba(212,168,67,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.9);
+}
+
+/* The logo image itself */
+.logoImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: contrast(1.08) saturate(0.95);
+  transition: filter 0.2s ease;
+}
+
+.logoCard:hover .logoImg {
+  filter: contrast(1.12) saturate(1.05);
+}
+
+/* Company name below */
+.logoName {
+  font-family: var(--font-heading);
+  font-size: 0.52rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.4;
+  width: 100%;
+  background: linear-gradient(90deg, #D4A843 0%, #F0C85A 50%, #D4A843 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── CTA Block ────────────────────────── */
+.cta {
+  background: linear-gradient(135deg, rgba(212,168,67,0.07) 0%, rgba(0,196,167,0.04) 50%, rgba(79,132,255,0.04) 100%);
+  border: 1px solid rgba(212,168,67,0.18);
+  border-radius: var(--radius-xl);
+  padding: var(--space-2xl) var(--space-xl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xl);
+  position: relative;
+  overflow: hidden;
+}
+
+.cta::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 240px; height: 240px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,168,67,0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.ctaContent { flex: 1; }
+
+.ctaTitle {
+  margin-bottom: var(--space-sm);
+  color: var(--text-primary);
+}
+
+.ctaDesc {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  max-width: 480px;
+}
+
+.ctaActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+/* ── Responsive ───────────────────────── */
+@media (max-width: 768px) {
+  .cta { flex-direction: column; align-items: flex-start; }
+  .ctaActions { width: 100%; }
+
+  .logoBox { width: 72px; height: 72px; }
+  .logoCard { width: 96px; }
+  .track { gap: 14px; }
+}

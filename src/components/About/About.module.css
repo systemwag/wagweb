@@ -1,0 +1,217 @@
+.section {
+  padding: var(--space-3xl) 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.section::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(to top, #04060C 0%, #04060C 5%, rgba(4,6,12,0.6) 35%, rgba(4,6,12,0.6) 65%, #04060C 95%, #04060C 100%), url('/images/7.webp');
+  background-size: cover;
+  background-position: center;
+  width: 120%;
+  left: -10%;
+  animation: bgPan 18s ease-in-out infinite -5s;
+}
+
+@keyframes bgPan {
+  0%   { transform: translateX(0); }
+  50%  { transform: translateX(-8%); }
+  100% { transform: translateX(0); }
+}
+
+/* ── Section header ───────────────────── */
+.header {
+  max-width: 720px;
+  margin-bottom: var(--space-2xl);
+}
+
+.title {
+  margin-bottom: var(--space-md);
+}
+
+.description {
+  font-size: 1.15rem;
+  color: var(--text-primary);
+  line-height: 1.8;
+  opacity: 0.85;
+}
+
+/* ── Services row — 4 cards across ────── */
+.servicesRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-md);
+  margin-bottom: var(--space-2xl);
+}
+
+@keyframes aboutStripePulse {
+  0%, 100% { opacity: 0.55; }
+  50%       { opacity: 1; }
+}
+
+.serviceCard {
+  position: relative;
+  padding: var(--space-xl) var(--space-lg);
+  cursor: default;
+  transition: var(--t-base);
+  background:
+    repeating-linear-gradient(
+      0deg, transparent, transparent 3px,
+      rgba(255,255,255,0.011) 3px, rgba(255,255,255,0.011) 4px
+    ),
+    rgba(4, 6, 14, 0.72);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(212,168,67,0.12);
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.serviceCard::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold) 0%, transparent 65%);
+  animation: aboutStripePulse 3s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.serviceCard::after {
+  content: '';
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 0; height: 0;
+  border-style: solid;
+  border-width: 0 0 14px 14px;
+  border-color: transparent transparent rgba(212,168,67,0.18) transparent;
+  pointer-events: none;
+}
+
+.serviceCard:hover {
+  border-color: rgba(212, 168, 67, 0.28);
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-4px);
+}
+
+.serviceIcon {
+  color: var(--gold);
+  margin-bottom: var(--space-md);
+  display: flex;
+}
+
+.serviceTitle {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: var(--space-sm);
+  color: var(--text-primary);
+}
+
+.serviceDesc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* ── Detail grid — 3 columns ─────────── */
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-lg);
+  margin-bottom: var(--space-2xl);
+}
+
+.blockTitle {
+  margin-bottom: var(--space-lg);
+  color: var(--text-primary);
+}
+
+.infoBlock {
+  position: relative;
+  padding: var(--space-xl);
+  background:
+    repeating-linear-gradient(
+      0deg, transparent, transparent 3px,
+      rgba(255,255,255,0.011) 3px, rgba(255,255,255,0.011) 4px
+    ),
+    rgba(4, 6, 14, 0.72);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(212,168,67,0.12);
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.infoBlock::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold) 0%, transparent 65%);
+  animation: aboutStripePulse 3s ease-in-out infinite -1.5s;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.infoBlock::after {
+  content: '';
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 0; height: 0;
+  border-style: solid;
+  border-width: 0 0 14px 14px;
+  border-color: transparent transparent rgba(212,168,67,0.18) transparent;
+  pointer-events: none;
+}
+
+.licenseList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.licenseItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.licenseIcon {
+  flex-shrink: 0;
+  display: flex;
+}
+
+/* ── Geography — full width ──────────── */
+.geographyBlock {
+  padding: var(--space-xl);
+}
+
+.geoDesc {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  line-height: 1.7;
+  margin-bottom: var(--space-lg);
+}
+
+/* ── Responsive ───────────────────────── */
+@media (max-width: 1024px) {
+  .servicesRow { grid-template-columns: repeat(2, 1fr); }
+  .detailGrid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 768px) {
+  .detailGrid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .servicesRow { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,70 @@
+.section {
+  padding: var(--space-3xl) 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.section::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(to bottom, #04060C 0%, #04060C 5%, rgba(4,6,12,0.55) 35%,
+    rgba(4,6,12,0.55) 65%, #04060C 95%, #04060C 100%),
+    url('/images/Gemini_Generated_Image_ddlu49ddlu49ddlu.webp');
+  background-size: cover;
+  background-position: center;
+  width: 120%;
+  left: -10%;
+  animation: bgPan 36s ease-in-out infinite -14s;
+}
+
+@keyframes bgPan {
+  0%   { transform: translateX(0); }
+  50%  { transform: translateX(-8%); }
+  100% { transform: translateX(0); }
+}
+
+/* ── Header: title left, desc right ──── */
+.header {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-2xl);
+  margin-bottom: var(--space-xl);
+}
+
+.headerLeft {
+  flex: 0 0 42%;
+  max-width: 480px;
+}
+
+.headerRight {
+  flex: 1;
+  padding-bottom: 4px;
+}
+
+.title {
+  font-size: clamp(1.55rem, 2.1vw, 2.2rem);
+  line-height: 1.25;
+  margin-top: var(--space-sm);
+  margin-bottom: 0;
+}
+
+.desc {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  line-height: 1.8;
+  opacity: 0.82;
+}
+
+/* ── Responsive ───────────────────────── */
+@media (max-width: 900px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+  }
+  .headerLeft { max-width: 100%; }
+}

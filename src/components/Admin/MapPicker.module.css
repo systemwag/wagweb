@@ -1,0 +1,27 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hint {
+  font-size: 0.75rem;
+  color: rgba(221,228,240,0.45);
+  margin: 0;
+}
+
+.svg {
+  width: 100%;
+  border: 1px solid rgba(0,196,167,0.2);
+  border-radius: 8px;
+  background: #080d1a;
+  display: block;
+}
+
+.coords {
+  font-family: monospace;
+  font-size: 0.72rem;
+  color: #00c4a7;
+  margin: 0;
+  text-align: center;
+}

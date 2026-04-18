@@ -1,0 +1,180 @@
+.main {
+  min-height: 100vh;
+  padding-top: var(--header-height);
+}
+
+/* ── Breadcrumb ───────────────────────── */
+.breadcrumb {
+  border-bottom: 1px solid var(--glass-border);
+  padding: 14px 0;
+}
+
+.breadNav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.breadNav a { color: var(--text-secondary); transition: var(--t-fast); }
+.breadNav a:hover { color: var(--gold); }
+.breadNav span:last-child {
+  color: var(--text-primary);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 400px;
+}
+
+/* ── Hero ─────────────────────────────── */
+.hero {
+  position: relative;
+  padding: var(--space-2xl) 0;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 75% 50%, rgba(212,168,67,0.05) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 10% 80%, rgba(0,196,167,0.03) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.heroGlow {
+  position: absolute;
+  top: -40px; right: -60px;
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,168,67,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.heroMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.heroNum {
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.heroTitle {
+  margin-bottom: var(--space-lg);
+  max-width: 800px;
+}
+
+.heroDesc {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  line-height: 1.75;
+  max-width: 640px;
+  margin-bottom: var(--space-xl);
+}
+
+.heroInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+.infoItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* ── Badge ────────────────────────────── */
+.badge {
+  display: inline-block;
+  font-family: var(--font-heading);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+}
+
+.badge_full-cycle    { color: var(--gold);         background: rgba(212,168,67,0.1);  border: 1px solid rgba(212,168,67,0.25); }
+.badge_design        { color: var(--teal-light);    background: rgba(0,196,167,0.1);   border: 1px solid rgba(0,196,167,0.25); }
+.badge_documentation { color: var(--text-secondary);background: rgba(255,255,255,0.05);border: 1px solid var(--glass-border); }
+.badge_feasibility   { color: var(--blue);          background: rgba(79,132,255,0.1);  border: 1px solid rgba(79,132,255,0.25);}
+
+/* ── Works section ────────────────────── */
+.worksSection {
+  padding: 0 0 var(--space-3xl);
+  border-top: 1px solid var(--glass-border);
+}
+
+.worksCard {
+  background: rgba(13,18,34,0.45);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: var(--space-xl);
+  margin-top: var(--space-2xl);
+  margin-bottom: var(--space-xl);
+  position: relative;
+  overflow: hidden;
+}
+
+.worksCard::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,196,167,0.4), transparent);
+}
+
+.worksTitle {
+  color: var(--text-primary);
+  margin-bottom: var(--space-xl);
+}
+
+.worksList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.workItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.workDot {
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.backRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+  .heroTitle { font-size: clamp(1.6rem, 5vw, 2.5rem); }
+  .breadNav span:last-child { max-width: 200px; }
+}

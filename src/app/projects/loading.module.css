@@ -1,0 +1,66 @@
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.sk {
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.6s infinite;
+  border-radius: 6px;
+}
+
+.wrap {
+  padding-top: var(--header-height);
+  min-height: 100vh;
+}
+
+.hero {
+  padding: var(--space-3xl) 0 var(--space-2xl);
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-left: var(--space-xl);
+  padding-right: var(--space-xl);
+}
+
+.skLabel {
+  composes: sk;
+  width: 120px; height: 20px;
+  margin-bottom: 20px;
+}
+
+.skTitle {
+  composes: sk;
+  width: 480px; height: 52px;
+  margin-bottom: 16px;
+  border-radius: 10px;
+}
+
+.skDesc {
+  composes: sk;
+  width: 360px; height: 20px;
+}
+
+.grid {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--space-xl) var(--space-3xl);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.card {
+  composes: sk;
+  height: 280px;
+  border-radius: 16px;
+  animation: shimmer 1.6s infinite;
+}
+
+@media (max-width: 900px) {
+  .grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .grid { grid-template-columns: 1fr; }
+  .skTitle { width: 80%; }
+}

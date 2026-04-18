@@ -1,0 +1,148 @@
+.section {
+  padding: var(--space-3xl) 0;
+  position: relative;
+  z-index: 10;
+  overflow: hidden;
+}
+
+.section::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(to bottom, #04060C 0%, #04060C 5%, rgba(4,6,12,0.6) 35%, rgba(4,6,12,0.6) 65%, #04060C 95%, #04060C 100%), url('/images/stats-bg.webp');
+  background-size: cover;
+  background-position: center 30%;
+  width: 120%;
+  left: -10%;
+  animation: bgPan 30s ease-in-out infinite -5s;
+}
+
+@keyframes bgPan {
+  0%   { transform: translateX(0); }
+  50%  { transform: translateX(-8%); }
+  100% { transform: translateX(0); }
+}
+
+.inner {
+  /* No overlap — scroll indicator now has room */
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-md);
+}
+
+/* ── Card ─────────────────────────────── */
+@keyframes statsStripePulse {
+  0%, 100% { opacity: 0.55; }
+  50%       { opacity: 1; }
+}
+
+.card {
+  --stripe-color: var(--gold);
+  position: relative;
+  padding: var(--space-xl) var(--space-lg);
+  animation: fadeInUp 0.6s var(--ease-out) both;
+  text-align: center;
+  background:
+    repeating-linear-gradient(
+      0deg, transparent, transparent 3px,
+      rgba(255,255,255,0.011) 3px, rgba(255,255,255,0.011) 4px
+    ),
+    rgba(4, 6, 14, 0.72);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--glass-border);
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Animated top stripe */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--stripe-color) 0%, transparent 65%);
+  animation: statsStripePulse 3s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Accent corner */
+.card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 0; height: 0;
+  border-style: solid;
+  border-width: 0 0 14px 14px;
+  border-color: transparent transparent rgba(212,168,67,0.18) transparent;
+  pointer-events: none;
+}
+
+.card_gold  { --stripe-color: var(--gold); border-color: rgba(212, 168, 67, 0.18); }
+.card_teal  { --stripe-color: var(--teal); border-color: rgba(0, 196, 167, 0.14); }
+.card_blue  { --stripe-color: var(--blue); border-color: rgba(79, 132, 255, 0.14); }
+
+.card_teal::before { animation-delay: -1s; }
+.card_blue::before { animation-delay: -2s; }
+
+.card_teal::after  { border-color: transparent transparent rgba(0,196,167,0.18)  transparent; }
+.card_blue::after  { border-color: transparent transparent rgba(79,132,255,0.18) transparent; }
+
+/* ── Value ────────────────────────────── */
+.valueRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 2px;
+  margin-bottom: var(--space-sm);
+}
+
+.value {
+  font-family: var(--font-heading);
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.suffix {
+  font-family: var(--font-heading);
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  font-weight: 700;
+}
+
+.value_gold  { color: var(--gold-light); }
+.value_teal  { color: var(--teal-light); }
+.value_blue  { color: var(--blue); }
+.value_white { color: var(--text-primary); }
+
+/* ── Labels ───────────────────────────── */
+.label {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.sublabel {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ── Responsive ───────────────────────── */
+@media (max-width: 900px) {
+  .grid { grid-template-columns: repeat(2, 1fr); }
+  .inner { transform: translateY(-32px); }
+}
+
+@media (max-width: 480px) {
+  .grid { grid-template-columns: 1fr 1fr; gap: var(--space-sm); }
+  .inner { transform: translateY(-24px); }
+  .card { padding: var(--space-lg) var(--space-md); }
+}

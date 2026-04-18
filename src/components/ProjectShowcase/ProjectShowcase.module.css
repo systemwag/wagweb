@@ -1,0 +1,446 @@
+/* ── Section ──────────────────────────────────────────────────────────────── */
+.section {
+  padding: var(--space-3xl) 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.section::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(to bottom, #04060C 0%, #04060C 5%, rgba(4,6,12,0.55) 35%,
+    rgba(4,6,12,0.55) 65%, #04060C 95%, #04060C 100%),
+    url('/images/1.webp');
+  background-size: cover;
+  background-position: center;
+  width: 120%;
+  left: -10%;
+  animation: bgPan 40s ease-in-out infinite -22s;
+}
+
+@keyframes bgPan {
+  0%   { transform: translateX(0); }
+  50%  { transform: translateX(-8%); }
+  100% { transform: translateX(0); }
+}
+
+/* ── Header ───────────────────────────────────────────────────────────────── */
+.header {
+  margin-bottom: var(--space-2xl);
+}
+
+.eyebrow {
+  display: inline-block;
+  font-family: var(--font-heading);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: var(--space-sm);
+}
+
+.title {
+  margin-bottom: var(--space-sm);
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  line-height: 1.8;
+  opacity: 0.82;
+}
+
+/* ── Stage ────────────────────────────────────────────────────────────────── */
+.stage {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  background: rgba(4, 6, 14, 0.7);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+/* Atmospheric glow */
+.atmoGlow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: background 1.2s ease;
+  z-index: 0;
+}
+
+/* SVG spanning the stage */
+.lineSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ── Origin info (left) ───────────────────────────────────────────────────── */
+.origin {
+  position: absolute;
+  left: 2%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.originCoords {
+  font-family: 'Courier New', monospace;
+  font-size: 0.62rem;
+  color: rgba(0,196,167,0.75);
+  letter-spacing: 0.04em;
+}
+
+.originLocation {
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.35;
+}
+
+.originYear {
+  font-family: var(--font-heading);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--gold);
+  opacity: 0.75;
+}
+
+/* ── Card ─────────────────────────────────────────────────────────────────── */
+.card {
+  position: absolute;
+  border: 1px solid rgba(212,168,67,0.2);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  z-index: 3;
+  box-shadow:
+    0 24px 64px rgba(0,0,0,0.7),
+    0 0 0 1px rgba(212,168,67,0.06);
+}
+
+/* Background photo */
+.cardImg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.04);
+  transition: transform 6s ease;
+  z-index: 0;
+}
+
+.card:hover .cardImg {
+  transform: scale(1.08);
+}
+
+/* Dark gradient overlay */
+.cardOverlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      110deg,
+      rgba(4,6,14,0.97) 0%,
+      rgba(4,6,14,0.88) 45%,
+      rgba(4,6,14,0.55) 100%
+    );
+  z-index: 1;
+}
+
+/* Bottom accent glow from status color */
+.cardOverlay::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent, #D4A843), transparent 60%);
+}
+
+/* Left accent stripe */
+.cardStripe {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  z-index: 2;
+  box-shadow: 4px 0 20px currentColor;
+}
+
+/* Content */
+.cardContent {
+  position: absolute;
+  inset: 0;
+  padding: 24px 28px 20px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 3;
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.cardCategory {
+  font-family: var(--font-heading);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--gold);
+  background: rgba(212,168,67,0.1);
+  border: 1px solid rgba(212,168,67,0.22);
+  border-radius: 20px;
+  padding: 2px 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70%;
+}
+
+.cardYear {
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.cardTitle {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cardDesc {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin: 0;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Tags */
+.cardTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.cardTag {
+  font-family: var(--font-heading);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 2px 9px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--text-secondary);
+  background: rgba(255,255,255,0.04);
+}
+
+/* Footer */
+.cardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  margin-top: auto;
+}
+
+.cardStatus {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cardStatusDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.cardStatusText {
+  font-family: var(--font-heading);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--text-secondary);
+}
+
+.cardMeta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.cardMetaItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-heading);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+.cardCounter {
+  font-family: 'Courier New', monospace;
+  font-size: 0.62rem;
+  color: rgba(255,255,255,0.22);
+}
+
+/* ── Card animation states ────────────────────────────────────────────────── */
+@keyframes cardSlideIn {
+  from { opacity: 0; transform: translateX(14px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes cardSlideOut {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(-8px); }
+}
+
+.cardHide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cardShow {
+  animation: cardSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both;
+}
+
+.cardFade {
+  animation: cardSlideOut 0.55s ease forwards;
+}
+
+/* ── Line animation states ────────────────────────────────────────────────── */
+@keyframes scLineDraw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+
+@keyframes scFadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+.scLineDraw {
+  animation: scLineDraw 0.9s cubic-bezier(0.37, 0, 0.63, 1) forwards;
+}
+
+.scLineFade {
+  stroke-dashoffset: 0;
+  animation: scFadeOut 0.55s ease forwards;
+}
+
+/* ── Tip dot ──────────────────────────────────────────────────────────────── */
+@keyframes tipPop {
+  from { opacity: 0; r: 0.4; }
+  to   { opacity: 1; r: 1.2; }
+}
+
+.scTipShow {
+  animation: tipPop 0.2s ease forwards;
+}
+
+.scTipFade {
+  animation: scFadeOut 0.55s ease forwards;
+}
+
+/* ── Progress dots ────────────────────────────────────────────────────────── */
+.dotsRow {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 4;
+}
+
+.dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
+}
+
+.dot:hover {
+  background: rgba(255,255,255,0.35);
+  transform: scale(1.3);
+}
+
+.dotActive {
+  transform: scale(1.4);
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .stage { height: 340px; }
+
+  .origin { display: none; }
+
+  .card {
+    left: 8% !important;
+    top: 8% !important;
+    width: 84% !important;
+    height: 84% !important;
+  }
+}
+
+@media (max-width: 540px) {
+  .stage { height: 380px; }
+
+  .card {
+    left: 4% !important;
+    top: 4% !important;
+    width: 92% !important;
+    height: 92% !important;
+  }
+
+  .cardContent { padding: 16px 18px 14px; }
+  .cardTitle   { font-size: 0.95rem; }
+}

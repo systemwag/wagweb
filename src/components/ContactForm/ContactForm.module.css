@@ -1,0 +1,153 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* ── Row ──────────────────────────────── */
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+/* ── Field ────────────────────────────── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-family: var(--font-heading);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+}
+
+.required {
+  color: var(--gold);
+}
+
+/* ── Inputs ───────────────────────────── */
+.input,
+.textarea {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 13px 16px;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  transition: var(--t-base);
+  outline: none;
+  resize: none;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.input:focus,
+.textarea:focus {
+  border-color: rgba(212, 168, 67, 0.45);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.08);
+}
+
+.input:disabled,
+.textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Feedback ─────────────────────────── */
+.feedback {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.feedbackIcon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.feedback_success {
+  background: rgba(0, 196, 167, 0.08);
+  border: 1px solid rgba(0, 196, 167, 0.2);
+  color: var(--teal-light);
+}
+
+.feedback_success .feedbackIcon {
+  background: rgba(0, 196, 167, 0.15);
+  color: var(--teal);
+}
+
+.feedback_error {
+  background: var(--error-dim);
+  border: 1px solid rgba(255, 80, 80, 0.2);
+  color: var(--error);
+}
+
+.feedback_error .feedbackIcon {
+  background: rgba(255, 80, 80, 0.15);
+  color: var(--error);
+}
+
+/* ── Submit ───────────────────────────── */
+.submit {
+  width: 100%;
+  justify-content: center;
+  padding: 15px 28px;
+  font-size: 1rem;
+}
+
+.submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* ── Spinner ──────────────────────────── */
+.spinner {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(7, 11, 20, 0.3);
+  border-top-color: #070B14;
+  border-radius: 50%;
+  animation: rotateSlow 0.7s linear infinite;
+}
+
+/* ── Privacy ──────────────────────────── */
+.privacy {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.privacy a {
+  color: var(--gold);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ── Responsive ───────────────────────── */
+@media (max-width: 540px) {
+  .row { grid-template-columns: 1fr; }
+}

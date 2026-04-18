@@ -1,0 +1,65 @@
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.sk {
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.6s infinite;
+  border-radius: 6px;
+}
+
+.wrap {
+  padding-top: var(--header-height);
+  min-height: 100vh;
+}
+
+.hero {
+  padding: var(--space-3xl) var(--space-xl) var(--space-2xl);
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.skLabel  { composes: sk; width: 160px; height: 18px; margin-bottom: 20px; }
+.skTitle  { composes: sk; width: 520px; height: 52px; margin-bottom: 16px; border-radius: 10px; }
+.skDesc   { composes: sk; width: 400px; height: 18px; }
+
+.tableBlock {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-xl) var(--space-3xl);
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.skTabs   { composes: sk; width: 400px; height: 40px; border-radius: 10px; }
+.skSearch { composes: sk; width: 220px; height: 36px; border-radius: 8px; }
+
+.table {
+  background: rgba(13,18,34,0.45);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.row {
+  composes: sk;
+  height: 52px;
+  border-radius: 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  animation: shimmer 1.6s infinite;
+}
+
+.row:last-child { border-bottom: none; }
+
+@media (max-width: 600px) {
+  .skTitle { width: 80%; }
+  .skTabs  { width: 60%; }
+}
