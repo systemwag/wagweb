@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Footer from '@/components/Footer/Footer';
+import ServicesHeroAnim from '@/components/ServicesHeroAnim/ServicesHeroAnim';
 import { getServices } from '@/lib/data';
 import styles from './services.module.css';
 import {
@@ -113,6 +114,7 @@ export default async function ServicesPage() {
             </div>
           </div>
           <div className={styles.heroGlow} aria-hidden="true" />
+          <ServicesHeroAnim />
         </section>
 
         {/* ── Direction 01: Design ── */}

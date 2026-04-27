@@ -34,15 +34,17 @@ export default async function ProjectsPage({
   const params   = await searchParams;
   const category = params.category;
 
-  const [projects, categories, mapProjects] = await Promise.all([
+  const [projects, allProjects, categories, mapProjects] = await Promise.all([
     getProjects(category),
+    getProjects(),
     Promise.resolve(getProjectCategories()),
     getMapProjects(),
   ]);
 
-  const completed  = mapProjects.filter(p => p.status === 'completed').length;
-  const inProgress = mapProjects.filter(p => p.status === 'in-progress').length;
-  const planned    = mapProjects.filter(p => p.status === 'planned').length;
+  /* Stats count ALL projects; map shows only projects with coords */
+  const completed  = allProjects.filter(p => p.status === 'completed').length;
+  const inProgress = allProjects.filter(p => p.status === 'in-progress').length;
+  const planned    = allProjects.filter(p => p.status === 'planned').length;
 
   return (
     <>

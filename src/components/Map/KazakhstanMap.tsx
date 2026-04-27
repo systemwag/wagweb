@@ -200,7 +200,6 @@ export default function KazakhstanMap({ projects, stats }: Props) {
   const current  = labeled[idx] ?? null;
   const layout   = current ? computeLayout(current) : null;
   const dotFill  = current ? (FILL[current.status] ?? '#fff') : '#fff';
-  const dotGlow  = current ? (GLOW[current.status] ?? 'rgba(255,255,255,0.2)') : 'rgba(255,255,255,0.2)';
 
   return (
     <div ref={wrapRef}>

@@ -25,7 +25,7 @@
 
 /* ── Sidebar ─────────────────────────── */
 .sidebar {
-  width: 340px;
+  width: 460px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -334,3 +334,86 @@
   color: #d4a843;
 }
 .btnSave:hover { background: rgba(212, 168, 67, 0.18); }
+
+/* ── Sort row ───────────────────────── */
+.sortRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sortLabel {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.04em;
+  margin-right: 2px;
+}
+
+.sortPill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: var(--font-heading, inherit);
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.sortPill:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.sortPillActive {
+  background: rgba(0, 196, 167, 0.15);
+  border-color: rgba(0, 196, 167, 0.4);
+  color: #00c4a7;
+}
+
+/* ── On-map toggle ──────────────────── */
+.toggleBtn {
+  flex-shrink: 0;
+  width: 34px;
+  height: 18px;
+  padding: 0;
+  margin-left: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.toggleBtn:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.toggleBtnOn {
+  background: rgba(0, 196, 167, 0.2);
+  border-color: rgba(0, 196, 167, 0.5);
+}
+
+.toggleBtnOn:hover {
+  background: rgba(0, 196, 167, 0.3);
+}
+
+.toggleDot {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+  transition: transform 0.2s, background 0.2s;
+}
+
+.toggleBtnOn .toggleDot {
+  transform: translateX(16px);
+  background: #00c4a7;
+}

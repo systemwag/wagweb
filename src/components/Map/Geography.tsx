@@ -1,12 +1,14 @@
-import { getMapProjects } from '@/lib/data';
+import { getProjects } from '@/lib/data';
 import KazakhstanMap from './KazakhstanMap';
 import styles from './Geography.module.css';
 
 export default async function Geography() {
-  const mapProjects = await getMapProjects();
-  const completed  = mapProjects.filter(p => p.status === 'completed').length;
-  const inProgress = mapProjects.filter(p => p.status === 'in-progress').length;
-  const planned    = mapProjects.filter(p => p.status === 'planned').length;
+  /* Counters count ALL projects, while the map only shows ones with coords */
+  const allProjects = await getProjects();
+  const mapProjects = allProjects.filter(p => p.x_map != null && p.y_map != null);
+  const completed  = allProjects.filter(p => p.status === 'completed').length;
+  const inProgress = allProjects.filter(p => p.status === 'in-progress').length;
+  const planned    = allProjects.filter(p => p.status === 'planned').length;
 
   return (
     <section className={styles.section} id="geography">

@@ -7,9 +7,14 @@
 import { unstable_cache } from 'next/cache';
 import { createServerClient } from './supabase-server';
 import type { Project, Service, DesignProject } from './types';
+import { SQL_PROJECTS } from './sql-projects';
 
 // ── Seed data (used as fallback / initial content) ─────────────
-const SEED_PROJECTS: Project[] = [
+// Real 48 projects sourced from supabase_migration_projects.sql
+const SEED_PROJECTS: Project[] = SQL_PROJECTS;
+
+// Legacy stub (kept disabled, was 10 placeholder projects)
+const _LEGACY_SEED_PROJECTS: Project[] = [
   {
     id: 1,
     slug: 'rekonstrukciya-almaty-shymkent',

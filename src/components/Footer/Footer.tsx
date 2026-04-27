@@ -8,6 +8,7 @@ const navColumns = [
       { label: 'Миссия и ценности',   href: '/about'      },
       { label: 'Лицензии',            href: '/licenses'   },
       { label: 'Проекты',             href: '/projects'   },
+      { label: 'Портфолио (PDF)',     href: '/portfolio/print' },
       { label: 'Контакты',            href: '/contacts'   },
     ],
   },

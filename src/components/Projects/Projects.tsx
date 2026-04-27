@@ -43,8 +43,6 @@ export default async function Projects() {
                   } : {}),
                 }}
               >
-                <div className={`${styles.cardStripe} ${styles[`stripe_${color}`]}`} />
-
                 <div className={styles.cardTop}>
                   <span className={`${styles.category} ${styles[`cat_${color}`]}`}>
                     {project.category}

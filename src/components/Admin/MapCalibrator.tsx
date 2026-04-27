@@ -27,6 +27,7 @@ const STATUS_LABEL: Record<string, string> = {
 
 type Positions = Record<number, { x: number; y: number }>;
 type StatusFilter = 'all' | 'completed' | 'in-progress' | 'planned' | 'no-coords';
+type SortBy = 'id' | 'name' | 'year';
 
 interface Props { projects: Project[] }
 
@@ -38,6 +39,7 @@ export default function MapCalibrator({ projects }: Props) {
   const [copied, setCopied] = useState(false);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [sortBy, setSortBy] = useState<SortBy>('id');
 
   const [positions, setPositions] = useState<Positions>(() => {
     const init: Positions = {};
@@ -46,6 +48,18 @@ export default function MapCalibrator({ projects }: Props) {
     }
     return init;
   });
+
+  /* On-map visibility: true = show on public map, false = hide (x_map/y_map → null on save) */
+  const [onMap, setOnMap] = useState<Record<number, boolean>>(() => {
+    const init: Record<number, boolean> = {};
+    for (const p of projects) init[p.id] = p.x_map != null;
+    return init;
+  });
+
+  const toggleOnMap = useCallback((id: number) => {
+    setOnMap(prev => ({ ...prev, [id]: !prev[id] }));
+    setSaved(false);
+  }, []);
 
   /* Convert mouse event → SVG viewBox coordinates */
   const toSVGCoords = useCallback((e: React.MouseEvent) => {
@@ -72,8 +86,8 @@ export default function MapCalibrator({ projects }: Props) {
   const handleSave = async () => {
     const updates = projects.map(p => ({
       id: p.id,
-      x_map: positions[p.id].x,
-      y_map: positions[p.id].y,
+      x_map: onMap[p.id] ? positions[p.id].x : null,
+      y_map: onMap[p.id] ? positions[p.id].y : null,
     }));
     try {
       const res = await fetch('/api/admin/update-map-coords', {
@@ -106,18 +120,24 @@ export default function MapCalibrator({ projects }: Props) {
     });
   };
 
-  /* Filtered list for sidebar */
-  const filtered = projects.filter(p => {
-    const q = search.toLowerCase();
-    const matchSearch = !q || p.title.toLowerCase().includes(q) || (p.location ?? '').toLowerCase().includes(q);
-    const matchStatus =
-      statusFilter === 'all'       ? true :
-      statusFilter === 'no-coords' ? (p.x_map == null) :
-      p.status === statusFilter;
-    return matchSearch && matchStatus;
-  });
+  /* Filtered + sorted list for sidebar */
+  const filtered = projects
+    .filter(p => {
+      const q = search.toLowerCase();
+      const matchSearch = !q || p.title.toLowerCase().includes(q) || (p.location ?? '').toLowerCase().includes(q);
+      const matchStatus =
+        statusFilter === 'all'       ? true :
+        statusFilter === 'no-coords' ? !onMap[p.id] :
+        p.status === statusFilter;
+      return matchSearch && matchStatus;
+    })
+    .sort((a, b) => {
+      if (sortBy === 'name') return a.title.localeCompare(b.title, 'ru');
+      if (sortBy === 'year') return (b.year ?? 0) - (a.year ?? 0); // newest first
+      return a.id - b.id;
+    });
 
-  const noCoordCount = projects.filter(p => p.x_map == null).length;
+  const noCoordCount = projects.filter(p => !onMap[p.id]).length;
 
   return (
     <div className={styles.wrap}>
@@ -152,12 +172,12 @@ export default function MapCalibrator({ projects }: Props) {
           </g>
 
           {/* Draggable dots */}
-          {projects.map(p => {
+          {projects.filter(p => onMap[p.id] || selectedId === p.id).map(p => {
             const pos = positions[p.id];
             const color = STATUS_COLOR[p.status] ?? '#fff';
             const isDragging = draggingId === p.id;
             const isSelected = selectedId === p.id;
-            const hasNoCoords = p.x_map == null;
+            const hasNoCoords = !onMap[p.id];
             return (
               <g
                 key={p.id}
@@ -239,8 +259,22 @@ export default function MapCalibrator({ projects }: Props) {
               style={statusFilter === f && f !== 'all' && f !== 'no-coords' ? { '--pill-color': STATUS_COLOR[f] } as React.CSSProperties : undefined}
             >
               {f === 'all'       ? `Все (${projects.length})` :
-               f === 'no-coords' ? `Без точки (${noCoordCount})` :
+               f === 'no-coords' ? `Скрыты (${noCoordCount})` :
                STATUS_LABEL[f]}
+            </button>
+          ))}
+        </div>
+
+        {/* Sort row */}
+        <div className={styles.sortRow}>
+          <span className={styles.sortLabel}>Сортировка:</span>
+          {(['id', 'name', 'year'] as SortBy[]).map(s => (
+            <button
+              key={s}
+              className={`${styles.sortPill} ${sortBy === s ? styles.sortPillActive : ''}`}
+              onClick={() => setSortBy(s)}
+            >
+              {s === 'id' ? 'ID' : s === 'name' ? 'Имя' : 'Год'}
             </button>
           ))}
         </div>
@@ -287,16 +321,27 @@ export default function MapCalibrator({ projects }: Props) {
 
                 {/* Coords / no-coords badge */}
                 <div className={styles.listCoords}>
-                  {hasCoords ? (
+                  {onMap[p.id] ? (
                     <>
                       <span className={styles.coordVal}>{pos.x}</span>
                       <span className={styles.coordSep}>·</span>
                       <span className={styles.coordVal}>{pos.y}</span>
                     </>
                   ) : (
-                    <span className={styles.coordMissing}>нет</span>
+                    <span className={styles.coordMissing}>скрыт</span>
                   )}
                 </div>
+
+                {/* On-map toggle */}
+                <button
+                  type="button"
+                  className={`${styles.toggleBtn} ${onMap[p.id] ? styles.toggleBtnOn : ''}`}
+                  onClick={(e) => { e.stopPropagation(); toggleOnMap(p.id); }}
+                  title={onMap[p.id] ? 'Скрыть с карты' : 'Показать на карте'}
+                  aria-label={onMap[p.id] ? 'Скрыть с карты' : 'Показать на карте'}
+                >
+                  <span className={styles.toggleDot} />
+                </button>
               </div>
             );
           })}

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Footer from '@/components/Footer/Footer';
 import LicenseCards from './LicenseCards';
+import CertificateCards from './CertificateCards';
 import styles from './licenses.module.css';
 
 export const metadata: Metadata = {
@@ -30,6 +31,16 @@ export default function LicensesPage() {
         <section className={styles.section}>
           <div className="container">
             <LicenseCards />
+          </div>
+        </section>
+
+        <section className={styles.certSection}>
+          <div className="container">
+            <h2 className={styles.sectionHeading}>
+              <span>Сертификаты</span>
+              Международные стандарты качества
+            </h2>
+            <CertificateCards />
           </div>
         </section>
       </main>

@@ -118,8 +118,10 @@ export default function GlobalVerticalBg() {
                     C ${startX} 300, ${endX} 100, ${endX} 600
                     V 16000`;
 
+  const isHome = pathname === '/';
+
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 10, pointerEvents: 'none' }} aria-hidden="true">
+    <div style={{ position: 'fixed', inset: 0, zIndex: isHome ? 10 : 2, pointerEvents: 'none' }} aria-hidden="true">
       <svg ref={svgWrapperRef} width="100%" height="16000" style={{ position: 'absolute', top: 0, left: 0, willChange: 'transform' }}>
         <defs>
           <mask id="hollowRailsMask">
