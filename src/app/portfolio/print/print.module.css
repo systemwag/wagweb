@@ -13,18 +13,75 @@
   print-color-adjust: exact;
 }
 
-.printHint {
+.printButtons {
   position: fixed;
-  top: 16px; right: 16px;
-  background: #04060C;
-  color: #C9941F;
-  border: 1px solid #C9941F;
-  padding: 10px 18px;
+  top: 20px; right: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 220px;
+}
+
+.printBtnPrimary,
+.printBtnSecondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 18px;
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 13px; font-weight: 700;
-  letter-spacing: 0.08em; text-transform: uppercase;
-  z-index: 1000; border-radius: 4px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+  border: 1px solid transparent;
+}
+
+.printBtnPrimary {
+  background: linear-gradient(135deg, #C9941F 0%, #F0C85A 100%);
+  color: #04060C;
+  box-shadow: 0 6px 20px rgba(201,148,31,0.4), 0 1px 0 rgba(255,255,255,0.2) inset;
+}
+
+.printBtnPrimary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(201,148,31,0.55), 0 1px 0 rgba(255,255,255,0.25) inset;
+}
+
+.printBtnSecondary {
+  background: rgba(4,6,12,0.92);
+  color: #C9941F;
+  border-color: #C9941F;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.45);
+}
+
+.printBtnSecondary:hover {
+  transform: translateY(-2px);
+  background: rgba(201,148,31,0.1);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.55);
+}
+
+.printBtnPrimary svg,
+.printBtnSecondary svg {
+  flex-shrink: 0;
+}
+
+.printHintNote {
+  margin-top: 4px;
+  padding: 8px 12px;
+  background: rgba(4,6,12,0.7);
+  border: 1px dashed rgba(201,148,31,0.4);
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  color: #C9941F;
+  text-align: center;
+  line-height: 1.4;
 }
 
 /* ── Page ───────────────────────────────────────────────────────── */
@@ -45,11 +102,25 @@
 .pageDark  { background: #04060C; color: #F0F2F8; }
 .pageLight { background: #FAF7F0; color: #1a1a1a; }
 
-/* Subtle scanline only on dark pages */
+/* Subtle scanline only on dark pages — z-index 0 so it never obscures content in print */
 .pageDark::after {
   content: ''; position: absolute; inset: 0;
   background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.018) 3px, rgba(255,255,255,0.018) 4px);
-  pointer-events: none; z-index: 2;
+  pointer-events: none; z-index: 0;
+}
+
+/* Make sure all section content sits above the scanline pseudo */
+.pageDark .sectionInner,
+.pageDark .numbersInner,
+.pageDark .geoInner,
+.pageDark .svcInner,
+.pageDark .contactsInner,
+.pageDark .stmtInner,
+.pageDark .cover,
+.pageDark .coverContent,
+.pageDark .qrInner {
+  position: relative;
+  z-index: 1;
 }
 
 /* ── Corner marks ────────────────────────────────────────────────── */
@@ -140,7 +211,7 @@
 /* ══════════════════════════════════════════════════════════════════
    SECTION INNER (common)
    ══════════════════════════════════════════════════════════════════ */
-.sectionInner { padding: 26mm 22mm 22mm; height: 100%; position: relative; }
+.sectionInner { padding: 26mm 22mm 22mm; height: 100%; position: relative; z-index: 1; }
 
 .sectionLabel {
   font-family: 'Courier New', monospace;
@@ -667,6 +738,118 @@
   font-weight: 700;
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   TESTIMONIALS GRID (pages 12–15)
+   ══════════════════════════════════════════════════════════════════ */
+.testContd {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Courier New', monospace;
+  font-size: 8.5pt;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #B0791C;
+  padding-bottom: 4mm;
+  margin-bottom: 6mm;
+  border-bottom: 1px solid rgba(176,121,28,0.3);
+}
+
+.testGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4mm;
+  margin-top: 5mm;
+  align-items: start;
+}
+
+.testCard {
+  background: #fff;
+  border: 1px solid rgba(176,121,28,0.22);
+  border-top: 2px solid #C9941F;
+  padding: 4mm 5mm;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5mm;
+  break-inside: avoid;
+  page-break-inside: avoid;
+  max-height: 105mm;
+  overflow: hidden;
+}
+
+.testCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 3mm;
+}
+
+.testCardCategory {
+  font-family: 'Courier New', monospace;
+  font-size: 7pt;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #C9941F;
+  background: rgba(201,148,31,0.08);
+  border: 1px solid rgba(201,148,31,0.25);
+  border-radius: 999px;
+  padding: 1mm 3mm;
+  white-space: nowrap;
+}
+
+.testCardDate {
+  font-family: 'Courier New', monospace;
+  font-size: 7pt;
+  letter-spacing: 0.06em;
+  color: #888;
+  white-space: nowrap;
+}
+
+.testCardClient {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 9.5pt;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1.25;
+  margin: 0;
+  letter-spacing: -0.005em;
+}
+
+.testCardQuote {
+  font-family: 'Onest', sans-serif;
+  font-size: 8pt;
+  line-height: 1.55;
+  color: #2a2a2a;
+  margin: 0;
+  padding: 2.5mm 3mm;
+  background: rgba(201,148,31,0.05);
+  border-left: 2px solid #C9941F;
+  flex: 1 1 auto;
+}
+
+.testCardSig {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5mm;
+  padding-top: 2.5mm;
+  border-top: 1px solid rgba(26,26,26,0.1);
+}
+
+.testCardSigName {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 9pt;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.testCardSigRole {
+  font-family: 'Courier New', monospace;
+  font-size: 7pt;
+  letter-spacing: 0.04em;
+  color: #777;
+}
+
 /* Testimonial intro */
 .testimonialIntro {
   font-family: 'Onest', sans-serif;
@@ -896,7 +1079,7 @@
   }
 
   .page { margin: 0; box-shadow: none; page-break-after: always; }
-  .printHint { display: none !important; }
+  .printButtons { display: none !important; }
 
   .coverTriangle,
   .aboutWatermark,

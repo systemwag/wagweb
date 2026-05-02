@@ -1,5 +1,5 @@
 .section {
-  padding: var(--space-3xl) 0;
+  padding: var(--space-3xl) 0 0 0;
   position: relative;
   overflow: hidden;
 }
@@ -12,7 +12,7 @@
   background:
     linear-gradient(to bottom, #04060C 0%, #04060C 5%, rgba(4,6,12,0.55) 35%,
     rgba(4,6,12,0.55) 65%, #04060C 95%, #04060C 100%),
-    url('/images/Gemini_Generated_Image_ddlu49ddlu49ddlu.webp');
+    url('/images/stats-bg.webp');
   background-size: cover;
   background-position: center;
   width: 120%;

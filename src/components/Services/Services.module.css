@@ -1,5 +1,5 @@
 .section {
-  padding: var(--space-3xl) 0;
+  padding: var(--space-md) 0 var(--space-3xl);
   position: relative;
   overflow: hidden;
 }
@@ -23,17 +23,143 @@
   100% { transform: translateX(0); }
 }
 
-/* ── Header ───────────────────────────── */
-.sectionHeader { margin-bottom: var(--space-2xl); }
+/* ── Header — 2-col: title left, side-stats right ─────── */
+.sectionHeader {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-2xl);
+  align-items: end;
+  margin-bottom: var(--space-2xl);
+}
+
+.sectionHeaderLeft {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
 
 .sectionTitle { margin-top: var(--space-sm); }
+
+/* Side stats — quick scope-of-section reading */
+.sectionHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding-bottom: 6px;
+}
+
+.sideStat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 80px;
+}
+
+.sideStatNum {
+  font-family: 'Outfit', var(--font-heading);
+  font-size: clamp(1.6rem, 2.4vw, 2.4rem);
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.sideStatLabel {
+  font-family: var(--font-heading);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-top: 6px;
+}
+
+.sideStatDivider {
+  width: 1px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 900px) {
+  .sectionHeader {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+  .sectionHeaderRight {
+    padding-bottom: 0;
+  }
+}
+
+@media (max-width: 540px) {
+  .sectionHeaderRight {
+    gap: var(--space-sm);
+  }
+  .sideStat {
+    min-width: 60px;
+  }
+}
 
 /* ── Direction cards ──────────────────── */
 .directions {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-lg);
-  margin-bottom: var(--space-3xl);
+  margin-bottom: var(--space-2xl);
+}
+
+/* ── Catalog CTA strip — gateway to /services ──────────── */
+.catalogStrip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-top: var(--space-xl);
+}
+
+.catalogLine {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right,
+    transparent 0%,
+    rgba(212, 168, 67, 0.25) 50%,
+    transparent 100%
+  );
+}
+
+/* The catalog button uses global .btn .btn-outline (animated conic border)
+   plus custom uppercase typography to match the section's premium voice */
+.catalogBtn {
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  padding: 14px 28px;
+}
+
+.catalogBtn svg {
+  transition: transform var(--t-base);
+}
+
+.catalogBtn:hover svg {
+  transform: translateX(4px);
+}
+
+@media (max-width: 700px) {
+  .catalogStrip {
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .catalogLine {
+    width: 60%;
+    flex: 0 0 auto;
+  }
+
+  .catalogBtn {
+    font-size: 0.72rem;
+    padding: 12px 22px;
+  }
 }
 
 @keyframes svcStripePulse {
@@ -111,8 +237,93 @@
   display: flex;
 }
 
+.dirIcon svg {
+  filter: drop-shadow(0 0 16px currentColor);
+  opacity: 0.9;
+}
+
 .dirIcon_gold { color: var(--gold); }
 .dirIcon_teal { color: var(--teal); }
+
+/* ── Proof badge — "+N видов работ →" linking to /design or /projects ── */
+.proofBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-heading);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  width: fit-content;
+  margin-bottom: var(--space-md);
+  transition: var(--t-base);
+}
+
+.proofBadge_gold {
+  background: rgba(212, 168, 67, 0.08);
+  border: 1px solid rgba(212, 168, 67, 0.28);
+  color: var(--gold-light);
+}
+
+.proofBadge_gold:hover {
+  background: rgba(212, 168, 67, 0.14);
+  border-color: rgba(212, 168, 67, 0.45);
+  color: var(--gold);
+}
+
+.proofBadge_teal {
+  background: rgba(0, 196, 167, 0.08);
+  border: 1px solid rgba(0, 196, 167, 0.28);
+  color: var(--teal-light);
+}
+
+.proofBadge_teal:hover {
+  background: rgba(0, 196, 167, 0.14);
+  border-color: rgba(0, 196, 167, 0.45);
+  color: var(--teal);
+}
+
+.proofBadge svg {
+  transition: transform var(--t-base);
+}
+
+.proofBadge:hover svg {
+  transform: translateX(2px);
+}
+
+/* ── Industry chips — visible "5 отраслей" tags on construction card ── */
+.industryChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: var(--space-lg);
+}
+
+.industryChip {
+  font-family: var(--font-heading);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 4px 11px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.industryChip_gold {
+  color: var(--gold-light);
+  border: 1px solid rgba(212, 168, 67, 0.22);
+  background: rgba(212, 168, 67, 0.05);
+}
+
+.industryChip_teal {
+  color: var(--teal-light);
+  border: 1px solid rgba(0, 196, 167, 0.25);
+  background: rgba(0, 196, 167, 0.05);
+}
 
 .dirLabel {
   font-family: var(--font-heading);

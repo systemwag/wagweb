@@ -2,8 +2,9 @@ import type { Metadata } from 'next';
 import Script from 'next/script';
 import './globals.css';
 import GlobalAnim from '@/components/ui/GlobalAnim';
-import GlobalVerticalBg from '@/components/ui/GlobalVerticalBg';
+import GlobalVerticalBg from '@/components/ui/GlobalVerticalBgMulti';
 import HeaderWrapper from '@/components/Header/HeaderWrapper';
+import SmoothScroll from '@/components/ui/SmoothScroll';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://west-arlan.kz'),
@@ -75,7 +76,7 @@ const jsonLd = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ru">
+    <html lang="ru" data-scroll-behavior="smooth">
       <head>
         <Script
           id="json-ld-org"
@@ -84,12 +85,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         />
       </head>
       <body>
+        <SmoothScroll />
         <GlobalVerticalBg />
         <HeaderWrapper />
-        <div style={{ position: 'relative', zIndex: 3 }}>
-          {children}
-          <GlobalAnim />
-        </div>
+        {children}
+        <GlobalAnim />
       </body>
     </html>
   );

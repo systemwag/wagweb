@@ -1,6 +1,7 @@
 import { getProjects, getDesignProjects } from '@/lib/data';
 import QRCode from 'qrcode';
 import styles from './print.module.css';
+import PrintButtons from './PrintButtons';
 
 /* ── WAG triangle path (from Hero.tsx) ────────────────────────── */
 const WAG_PATH = 'M613.8,437.27c-62.3-103.58-132.83-240.95-201.5-355.51L367.22,0h-16.51c-5.26,19.77-26.22,45.86-33.35,61.03-12.21,25.99-1.91,26.43,18.72,64.07l206.32,360.76,30.4,59.77-106.51.95c-9.82-18.63-13.04-29.8-27.52-49.02l-155.86-274.97c-10.29-18.78-10.26-28.99-25.78-40.4-19.27,12.94-14.27,13.44-25.87,34.79-8.93,16.45-15.27,26.27-23.65,42.54l-143.13,248.42c-77.1,142.82-94.44,127.54-.02,127,86.18-.49,172.52-.02,258.72-.02-2-24.09-9.24-28.93-19.64-46.55-33.15-56.19-11.28-41.79-156.49-41.79,3.5-13.11,16.34-33.82,24.36-47.34l91.22-145.89c4.18,18,25.71,50.9,36.21,68.58,8.16,13.76,11.9,23.61,19.08,36.06,7.25,12.59,11.91,19.4,19.91,35.23l78.91,141.69h302.74c-2.68-32.14-85.4-163.93-105.69-197.65Z';
@@ -14,6 +15,48 @@ function WagTriangle({ className }: { className?: string }) {
     </svg>
   );
 }
+
+type PrintTestimonial = {
+  client: string;
+  signatory: string;
+  role: string;
+  date?: string;
+  category: string;
+  quote: string;
+};
+
+const PRINT_TESTIMONIALS: PrintTestimonial[] = [
+  { client: 'ТОО «УКИЗ Актобе» · Aktobe Industrial Zone', signatory: 'Тулебаев А. Н.', role: 'Директор', date: '5 января 2020', category: 'Содержание · 4,5 км',
+    quote: 'За время сотрудничества текущее содержание подъездных железнодорожных путей осуществляется квалифицированными специалистами. Качественно и своевременно устраняются все дефекты. Профессионализм работников West Capital Construction LLP позволяет нам быть уверенными в безопасной эксплуатации.' },
+  { client: 'ТОО «Актюбинская медная компания»', signatory: 'Бондаренко Н. С.', role: 'Генеральный директор', category: 'Перебортовка · 63 км',
+    quote: 'Высококвалифицированный персонал ответственно подошёл к выполнению поставленных задач, и качественно в установленные договором сроки выполнил данные работы. West Capital Construction LLP имеет всю необходимую технику и оборудование для выполнения как демонтажных, так и СМР работ.' },
+  { client: 'ТОО «Актюбинская медная компания»', signatory: 'Бондаренко Н. С.', role: 'Генеральный директор', category: 'Содержание · 7,2 + 20 км',
+    quote: 'Техническое обслуживание такого путевого развития требует большой ответственности и профессионального внимания. Был заключён договор с West Capital Construction LLP, т. к. их специалисты зарекомендовали себя как профессиональные и добросовестные работники.' },
+  { client: 'ТОО «Актюбинская медная компания»', signatory: 'Бондаренко Н. С.', role: 'Генеральный директор', date: '21 сентября 2018', category: 'Реконструкция · ст. Рудная',
+    quote: 'Сотрудники компании оперативно и качественно решали многочисленные вопросы, возникающие в процессе строительства. Все этапы дальнейшего строительства West Capital Construction LLP терпеливо согласовывала с руководством ТОО «АМК». Рекомендуем их как надёжную команду для проектов любой сложности.' },
+  { client: 'ТОО «Зерде-Керамика Актобе»', signatory: 'Тлеукабылов Е. Р.', role: 'Директор', date: 'Сентябрь 2021', category: 'Строительство · 481 м',
+    quote: 'Учитывая добросовестность и ответственность работников West Capital Construction LLP, а также серьёзный подход к выполняемой работе, мы уверены в безопасности эксплуатации железнодорожного пути и надеемся на дальнейшее сотрудничество.' },
+  { client: 'ТОО «Зерде-Керамика Актобе»', signatory: 'Тлеукабылов Е. Р.', role: 'Директор', category: 'Демонтаж · 6,7 км',
+    quote: 'Ваши специалисты справились с выполнением работ качественно и в установленные сроки, что подтверждает Вашу ответственность и подготовленность. Учитывая, что Ваша компания работала с нами при строительстве, обслуживании и теперь демонтажных работах, мы выражаем готовность на дальнейшее сотрудничество.' },
+  { client: 'ТОО «Компания Фаэтон»', signatory: 'Русманова В. Ю.', role: 'Директор', date: '20 октября 2018', category: 'Содержание · рампа 70 м',
+    quote: 'Сотрудники West Capital Construction LLP отличаются ответственностью, добропорядочностью и профессионализмом. Обход, осмотр и исправление дефектов подъездного пути осуществляется качественно и своевременно. Их работа даёт нам уверенность в безопасной эксплуатации пути.' },
+  { client: 'ТОО «АлтынНұран»', signatory: 'Мурзабеков Ж. Н.', role: 'Директор', date: 'С сентября 2019', category: 'Содержание · 115 м',
+    quote: 'Все работы по текущему содержанию железнодорожного пути и сооружений выполнялись высококвалифицированными специалистами. Учитывая добросовестность и ответственность работников, мы уверены в безопасности эксплуатации и надеемся на дальнейшее сотрудничество.' },
+  { client: 'ТОО «Синтез Урал»', signatory: 'Морозов С. А.', role: 'Директор', date: 'С ноября 2024', category: 'Строительство · 500 м',
+    quote: 'Хочется отметить профессионализм и ответственность работников West Capital Construction LLP, а также оперативность решения вопросов в ходе строительства. Высокий уровень организационной работы позволил качественно и в срок сдать объект в эксплуатацию.' },
+  { client: 'ТОО «Portal KZ»', signatory: 'Нышанов М. М.', role: 'Директор', category: 'Строительство · ст. Никельтау',
+    quote: 'Строительство выполнено с чётким соблюдением всех условий договора: работа была выполнена в срок, в соответствии с техническим заданием. Между нашими организациями сложилась хорошая практика оперативного взаимодействия в согласовании технических решений.' },
+  { client: 'ИП «Жанажанов Б. С.»', signatory: 'Жанажанов Б. С.', role: 'Индивидуальный предприниматель', category: 'Строительство · 200 м',
+    quote: 'Благодаря профессиональному подходу к работе сотрудниками West Capital Construction LLP строительство нашего железнодорожного пути необщего пользования было завершено раньше намеченного срока, при этом качество и надёжность построенного объекта достойны самых высоких оценок.' },
+  { client: 'ТОО «Нефтестройсервис ЛТД» · NSS', signatory: 'Отаров Р. К.', role: 'Директор', date: '01 ноября 2022', category: 'Строительство · ст. Тендык',
+    quote: 'Работы выполнены в соответствии с действующими строительными нормами и правилами, согласно техническому заданию и условиям контракта, с надлежащим качеством и в установленный срок. West Capital Construction LLP проявила себя как высокопрофессиональная компания.' },
+  { client: 'ЧЛ «Ни К. А.»', signatory: 'Ни К. А.', role: 'Частный заказчик', category: 'Строительство · 41 разъезд',
+    quote: 'Компания показала себя как исполнительный подрядчик, выполняющий договорные обязательства с превосходным качеством работ и в установленные сроки. Применяемые компанией современные методы строительства соответствуют требованиям СН РК, СП РК и ГОСТ.' },
+  { client: 'ТОО «СП «Сине Мидас Строй»', signatory: 'Иманкулова Б. Т.', role: 'Исполнительный директор', category: 'Демонтаж · 850 м',
+    quote: 'Не можем не отметить высокий профессионализм работников West Capital Construction LLP, а также максимальную ответственность при выполнении поставленных задач. Качество работ не оставляет сомнений, надеемся на ещё более тесное сотрудничество.' },
+  { client: 'ТОО «ПГС-Тамды»', signatory: 'Испанов А. К.', role: 'Директор', category: 'Строительство · ст. Тамды',
+    quote: 'Профессиональный и ответственный подход к выполнению работы сотрудниками West Capital Construction LLP обеспечили строительство нашего железнодорожного пути необщего пользования в стационарный путь «на окно». Все согласования с организациями АО «НК «КТЖ» велись своевременно.' },
+];
 
 const PARTNERS = [
   { file: '9.png',          name: 'Қазақстан Темір Жолы' },
@@ -129,12 +172,12 @@ export default async function PortfolioPrintPage() {
     genQR(URL_DESIGN),
   ]);
 
-  const TOTAL = 14;
+  const TOTAL = 17;
   const p = (n: number) => `${String(n).padStart(2, '0')} / ${TOTAL}`;
 
   return (
     <main className={styles.book}>
-      <div className={styles.printHint}>Ctrl+P → Сохранить как PDF</div>
+      <PrintButtons />
 
       {/* ═══ 01 · COVER ═══ */}
       <section className={`${styles.page} ${styles.pageDark} ${styles.cover}`}>
@@ -545,9 +588,62 @@ export default async function PortfolioPrintPage() {
         </div>
       </section>
 
-      {/* ═══ 12 · PARTNERS ═══ */}
+      {/* ═══ 12–15 · TESTIMONIALS (3 on first page, 4 on the rest) ═══ */}
+      {(() => {
+        const FIRST = 3;
+        const PER = 4;
+        const chunks: PrintTestimonial[][] = [];
+        chunks.push(PRINT_TESTIMONIALS.slice(0, FIRST));
+        for (let i = FIRST; i < PRINT_TESTIMONIALS.length; i += PER) {
+          chunks.push(PRINT_TESTIMONIALS.slice(i, i + PER));
+        }
+        return chunks.map((chunk, ci) => (
+          <section key={`test-${ci}`} className={`${styles.page} ${styles.pageLight}`}>
+            <Corners pageNum={p(12 + ci)} />
+            <div className={styles.sectionInner}>
+              {ci === 0 ? (
+                <>
+                  <div className={styles.sectionLabel}>Отзывы клиентов</div>
+                  <h2 className={styles.sectionTitle}>
+                    Что говорят<br />
+                    <span className={styles.sectionTitleAccent}>наши заказчики</span>
+                  </h2>
+                  <p className={styles.testimonialIntro}>
+                    Большинство писем адресованы подрядной компании группы —
+                    West Capital Construction LLP — по объектам, сданным в эксплуатацию заказчикам.
+                  </p>
+                </>
+              ) : (
+                <div className={styles.testContd}>
+                  <span>Отзывы клиентов · продолжение</span>
+                  <span>стр. {ci + 1} из {chunks.length}</span>
+                </div>
+              )}
+
+              <div className={styles.testGrid}>
+                {chunk.map((t, ti) => (
+                  <article key={`${ci}-${ti}`} className={styles.testCard}>
+                    <div className={styles.testCardHeader}>
+                      <span className={styles.testCardCategory}>{t.category}</span>
+                      {t.date && <span className={styles.testCardDate}>{t.date}</span>}
+                    </div>
+                    <h3 className={styles.testCardClient}>{t.client}</h3>
+                    <p className={styles.testCardQuote}>«{t.quote}»</p>
+                    <div className={styles.testCardSig}>
+                      <div className={styles.testCardSigName}>{t.signatory}</div>
+                      <div className={styles.testCardSigRole}>{t.role}</div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </section>
+        ));
+      })()}
+
+      {/* ═══ 16 · PARTNERS ═══ */}
       <section className={`${styles.page} ${styles.pageLight}`}>
-        <Corners pageNum={p(12)} />
+        <Corners pageNum={p(16)} />
         <div className={styles.sectionInner}>
           <div className={styles.sectionLabel}>Партнёры и заказчики</div>
           <h2 className={styles.sectionTitle}>
@@ -565,61 +661,9 @@ export default async function PortfolioPrintPage() {
         </div>
       </section>
 
-      {/* ═══ 12 · TESTIMONIAL ═══ */}
-      <section className={`${styles.page} ${styles.pageLight}`}>
-        <Corners pageNum={p(12)} />
-        <div className={styles.sectionInner}>
-          <div className={styles.sectionLabel}>Отзыв заказчика</div>
-          <h2 className={styles.sectionTitle}>
-            Что говорят<br />
-            <span className={styles.sectionTitleAccent}>наши заказчики</span>
-          </h2>
-          <p className={styles.testimonialIntro}>
-            Отзывы получены подрядной компанией группы — West Capital Construction LLP — по объектам,
-            сданным в эксплуатацию заказчикам.
-          </p>
-          <div className={styles.testimonial}>
-            <div className={styles.testimonialQuote}>
-              «Профессионализм и добросовестность работников West Capital Construction LLP позволяют
-              нам быть уверенными в безопасной эксплуатации наших подъездных железнодорожных путей.»
-            </div>
-            <div className={styles.testimonialAttr}>
-              <strong>Тулебаев А. Н.</strong>
-              <span>Директор · ТОО «УКИЗ Актобе»</span>
-              <span>Aktobe Industrial Zone · 5 января 2020 г.</span>
-            </div>
-          </div>
-          <div className={styles.testimonial} style={{ marginTop: '8mm' }}>
-            <div className={styles.testimonialQuote}>
-              «Учитывая добросовестность и ответственность работников West Capital Construction LLP,
-              а также серьёзный подход к выполняемой работе, мы уверены в безопасности эксплуатации
-              железнодорожного пути и надеемся на дальнейшее сотрудничество.»
-            </div>
-            <div className={styles.testimonialAttr}>
-              <strong>Тлеукабылов Е. Р.</strong>
-              <span>Директор · ТОО «Зерде-Керамика Актобе»</span>
-              <span>Сентябрь 2021 г.</span>
-            </div>
-          </div>
-          <div className={styles.testimonial} style={{ marginTop: '8mm' }}>
-            <div className={styles.testimonialQuote}>
-              «Все этапы дальнейшего строительства West Capital Construction LLP терпеливо
-              согласовывала с руководством ТОО «АМК», чтобы учесть все наши пожелания как заказчика.
-              Профессионализм и добросовестность позволяют нам рекомендовать их как надёжную команду
-              для осуществления строительных проектов любой сложности.»
-            </div>
-            <div className={styles.testimonialAttr}>
-              <strong>Бондаренко Н. С.</strong>
-              <span>Генеральный директор · АМК</span>
-              <span>Актюбинская медная компания</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ 14 · CONTACTS / BACK COVER ═══ */}
+      {/* ═══ 17 · CONTACTS / BACK COVER ═══ */}
       <section className={`${styles.page} ${styles.pageDark}`}>
-        <Corners pageNum={p(14)} />
+        <Corners pageNum={p(17)} />
         <div className={styles.contactsInner}>
           <div className={`${styles.sectionLabel} ${styles.darkLabel}`}>Контакты</div>
           <h2 className={styles.contactsTitle}>

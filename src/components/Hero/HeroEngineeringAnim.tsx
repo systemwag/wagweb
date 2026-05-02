@@ -13,25 +13,26 @@ function buildSinePath(cycles: number, period: number, amplitude: number, cy: nu
   return d;
 }
 
-// ── Compass — LEFT side ────────────────────────────────────────────────────────
-const CX = 155;
-const CY = 270;
-const R  = 115;
+// ── Compass — выровнен ровно над двумя панелями графиков ─────────────────────
+// Центр совпадает с центром панелей по X (PANEL_X + PANEL_W/2 = 880 + 98 = 978)
+const CX = 978;
+const CY = 290;
+const R  = 95;
 const SWEEP_AX = (CX + R * Math.sin(-Math.PI / 3)).toFixed(1);
 const SWEEP_AY = (CY - R * Math.cos(-Math.PI / 3)).toFixed(1);
 
-// ── Panel layout — two panels stacked vertically in one column ─────────────────
-// Both panels: width=280, height=115, same x, gap=10px
-const PANEL_X  = 840;
-const PANEL_W  = 280;
-const PANEL_H  = 115;
-const PANEL_A_Y = 450;
-const PANEL_B_Y = PANEL_A_Y + PANEL_H + 10; // 575
-const PANEL_A_CY = PANEL_A_Y + PANEL_H / 2; // 507.5
-const PANEL_B_BASELINE = PANEL_B_Y + PANEL_H - 10; // 680
+// ── Panel layout — two panels stacked vertically (-30% in size) ────────────────
+// Both panels: width=196, height=80, same x, gap=10px
+const PANEL_X  = 880;
+const PANEL_W  = 196;
+const PANEL_H  = 80;
+const PANEL_A_Y = 470;
+const PANEL_B_Y = PANEL_A_Y + PANEL_H + 10; // 560
+const PANEL_A_CY = PANEL_A_Y + PANEL_H / 2; // 510
+const PANEL_B_BASELINE = PANEL_B_Y + PANEL_H - 10; // 630
 
 // ── Panel A: animated sine wave (cy = center of panel A) ─────────────────────
-const SINE_PATH_PANEL = buildSinePath(12, 100, 18, PANEL_A_CY);
+const SINE_PATH_PANEL = buildSinePath(12, 100, 13, PANEL_A_CY);
 
 // ── Panel B: terrain elevation — computed relative to PANEL_X ─────────────────
 // Original x: 80–1380 (range 1300), original y: 753–815 (baseline 815, range 62)
@@ -43,7 +44,7 @@ const terrainX0 = PANEL_X + 5;
 const terrainW  = PANEL_W - 10;
 const MINI_TERRAIN_PTS = SRC_TERRAIN.map(([x, y]): [number, number] => [
   terrainX0 + (x - 80) * terrainW / 1300,
-  PANEL_B_BASELINE - (815 - y) * 50 / 62,
+  PANEL_B_BASELINE - (815 - y) * 35 / 62,
 ]);
 const MINI_TERRAIN_PATH = MINI_TERRAIN_PTS
   .map(([x, y], i) => `${i === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`)
@@ -52,12 +53,13 @@ const lastX = MINI_TERRAIN_PTS[MINI_TERRAIN_PTS.length - 1][0].toFixed(1);
 const MINI_TERRAIN_PATH_CLOSED = MINI_TERRAIN_PATH + ` L ${lastX} ${PANEL_B_BASELINE} L ${terrainX0} ${PANEL_B_BASELINE} Z`;
 const MINI_TERRAIN_LEN = 420;
 
-// ── GPS survey nodes ──────────────────────────────────────────────────────────
+// ── GPS survey nodes — confined to right visual zone (X > 800) ────────────────
+// Left half is reserved for text content (eyebrow, H1, paragraph, CTAs, trust strip)
 const SURVEY_PTS = [
-  { x: 130,  y: 100, label: 'N:4840612', delay: '0s'   },
+  { x: 820,  y: 110, label: 'N:4840612', delay: '0s'   },
   { x: 1380, y: 88,  label: 'N:4840718', delay: '1.5s' },
-  { x: 1395, y: 360, label: 'N:4840583', delay: '0.8s' },
-  { x: 150,  y: 715, label: 'N:4840544', delay: '2.2s' },
+  { x: 1395, y: 420, label: 'N:4840583', delay: '0.8s' },
+  { x: 1280, y: 820, label: 'N:4840544', delay: '2.2s' },
 ];
 
 export default function HeroEngineeringAnim() {
@@ -162,14 +164,14 @@ export default function HeroEngineeringAnim() {
         <line x1={CX} y1={CY - R - 10} x2={CX} y2={CY - R + 6}
           stroke="var(--teal)" strokeWidth="2" strokeOpacity="0.7" />
 
-        <text x={CX + R + 18} y={CY - 8}
+        <text x={CX - R - 18} y={CY - 8}
           fill="var(--teal)" fontSize="10" fontFamily="monospace"
-          textAnchor="start" opacity="0.55" letterSpacing="2px">
+          textAnchor="end" opacity="0.55" letterSpacing="2px">
           ТЕОДОЛИТ T-02
         </text>
-        <text x={CX + R + 18} y={CY + 10}
+        <text x={CX - R - 18} y={CY + 10}
           fill="var(--gold)" fontSize="11" fontFamily="monospace"
-          textAnchor="start" letterSpacing="1px">
+          textAnchor="end" letterSpacing="1px">
           α = 247.3°
           <animate attributeName="opacity" values="0.85;0.3;0.85" dur="2.8s" repeatCount="indefinite" />
         </text>
@@ -204,19 +206,19 @@ export default function HeroEngineeringAnim() {
           </path>
         </g>
 
-        <text x={PANEL_X + 8} y={PANEL_A_Y + 15}
-          fill="var(--teal)" fontSize="9" fontFamily="monospace"
+        <text x={PANEL_X + 8} y={PANEL_A_Y + 12}
+          fill="var(--teal)" fontSize="7" fontFamily="monospace"
           opacity="0.55" letterSpacing="0.5px">
           ДИНАМИЧЕСКАЯ НАГРУЗКА
         </text>
-        <text x={PANEL_X + PANEL_W - 4} y={PANEL_A_Y + 15}
-          fill="var(--gold)" fontSize="10" fontFamily="monospace"
+        <text x={PANEL_X + PANEL_W - 4} y={PANEL_A_Y + 12}
+          fill="var(--gold)" fontSize="8" fontFamily="monospace"
           textAnchor="end" letterSpacing="0.5px">
           124 kN
           <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2.5s" repeatCount="indefinite" />
         </text>
-        <text x={PANEL_X + 8} y={PANEL_A_Y + PANEL_H - 6}
-          fill="var(--text-secondary)" fontSize="8" fontFamily="monospace"
+        <text x={PANEL_X + 8} y={PANEL_A_Y + PANEL_H - 5}
+          fill="var(--text-secondary)" fontSize="6" fontFamily="monospace"
           opacity="0.35" letterSpacing="0.3px">
           ЧАСТОТА: 2.4 Гц · АМПЛИТУДА: 0.8 мм · СТАТУС: НОРМА
         </text>
@@ -258,19 +260,19 @@ export default function HeroEngineeringAnim() {
           </path>
         </g>
 
-        <text x={PANEL_X + 8} y={PANEL_B_Y + 15}
-          fill="var(--teal)" fontSize="9" fontFamily="monospace"
+        <text x={PANEL_X + 8} y={PANEL_B_Y + 12}
+          fill="var(--teal)" fontSize="7" fontFamily="monospace"
           opacity="0.55" letterSpacing="0.5px">
           ПРОДОЛЬНЫЙ ПРОФИЛЬ
         </text>
-        <text x={PANEL_X + PANEL_W - 4} y={PANEL_B_Y + 15}
-          fill="var(--gold)" fontSize="10" fontFamily="monospace"
+        <text x={PANEL_X + PANEL_W - 4} y={PANEL_B_Y + 12}
+          fill="var(--gold)" fontSize="8" fontFamily="monospace"
           textAnchor="end" letterSpacing="0.5px">
           447 м
           <animate attributeName="opacity" values="0.8;0.3;0.8" dur="3.1s" repeatCount="indefinite" />
         </text>
-        <text x={PANEL_X + 8} y={PANEL_B_Y + PANEL_H - 6}
-          fill="var(--text-secondary)" fontSize="8" fontFamily="monospace"
+        <text x={PANEL_X + 8} y={PANEL_B_Y + PANEL_H - 5}
+          fill="var(--text-secondary)" fontSize="6" fontFamily="monospace"
           opacity="0.35" letterSpacing="0.3px">
           ПК 108–113 · ОТМЕТКА: 438–447 м · УКЛОН: ‰
         </text>

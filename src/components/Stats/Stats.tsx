@@ -8,30 +8,35 @@ interface StatItem {
   suffix: string;
   label: string;
   sublabel: string;
-  color: 'gold' | 'teal' | 'blue' | 'white';
 }
 
 const stats: StatItem[] = [
-  { value: 15,  suffix: '+', label: 'Лет на рынке',      sublabel: 'С 2010 года',              color: 'gold'  },
-  { value: 300, suffix: '+', label: 'Объектов сдано',    sublabel: 'По всему Казахстану',       color: 'teal'  },
-  { value: 2800,suffix: '+', label: 'км дорог',          sublabel: 'Железнодорожных путей',     color: 'blue'  },
-  { value: 98,  suffix: '%', label: 'Довольных клиентов',sublabel: 'Повторные обращения',       color: 'white' },
+  { value: 15, suffix: '+', label: 'Лет на рынке',         sublabel: 'с 2010 года'                },
+  { value: 80, suffix: '+', label: 'Специалистов',         sublabel: 'ГИПы, инженеры, прорабы'    },
+  { value: 14, suffix: '',  label: 'Регионов Казахстана',  sublabel: 'от Атырау до Хоргоса'       },
+  { value: 94, suffix: '%', label: 'Повторных контрактов', sublabel: 'клиенты возвращаются'       },
 ];
 
-function StatCard({ item, index }: { item: StatItem; index: number }) {
+const regalia = [
+  'I категория',
+  'ISO 9001:2015',
+  'ISO 14001:2015',
+  'Допуск СРО',
+];
+
+function StatCell({ item, index }: { item: StatItem; index: number }) {
   return (
     <div
-      className={`glass-card ${styles.card} ${styles[`card_${item.color}`]}`}
+      className={styles.cell}
       style={{ animationDelay: `${index * 0.12}s` }}
     >
-      <div className={styles.cardGlow} aria-hidden="true" />
       <div className={styles.valueRow}>
-        <AnimatedCounter 
-          target={item.value} 
-          className={`${styles.value} ${styles[`value_${item.color}`]}`} 
-          duration={2500} 
+        <AnimatedCounter
+          target={item.value}
+          className={styles.value}
+          duration={2500}
         />
-        <span className={`${styles.suffix} ${styles[`value_${item.color}`]}`}>{item.suffix}</span>
+        <span className={styles.suffix}>{item.suffix}</span>
       </div>
       <div className={styles.label}>{item.label}</div>
       <div className={styles.sublabel}>{item.sublabel}</div>
@@ -43,11 +48,24 @@ export default function Stats() {
   return (
     <section className={styles.section}>
       <div className={`container ${styles.inner}`}>
+
         <div className={styles.grid}>
           {stats.map((item, i) => (
-            <StatCard key={item.label} item={item} index={i} />
+            <StatCell key={item.label} item={item} index={i} />
           ))}
         </div>
+
+        <div className={styles.regalia} aria-label="Лицензии и сертификаты">
+          {regalia.map((item, i) => (
+            <span key={item} className={styles.regaliaWrap}>
+              <span className={styles.regaliaItem}>{item}</span>
+              {i < regalia.length - 1 && (
+                <span className={styles.regaliaSep} aria-hidden="true">·</span>
+              )}
+            </span>
+          ))}
+        </div>
+
       </div>
     </section>
   );

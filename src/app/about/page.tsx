@@ -76,6 +76,17 @@ const team = [
   { name: 'Прорабы, мастера, инженеры СЦБ', role: 'Строительные бригады', count: 50 },
 ];
 
+const leadership = [
+  { name: 'Аронов Аян Садиржанович',         role: 'Генеральный директор',                    photo: '/team/aronov.jpg' },
+  { name: 'Валеев Алексей Сергеевич',        role: 'Директор проектной группы',               photo: '/team/valeev.jpg' },
+  { name: 'Прусс Альберт Русланович',        role: 'Директор по производству',                photo: '/team/pruss.jpg' },
+  { name: 'Штурмилов Валентин Петрович',     role: 'Главный инженер проекта (ГИП)',           photo: '/team/shturmilov.jpg' },
+  { name: 'Аргумбаев Болат Клбергенович',    role: 'Главный технолог по линейным сооружениям', photo: '/team/argumbaev.jpg' },
+  { name: 'Абакумов Владимир',               role: 'Главный инженер СЦБ',                     photo: '/team/abakumov.jpg' },
+  { name: 'Николаева Ольга Юрьевна',         role: 'Руководитель сметного отдела',            photo: '/team/nikolaeva.jpg' },
+  { name: 'Айекешов Айбек Карлович',         role: 'Специалист по БиОТ',                      photo: '/team/ayekeshov.jpg' },
+];
+
 export default function AboutPage() {
   return (
     <>
@@ -169,6 +180,27 @@ export default function AboutPage() {
                   <div className={styles.teamCount}>{t.count}+</div>
                   <div className={styles.teamRole}>{t.role}</div>
                   <div className={styles.teamName}>{t.name}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Leadership ── */}
+        <section className={styles.section}>
+          <div className="container">
+            <span className="section-label">Руководство</span>
+            <h2 className="heading-2" style={{ marginBottom: 'var(--space-2xl)' }}>
+              Команда руководителей
+            </h2>
+            <div className={styles.leadershipGrid}>
+              {leadership.map((p) => (
+                <div key={p.name} className={`glass-card ${styles.leadCard}`}>
+                  <div className={styles.leadPhotoWrap}>
+                    <img src={p.photo} alt={p.name} className={styles.leadPhoto} />
+                  </div>
+                  <div className={styles.leadRole}>{p.role}</div>
+                  <div className={styles.leadName}>{p.name}</div>
                 </div>
               ))}
             </div>

@@ -6,12 +6,13 @@ import Link from 'next/link';
 import styles from './Header.module.css';
 
 const navLinks = [
-  { label: 'О компании',     href: '/about',    num: '01' },
-  { label: 'Услуги',         href: '/services', num: '02' },
-  { label: 'Проектирование', href: '/design',   num: '03' },
-  { label: 'Строительство',  href: '/projects', num: '04' },
-  { label: 'Лицензии',       href: '/licenses', num: '05' },
-  { label: 'Контакты',       href: '/contacts', num: '06' },
+  { label: 'О компании',     href: '/about',        num: '01' },
+  { label: 'Услуги',         href: '/services',     num: '02' },
+  { label: 'Проектирование', href: '/design',       num: '03' },
+  { label: 'Строительство',  href: '/projects',     num: '04' },
+  { label: 'Лицензии',       href: '/licenses',     num: '05' },
+  { label: 'Отзывы',         href: '/testimonials', num: '06' },
+  { label: 'Контакты',       href: '/contacts',     num: '07' },
 ];
 
 export default function Header() {

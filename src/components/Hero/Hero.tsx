@@ -1,8 +1,19 @@
 'use client';
 
+import Image from 'next/image';
 import styles from './Hero.module.css';
 import HeroAnimatedBackground from './HeroAnimatedBackground';
 import HeroEngineeringAnim from './HeroEngineeringAnim';
+
+// Trust strip uses PNGs only (transparent backgrounds).
+// JPG partners (Тенгизшевройл, Khorgos) live in the lower Partners marquee.
+const trustLogos = [
+  { file: '9.png',                          name: 'Қазақстан Темір Жолы' },
+  { file: '1.png',                          name: 'Русская Медная Компания' },
+  { file: 'metprom-logo-rus-Photoroom.png', name: 'Метпром' },
+  { file: 'QB_-01_1__.png',                 name: 'Qazaq Bitum' },
+  { file: '4.png',                          name: 'Shubarkol Premium' },
+];
 
 export default function Hero() {
 
@@ -17,28 +28,86 @@ export default function Hero() {
 
       {/* Content */}
       <div className={styles.content}>
+        <div className={styles.brandEyebrow}>
+          <span className={styles.brandName}>West Arlan Group</span>
+          <span className={styles.brandDot} aria-hidden="true">·</span>
+          <span className={styles.brandSince}>с 2010 года</span>
+        </div>
+
         <h1 className={`heading-1 ${styles.title}`}>
-          <span className="text-gradient-gold">West Arlan Group</span>
-          <br />
-          <span className={styles.titleSub}>
-            строим
-            <br />
-            инфраструктуру
-            <br />
-            будущего
-          </span>
+          Проектируем. Строим. Обслуживаем.
         </h1>
 
+        <div className={styles.subtitle}>
+          <p className={styles.subtitleLead}>
+            Полный цикл — от изысканий до сдачи объекта под&nbsp;ключ.
+          </p>
+
+          <p className={styles.subtitleCategories}>
+            <span className={styles.subtitleCategoriesLabel}>Инфраструктура любого типа:</span>
+            <span className={styles.subtitleCategoriesList}>
+              трубопроводы, ЛЭП, автодороги, железные дороги, промышленные объекты.
+            </span>
+          </p>
+
+          <div className={styles.subtitleStats}>
+            <span className={styles.subtitleStat}>
+              <span className={styles.subtitleStatNum}>+300</span>
+              <span className={styles.subtitleStatLabel}>проектов</span>
+            </span>
+            <span className={styles.subtitleStatSep} aria-hidden="true" />
+            <span className={styles.subtitleStat}>
+              <span className={styles.subtitleStatNum}>+50</span>
+              <span className={styles.subtitleStatLabel}>под ключ</span>
+            </span>
+          </div>
+        </div>
+
         <div className={styles.actions}>
-          <a href="#projects" className="btn btn-primary">
-            Наши проекты
+          <a href="/contacts" className="btn btn-primary">
+            Обсудить проект
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
               <path d="M3.5 9h11M10 4.5l4.5 4.5-4.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </a>
-          <a href="#about" className="btn btn-outline">
-            О компании
+          <a href="/portfolio/print" target="_blank" rel="noopener" className={`btn btn-outline ${styles.downloadBtn}`}>
+            <svg className={styles.downloadIcon} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <g className={styles.downloadArrow}>
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </g>
+            </svg>
+            Скачать PDF
           </a>
+          <a href="tel:+77132538288" className={styles.phoneCta}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+            <span className={styles.phoneText}>
+              <span className={styles.phoneNumber}>+7 7132 538-288</span>
+              <span className={styles.phoneHours}>с 9:00 до 18:00</span>
+            </span>
+          </a>
+        </div>
+
+        <div className={styles.trustStrip} aria-label="Наши клиенты">
+          <span className={styles.trustStripLabel}>Нам доверяют</span>
+          <div className={styles.trustStripDivider} aria-hidden="true" />
+          <div className={styles.trustStripLogos}>
+            {trustLogos.map((c) => (
+              <div key={c.file} className={styles.trustLogoBox} title={c.name}>
+                <Image
+                  src={`/partners/${encodeURIComponent(c.file)}`}
+                  alt={c.name}
+                  width={160}
+                  height={52}
+                  className={styles.trustLogo}
+                  unoptimized
+                />
+              </div>
+            ))}
+          </div>
         </div>
 
       </div>

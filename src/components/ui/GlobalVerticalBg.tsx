@@ -141,7 +141,7 @@ export default function GlobalVerticalBg() {
 
         <g mask="url(#drawMask)">
           {/* Гравийная подушка / Тень */}
-          <path d={mainPath} stroke="rgba(4, 6, 12, 0.6)" strokeWidth="80" fill="none" />
+          <path d={mainPath} stroke="rgba(4,6,12, 0.6)" strokeWidth="80" fill="none" />
 
           {/* Непрерывные бирюзовые направляющие по краям пути (до самого конца!) */}
           <path d={mainPath} stroke="var(--teal)" strokeWidth="122" strokeDasharray="10 10" strokeOpacity="0.8" fill="none" mask="url(#blueprintGuidesMask)" />

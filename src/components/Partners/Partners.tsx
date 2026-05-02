@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from './Partners.module.css';
 
 const partners = [
@@ -145,6 +145,23 @@ export default function Partners() {
         </div>
       </div>
 
+      {/* ── Testimonial slider (one at a time) ───────────────────── */}
+      <div className="container">
+        <div className={styles.testimonialsBlock}>
+          <div className={styles.testimonialsHeader}>
+            <span className="section-label">Отзывы клиентов</span>
+            <a href="/testimonials" className={styles.testimonialsLink}>
+              Посмотреть все отзывы
+              <svg viewBox="0 0 16 16" fill="none" width="14" height="14">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </a>
+          </div>
+
+          <TestimonialSlider />
+        </div>
+      </div>
+
       {/* ── CTA ──────────────────────────────────────────────────── */}
       <div className="container">
         <div className={styles.cta}>
@@ -165,8 +182,8 @@ export default function Partners() {
                   strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </a>
-            <a href="tel:+77172000000" className="btn btn-outline">
-              +7 (717) 200-00-00
+            <a href="tel:+77132538288" className="btn btn-outline">
+              +7 7132 538-288
             </a>
           </div>
         </div>
@@ -174,3 +191,77 @@ export default function Partners() {
     </section>
   );
 }
+
+/* ── Single-card auto-rotating testimonial slider ─────────────────── */
+function TestimonialSlider() {
+  const [idx, setIdx] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [animating, setAnimating] = useState(false);
+
+  useEffect(() => {
+    if (paused) return;
+    const t = setInterval(() => {
+      setAnimating(true);
+      setTimeout(() => {
+        setIdx((p) => (p + 1) % TESTIMONIAL_SNIPPETS.length);
+        setAnimating(false);
+      }, 280); // fade-out duration
+    }, 6000);
+    return () => clearInterval(t);
+  }, [paused]);
+
+  const goTo = (target: number) => {
+    if (target === idx) return;
+    setAnimating(true);
+    setTimeout(() => {
+      setIdx(target);
+      setAnimating(false);
+    }, 280);
+  };
+
+  const t = TESTIMONIAL_SNIPPETS[idx];
+
+  return (
+    <div
+      className={styles.testSliderWrap}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <article className={`${styles.testSlide} ${animating ? styles.testSlideOut : ''}`}>
+        <div className={styles.testQuote}>«{t.quote}»</div>
+        <div className={styles.testAttr}>
+          <span className={styles.testName}>{t.name}</span>
+          <span className={styles.testCompany}>{t.company}</span>
+        </div>
+      </article>
+
+      <div className={styles.testDots} role="tablist" aria-label="Отзывы">
+        {TESTIMONIAL_SNIPPETS.map((_, i) => (
+          <button
+            key={i}
+            type="button"
+            role="tab"
+            aria-selected={i === idx}
+            aria-label={`Отзыв ${i + 1} из ${TESTIMONIAL_SNIPPETS.length}`}
+            className={`${styles.testDot} ${i === idx ? styles.testDotActive : ''}`}
+            onClick={() => goTo(i)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ── Testimonials data (short snippets) ───────────────────────────── */
+const TESTIMONIAL_SNIPPETS = [
+  { quote: 'Качественно и своевременно устраняются все дефекты. Мы уверены в безопасной эксплуатации наших путей.', name: 'Тулебаев А. Н.', company: 'ТОО «УКИЗ Актобе»' },
+  { quote: 'Высококвалифицированный персонал ответственно подошёл к выполнению задач, выполнил работы качественно и в срок.', name: 'Бондаренко Н. С.', company: 'ТОО «Актюбинская медная компания»' },
+  { quote: 'Учитывая добросовестность и серьёзный подход к работе, мы уверены в безопасности эксплуатации пути.', name: 'Тлеукабылов Е. Р.', company: 'ТОО «Зерде-Керамика Актобе»' },
+  { quote: 'Сотрудники отличаются ответственностью, добропорядочностью и профессионализмом.', name: 'Русманова В. Ю.', company: 'ТОО «Компания Фаэтон»' },
+  { quote: 'Работы выполняются высококвалифицированными специалистами. Надеемся на дальнейшее сотрудничество.', name: 'Мурзабеков Ж. Н.', company: 'ТОО «АлтынНұран»' },
+  { quote: 'Высокий уровень организационной работы позволил качественно и в срок сдать объект в эксплуатацию.', name: 'Морозов С. А.', company: 'ТОО «Синтез Урал»' },
+  { quote: 'Строительство выполнено с чётким соблюдением всех условий договора, в срок и по техническому заданию.', name: 'Нышанов М. М.', company: 'ТОО «Portal KZ»' },
+  { quote: 'Строительство пути было завершено раньше срока, качество и надёжность достойны самых высоких оценок.', name: 'Жанажанов Б. С.', company: 'ИП «Жанажанов Б. С.»' },
+  { quote: 'Высокопрофессиональная компания с квалифицированными кадрами, оперативно и качественно решающая задачи.', name: 'Отаров Р. К.', company: 'ТОО «Нефтестройсервис ЛТД»' },
+  { quote: 'Современные методы строительства соответствуют требованиям СН РК, СП РК и ГОСТ.', name: 'Ни К. А.', company: 'ЧЛ «Ни К. А.»' },
+];

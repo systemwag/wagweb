@@ -22,7 +22,18 @@
 
 .heroContent {
   position: relative;
-  z-index: 2;
+  z-index: 5;
+}
+
+.heroContent::before {
+  content: '';
+  position: absolute;
+  inset: -40px -10% -40px -10%;
+  max-width: 920px;
+  background:
+    radial-gradient(ellipse 70% 80% at 30% 50%, rgba(4,6,12,0.92) 0%, rgba(4,6,12,0.7) 45%, transparent 80%);
+  pointer-events: none;
+  z-index: -1;
 }
 
 .heroTitle {
@@ -66,9 +77,9 @@
 /* ── Mission ──────────────────────────── */
 .missionGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.1fr 1fr;
   gap: var(--space-2xl);
-  align-items: start;
+  align-items: center;
 }
 
 .missionText h2 { margin: var(--space-md) 0 var(--space-lg); }
@@ -76,32 +87,56 @@
 .missionStats {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-md);
+  gap: var(--space-sm);
+  max-width: 560px;
 }
 
 .miniStat {
-  padding: var(--space-xl) var(--space-lg);
-  text-align: center;
+  position: relative;
+  padding: var(--space-md) var(--space-md);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-md);
+  min-height: 130px;
   transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.miniStat::before {
+  content: '';
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  opacity: 0.45;
+  box-shadow: 0 0 8px rgba(212,168,67,0.5);
 }
 
 .miniStat:hover {
   transform: translateY(-4px);
   border-color: rgba(212,168,67,0.25);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(212,168,67,0.12);
 }
 
 .miniStatValue {
   display: block;
   font-family: var(--font-heading);
-  font-size: 2.2rem;
+  font-size: 2.6rem;
   font-weight: 800;
   letter-spacing: -0.03em;
-  margin-bottom: var(--space-xs);
+  line-height: 1;
 }
 
 .miniStatLabel {
   font-family: var(--font-heading);
-  font-size: 0.8rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: var(--text-muted);
 }
 
@@ -183,6 +218,68 @@
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-secondary);
+}
+
+/* ── Leadership ───────────────────────── */
+.leadershipGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-md);
+}
+
+.leadCard {
+  padding: var(--space-lg);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.leadCard:hover {
+  transform: translateY(-6px);
+  border-color: rgba(212,168,67,0.28);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(212,168,67,0.18);
+}
+
+.leadPhotoWrap {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+  border: 2px solid rgba(212,168,67,0.35);
+  background:
+    linear-gradient(135deg, rgba(212,168,67,0.12), rgba(0,196,167,0.06));
+  flex-shrink: 0;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.45), inset 0 0 0 4px rgba(4,6,12,0.5);
+}
+
+.leadPhoto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.leadRole {
+  font-family: var(--font-heading);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-top: var(--space-xs);
+  line-height: 1.4;
+}
+
+.leadName {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.35;
 }
 
 /* ── Licenses ─────────────────────────── */
@@ -321,16 +418,20 @@
   .valuesGrid     { grid-template-columns: repeat(2, 1fr); }
   .teamGrid       { grid-template-columns: repeat(2, 1fr); }
   .equipmentGrid  { grid-template-columns: repeat(2, 1fr); }
+  .leadershipGrid { grid-template-columns: repeat(3, 1fr); }
 }
 
 @media (max-width: 768px) {
   .missionGrid   { grid-template-columns: 1fr; }
   .licensesGrid  { grid-template-columns: 1fr; }
   .partnersGrid  { grid-template-columns: 1fr; }
+  .leadershipGrid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 540px) {
   .valuesGrid     { grid-template-columns: 1fr; }
   .teamGrid       { grid-template-columns: repeat(2, 1fr); }
   .equipmentGrid  { grid-template-columns: 1fr; }
+  .leadershipGrid { grid-template-columns: 1fr; }
+  .leadPhotoWrap  { width: 120px; height: 120px; }
 }

@@ -8,6 +8,7 @@ const navColumns = [
       { label: 'Миссия и ценности',   href: '/about'      },
       { label: 'Лицензии',            href: '/licenses'   },
       { label: 'Проекты',             href: '/projects'   },
+      { label: 'Отзывы клиентов',     href: '/testimonials' },
       { label: 'Портфолио (PDF)',     href: '/portfolio/print' },
       { label: 'Контакты',            href: '/contacts'   },
     ],
@@ -44,7 +45,7 @@ const navColumns = [
 
 export default function Footer() {
   return (
-    <footer className={styles.footer} id="contacts">
+    <footer className={styles.footer} id="contacts" style={{ position: 'relative', zIndex: 9999, isolation: 'isolate', background: 'var(--bg-primary)' }}>
       {/* Top bar */}
       <div className={styles.topBar}>
         <div className="container">
@@ -89,14 +90,8 @@ export default function Footer() {
             <div className={styles.brand}>
               <a href="#" className={styles.logo}>
                 <div className={styles.logoMark}>
-                  <svg width="40" height="40" viewBox="0 0 36 36" fill="none">
-                    <polygon points="18,2 34,10 34,26 18,34 2,26 2,10"
-                      stroke="url(#fg)" strokeWidth="1.5" fill="none"/>
-                    <polygon points="18,8 28,13 28,23 18,28 8,23 8,13"
-                      fill="url(#fg)" opacity="0.12"/>
-                    <text x="18" y="22" textAnchor="middle"
-                      fontFamily="Outfit, sans-serif" fontWeight="800"
-                      fontSize="11" fill="url(#fg)">W</text>
+                  <svg width="44" height="40" viewBox="0 0 719.49 635.66" fill="none">
+                    <path fill="url(#fg)" d="M613.8,437.27c-62.3-103.58-132.83-240.95-201.5-355.51L367.22,0h-16.51c-5.26,19.77-26.22,45.86-33.35,61.03-12.21,25.99-1.91,26.43,18.72,64.07l206.32,360.76,30.4,59.77-106.51.95c-9.82-18.63-13.04-29.8-27.52-49.02l-155.86-274.97c-10.29-18.78-10.26-28.99-25.78-40.4-19.27,12.94-14.27,13.44-25.87,34.79-8.93,16.45-15.27,26.27-23.65,42.54l-143.13,248.42c-77.1,142.82-94.44,127.54-.02,127,86.18-.49,172.52-.02,258.72-.02-2-24.09-9.24-28.93-19.64-46.55-33.15-56.19-11.28-41.79-156.49-41.79,3.5-13.11,16.34-33.82,24.36-47.34l91.22-145.89c4.18,18,25.71,50.9,36.21,68.58,8.16,13.76,11.9,23.61,19.08,36.06,7.25,12.59,11.91,19.4,19.91,35.23l78.91,141.69h302.74c-2.68-32.14-85.4-163.93-105.69-197.65Z"/>
                     <defs>
                       <linearGradient id="fg" x1="0" y1="0" x2="1" y2="1">
                         <stop offset="0%" stopColor="#D4A843"/>

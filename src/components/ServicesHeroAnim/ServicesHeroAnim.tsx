@@ -61,6 +61,9 @@ export default function ServicesHeroAnim() {
   const slot5Cx = rowL + tile * 4.5 + gap * 4;       // TRUCK (deliveries)
 
   const motifCy = h * 0.50;
+  /* Shared baseline for all labels — placed below the deepest motif extent
+     (crane base sits at motifCy + tile*0.45). */
+  const labelY  = motifCy + tile * 0.55 + 18;
 
   /* Logo — first tile, sized to match the others.
      `ring` keeps the original 1:2.8 ratio with the logo width so the
@@ -198,7 +201,6 @@ export default function ServicesHeroAnim() {
           const bboxLeft  = d.compassCx - d.compassR;
           const bboxRight = d.chartX + d.chartW;
           const bboxTop   = Math.min(d.compassCy - d.compassR, d.chartY);
-          const bboxBot   = Math.max(d.compassCy + d.compassR, d.chartY + d.chartH);
 
           return (
             <g key="design">
@@ -285,8 +287,8 @@ export default function ServicesHeroAnim() {
               <text x={bboxLeft} y={bboxTop - 6}
                 fill={d.color} fontSize="8" fontFamily="monospace" fontWeight="bold"
                 opacity="0.85" letterSpacing="0.5px">{d.tag}</text>
-              <text x={(bboxLeft + bboxRight) / 2} y={bboxBot + 22}
-                fill={d.color} fontSize="8.5" fontFamily="monospace"
+              <text x={(bboxLeft + bboxRight) / 2} y={labelY}
+                fill={d.color} fontSize="11.5" fontFamily="monospace"
                 textAnchor="middle" fontWeight="bold" letterSpacing="1.6px" opacity="0.85">
                 {d.label}
               </text>
@@ -420,8 +422,8 @@ export default function ServicesHeroAnim() {
               <text x={baseX - 22} y={mastTop - cabH - 30}
                 fill={st} fontSize="8" fontFamily="monospace" fontWeight="bold"
                 opacity="0.85" letterSpacing="0.5px" textAnchor="end">{crane.tag}</text>
-              <text x={baseX} y={baseY + 18}
-                fill={st} fontSize="8.5" fontFamily="monospace"
+              <text x={baseX} y={labelY}
+                fill={st} fontSize="11.5" fontFamily="monospace"
                 textAnchor="middle" fontWeight="bold" letterSpacing="1.6px" opacity="0.85">
                 {crane.label}
               </text>
@@ -543,8 +545,8 @@ export default function ServicesHeroAnim() {
               <text x={cx - trackW / 2} y={cabBottom - cabH - unit * 1.0}
                 fill={st} fontSize="8" fontFamily="monospace" fontWeight="bold"
                 opacity="0.85" letterSpacing="0.5px">{excavator.tag}</text>
-              <text x={cx} y={groundY + 18}
-                fill={st} fontSize="8.5" fontFamily="monospace"
+              <text x={cx} y={labelY}
+                fill={st} fontSize="11.5" fontFamily="monospace"
                 textAnchor="middle" fontWeight="bold" letterSpacing="1.6px" opacity="0.85">
                 {excavator.label}
               </text>
@@ -564,8 +566,10 @@ export default function ServicesHeroAnim() {
           const wheelR   = unit * 0.16;
           const wheelY   = groundY - wheelR;
 
-          /* Cab on the left (~30%), level dump bed on the right */
-          const cabRight  = tLeft + truckW * 0.30;
+          /* Truck faces RIGHT (matches excavator).
+             Cab on the right (~30%), level dump bed on the left. */
+          const cabLeft   = tRight - truckW * 0.30;
+          const cabRight  = tRight;
           const cabBottom = wheelY - wheelR * 0.4;
           const cabH      = tile * 0.38;
           const cabTop    = cabBottom - cabH;
@@ -575,16 +579,16 @@ export default function ServicesHeroAnim() {
           const chassisBottom = cabBottom;
 
           /* Level open dump bed: tall rectangular box, taller than cab */
-          const bedLeft   = cabRight + unit * 0.05;
-          const bedRight  = tRight;
+          const bedLeft   = tLeft;
+          const bedRight  = cabLeft - unit * 0.05;
           const bedH      = tile * 0.50;
           const bedBottom = chassisTop;
           const bedTop    = bedBottom - bedH;
 
-          /* Two wheels: under cab + under rear bed */
+          /* Two wheels: under bed (rear) + under cab (front) */
           const wheels = [
-            tLeft + truckW * 0.18,
-            tLeft + truckW * 0.78,
+            tLeft + truckW * 0.22,    // rear (under bed)
+            tLeft + truckW * 0.82,    // front (under cab)
           ];
 
           return (
@@ -641,29 +645,29 @@ export default function ServicesHeroAnim() {
                 }
                 fill={st} opacity="0.45" />
 
-              {/* Cab body — boxy with sloped front */}
+              {/* Cab body — boxy with sloped front on the RIGHT (truck faces right) */}
               <polygon
                 points={
-                  `${tLeft},${cabBottom} ` +
-                  `${tLeft},${cabTop + cabH * 0.45} ` +
-                  `${tLeft + (cabRight - tLeft) * 0.40},${cabTop} ` +
-                  `${cabRight},${cabTop} ` +
+                  `${cabLeft},${cabBottom} ` +
+                  `${cabLeft},${cabTop} ` +
+                  `${cabRight - (cabRight - cabLeft) * 0.40},${cabTop} ` +
+                  `${cabRight},${cabTop + cabH * 0.45} ` +
                   `${cabRight},${cabBottom}`
                 }
                 fill="rgba(232,165,114,0.10)" stroke={st} strokeWidth="1.1" strokeOpacity="0.85"
                 strokeLinejoin="round" />
-              {/* Windshield */}
+              {/* Windshield (on the right, sloped) */}
               <polygon
                 points={
-                  `${tLeft + (cabRight - tLeft) * 0.18},${cabTop + cabH * 0.45} ` +
-                  `${tLeft + (cabRight - tLeft) * 0.45},${cabTop + cabH * 0.12} ` +
-                  `${cabRight - unit * 0.06},${cabTop + cabH * 0.12} ` +
-                  `${cabRight - unit * 0.06},${cabTop + cabH * 0.55} ` +
-                  `${tLeft + (cabRight - tLeft) * 0.18},${cabTop + cabH * 0.55}`
+                  `${cabLeft + unit * 0.06},${cabTop + cabH * 0.12} ` +
+                  `${cabRight - (cabRight - cabLeft) * 0.45},${cabTop + cabH * 0.12} ` +
+                  `${cabRight - (cabRight - cabLeft) * 0.18},${cabTop + cabH * 0.45} ` +
+                  `${cabRight - (cabRight - cabLeft) * 0.18},${cabTop + cabH * 0.55} ` +
+                  `${cabLeft + unit * 0.06},${cabTop + cabH * 0.55}`
                 }
                 fill="rgba(232,165,114,0.22)" stroke={st} strokeWidth="0.5" strokeOpacity="0.65" />
-              {/* Headlight */}
-              <circle cx={tLeft + unit * 0.06} cy={cabBottom - cabH * 0.18} r={unit * 0.04}
+              {/* Headlight (on the right side, the front) */}
+              <circle cx={cabRight - unit * 0.06} cy={cabBottom - cabH * 0.18} r={unit * 0.04}
                 fill={st} opacity="0.7" />
 
               {/* Wheels — 2 (front + rear), rotating spokes */}
@@ -691,8 +695,8 @@ export default function ServicesHeroAnim() {
               <text x={tLeft} y={bedTop - 8}
                 fill={st} fontSize="8" fontFamily="monospace" fontWeight="bold"
                 opacity="0.85" letterSpacing="0.5px">{truck.tag}</text>
-              <text x={cx} y={groundY + 18}
-                fill={st} fontSize="8.5" fontFamily="monospace"
+              <text x={cx} y={labelY}
+                fill={st} fontSize="11.5" fontFamily="monospace"
                 textAnchor="middle" fontWeight="bold" letterSpacing="1.6px" opacity="0.85">
                 {truck.label}
               </text>
