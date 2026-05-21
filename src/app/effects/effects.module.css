@@ -1,0 +1,753 @@
+.main {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  padding: 80px 24px 60px;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Background grid detail */
+.main::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(15, 23, 42, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.main::after {
+  content: '';
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(26, 115, 232, 0.03) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.header {
+  max-width: 1200px;
+  margin: 0 auto 40px;
+  text-align: left;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-bottom: 24px;
+  transition: color 0.2s;
+}
+
+.backLink:hover {
+  color: var(--gold);
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  max-width: 600px;
+}
+
+/* ── Content Grid Layout ──────────────── */
+.layout {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+/* Sidebar navigation */
+.sidebar {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.02);
+}
+
+.sidebarTitle {
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+  padding-left: 12px;
+}
+
+.tabList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-align: left;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.tab:hover {
+  background: rgba(15, 23, 42, 0.03);
+  color: var(--text-primary);
+}
+
+.tabActive {
+  background: var(--gold-glow);
+  border-left: 3px solid var(--gold);
+  color: var(--gold);
+  font-weight: 600;
+  padding-left: 13px; /* offset the border shift */
+}
+
+/* Main Display Area */
+.mainCard {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.04);
+  padding: 32px;
+  min-height: 500px;
+}
+
+.cardHeader {
+  margin-bottom: 28px;
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 18px;
+}
+
+.effectBadge {
+  display: inline-block;
+  font-family: var(--font-tech);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--teal);
+  background: var(--teal-glow);
+  padding: 3px 10px;
+  border-radius: 99px;
+  margin-bottom: 10px;
+  letter-spacing: 0.05em;
+}
+
+.effectTitle {
+  font-family: var(--font-heading);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.effectDesc {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* Two-column splits */
+.split {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.previewSide {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sectionHeading {
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.viewport {
+  background: #ffffff;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 40px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(15, 23, 42, 0.01);
+}
+
+/* ── Effect 1: Glass Card Demo ───────── */
+.glassCardDemo {
+  width: 100%;
+  max-width: 320px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  transition: transform 0.4s var(--ease-cyber), border-color 0.4s var(--ease-cyber), box-shadow 0.4s var(--ease-cyber);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.03);
+}
+
+.glassCardDemo::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(26, 115, 232, 0.3), transparent);
+  opacity: 0;
+  transition: opacity 0.4s var(--ease-cyber);
+}
+
+.glassCardDemo:hover {
+  transform: translateY(-5px);
+  border-color: var(--border-gold);
+  box-shadow: 0 20px 40px rgba(26, 115, 232, 0.05), 0 1px 3px rgba(15, 23, 42, 0.02);
+}
+
+.glassCardDemo:hover::before {
+  opacity: 1;
+}
+
+.iconWrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: var(--gold-glow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gold);
+  margin-bottom: 20px;
+  transition: all 0.3s;
+}
+
+.glassCardDemo:hover .iconWrapper {
+  background: var(--gold);
+  color: #ffffff;
+  transform: rotate(5deg) scale(1.05);
+}
+
+.cardTitle {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.cardText {
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ── Effect 2: Button Demo ───────────── */
+.buttonDemoBox {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
+
+.btnPrimary {
+  background: var(--gold);
+  color: #ffffff;
+  padding: 12px 28px;
+  font-family: var(--font-heading);
+  font-size: 0.88rem;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  transition: background-color 0.2s, transform 0.15s var(--ease-cyber), box-shadow 0.2s;
+  box-shadow: 0 4px 12px rgba(26, 115, 232, 0.15);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btnPrimary:hover {
+  background: var(--gold-light);
+  transform: translateY(-1.5px) scale(1.02);
+  box-shadow: 0 8px 20px rgba(26, 115, 232, 0.25);
+}
+
+.btnPrimary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btnOutline {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--glass-border);
+  padding: 12px 28px;
+  font-family: var(--font-heading);
+  font-size: 0.88rem;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s var(--ease-cyber);
+}
+
+.btnOutline:hover {
+  background: var(--bg-primary);
+  border-color: var(--text-muted);
+  transform: translateY(-1.5px);
+}
+
+.btnOutline:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* ── Effect 3: Ping Indicator Demo ────── */
+.pingWrapper {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: var(--bg-primary);
+  padding: 16px 24px;
+  border-radius: 16px;
+  border: 1px solid var(--glass-border);
+}
+
+.pingLabel {
+  font-family: var(--font-tech);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.05em;
+}
+
+.pingNode {
+  position: relative;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background-color: var(--teal);
+}
+
+.pingCore {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background-color: var(--teal);
+  z-index: 2;
+}
+
+.pingRing {
+  position: absolute;
+  top: -6px; left: -6px;
+  width: 21px; height: 21px;
+  border-radius: 50%;
+  background-color: transparent;
+  border: 1.5px solid var(--teal);
+  opacity: 0;
+  transform: scale(0.3);
+  animation: signal-ping-demo 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  z-index: 1;
+}
+
+.pingSpeed {
+  animation-duration: 0.9s !important;
+}
+
+.pingGold {
+  background-color: var(--gold);
+}
+.pingGold .pingCore {
+  background-color: var(--gold);
+}
+.pingGold .pingRing {
+  border-color: var(--gold);
+}
+
+@keyframes signal-ping-demo {
+  0% {
+    transform: scale(0.35);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.15);
+    opacity: 0;
+  }
+}
+
+/* ── Effect 4: Background Glow Demo ───── */
+.glowDemoWrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.glowBlob {
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(26, 115, 232, 0.16) 0%, transparent 70%);
+  filter: blur(10px);
+  pointer-events: none;
+  animation: glowFloat 8s ease-in-out infinite alternate;
+}
+
+.glowBlobSecond {
+  background: radial-gradient(circle, rgba(13, 148, 136, 0.12) 0%, transparent 70%);
+  animation-delay: -4s;
+}
+
+@keyframes glowFloat {
+  0% {
+    transform: translate(-30px, -20px) scale(0.9);
+  }
+  100% {
+    transform: translate(30px, 20px) scale(1.1);
+  }
+}
+
+.glowGlassContainer {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 30px;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  z-index: 2;
+  text-align: center;
+  max-width: 240px;
+}
+
+.glowGlassContainer h4 {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.glowGlassContainer p {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+/* ── Effect 5: Blueprint Grid Demo ───── */
+.blueprintViewport {
+  background-color: #f8fafc;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.blueprintLines {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(26, 115, 232, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26, 115, 232, 0.04) 1px, transparent 1px);
+  background-size: 20px 20px;
+  z-index: 1;
+}
+
+.movingStripe {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  background: linear-gradient(to bottom, transparent, rgba(26, 115, 232, 0.025), transparent);
+  animation: gridStripeMove 6s linear infinite;
+  z-index: 2;
+}
+
+@keyframes gridStripeMove {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(400px); }
+}
+
+.coordNode {
+  position: absolute;
+  top: 40%;
+  left: 30%;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  z-index: 3;
+}
+
+.coordLabel {
+  font-family: var(--font-tech);
+  font-size: 0.58rem;
+  color: var(--gold);
+  background: rgba(255, 255, 255, 0.9);
+  padding: 1px 4px;
+  border-radius: 4px;
+  border: 1px solid var(--border-gold);
+}
+
+/* ── Code Display Side ───────────────── */
+.codeSide {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.codeBlockHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.codeBlockTitle {
+  font-family: var(--font-tech);
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+.copyBtn {
+  background: #ffffff;
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.copyBtn:hover {
+  background: var(--bg-primary);
+  color: var(--gold);
+  border-color: var(--border-gold);
+}
+
+.copyBtnSuccess {
+  background: var(--teal-glow);
+  color: var(--teal);
+  border-color: var(--teal);
+}
+
+.editor {
+  background: #0f172a; /* Slate 900 */
+  border-radius: 12px;
+  padding: 24px;
+  font-family: var(--font-tech), monospace;
+  font-size: 0.78rem;
+  color: #e2e8f0;
+  line-height: 1.6;
+  overflow-x: auto;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
+  margin: 0;
+  max-height: 380px;
+}
+
+/* CSS Syntax Coloring */
+.editor .comment  { color: #64748b; font-style: italic; }
+.editor .selector { color: #38bdf8; font-weight: 600; }
+.editor .property { color: #fda4af; }
+.editor .value    { color: #fbbf24; }
+.editor .unit     { color: #a7f3d0; }
+.editor .rule     { color: #c084fc; }
+
+.principlesBox {
+  background: var(--bg-primary);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+}
+
+.principlesTitle {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.principlesText {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+/* ── Effect 6: 3D Logo Orbit ────────── */
+.logo3DWrapper {
+  perspective: 800px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo3D {
+  width: 90px;
+  height: 90px;
+  position: relative;
+  transform-style: preserve-3d;
+  animation: wagSpin3D 10s linear infinite;
+  cursor: pointer;
+  transition: animation-duration 0.5s;
+}
+
+.logo3D:hover {
+  animation-duration: 3s; /* Accelerate rotation on hover */
+}
+
+@keyframes wagSpin3D {
+  0% { transform: rotateY(0deg) rotateX(15deg); }
+  100% { transform: rotateY(360deg) rotateX(15deg); }
+}
+
+/* ── Effect 7: Map Crosshair ────────── */
+.crosshairContainer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+}
+
+.crosshairX {
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  background: rgba(26, 115, 232, 0.15);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.crosshairY {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 1px;
+  background: rgba(26, 115, 232, 0.15);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.crosshairCoords {
+  position: absolute;
+  background: var(--text-primary);
+  color: #ffffff;
+  font-family: var(--font-tech);
+  font-size: 0.65rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  pointer-events: none;
+  z-index: 3;
+  transform: translate(12px, 12px);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+}
+
+/* ── Effect 8: Self-Drawing Paths ───── */
+.svgPathContainer {
+  width: 280px;
+  height: 180px;
+}
+
+.svgPathDraw {
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  animation: svgPathAnim 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+}
+
+@keyframes svgPathAnim {
+  0% { stroke-dashoffset: 400; opacity: 0.2; }
+  35% { opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 1; }
+}
+
+.svgNodePulse {
+  animation: svgNodePulseAnim 2s infinite alternate;
+}
+
+@keyframes svgNodePulseAnim {
+  0% { r: 3; opacity: 0.7; }
+  100% { r: 6; opacity: 1; }
+}
+
+/* ── Effect 9: Floating isometric element ───── */
+.floatingHeroBlock {
+  width: 150px;
+  height: 150px;
+  background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+  border: 1px solid var(--border-gold);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  animation: floatSlow-demo 6s ease-in-out infinite alternate;
+}
+
+.floatingHeroBlock::before {
+  content: 'WAG';
+  font-family: var(--font-tech);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+}
+
+@keyframes floatSlow-demo {
+  0% { transform: translateY(-8px) rotate(2deg); }
+  100% { transform: translateY(8px) rotate(-2deg); }
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .split {
+    grid-template-columns: 1fr;
+  }
+}

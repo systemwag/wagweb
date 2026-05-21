@@ -1,20 +1,35 @@
-import { getProjects, getDesignProjects } from '@/lib/data';
-import QRCode from 'qrcode';
+import { getProjects } from '@/lib/data';
 import styles from './print.module.css';
 import PrintButtons from './PrintButtons';
 
-/* ── WAG triangle path (from Hero.tsx) ────────────────────────── */
-const WAG_PATH = 'M613.8,437.27c-62.3-103.58-132.83-240.95-201.5-355.51L367.22,0h-16.51c-5.26,19.77-26.22,45.86-33.35,61.03-12.21,25.99-1.91,26.43,18.72,64.07l206.32,360.76,30.4,59.77-106.51.95c-9.82-18.63-13.04-29.8-27.52-49.02l-155.86-274.97c-10.29-18.78-10.26-28.99-25.78-40.4-19.27,12.94-14.27,13.44-25.87,34.79-8.93,16.45-15.27,26.27-23.65,42.54l-143.13,248.42c-77.1,142.82-94.44,127.54-.02,127,86.18-.49,172.52-.02,258.72-.02-2-24.09-9.24-28.93-19.64-46.55-33.15-56.19-11.28-41.79-156.49-41.79,3.5-13.11,16.34-33.82,24.36-47.34l91.22-145.89c4.18,18,25.71,50.9,36.21,68.58,8.16,13.76,11.9,23.61,19.08,36.06,7.25,12.59,11.91,19.4,19.91,35.23l78.91,141.69h302.74c-2.68-32.14-85.4-163.93-105.69-197.65Z';
+/* ─────────────────────────────────────────────────────────────────
+   WAG triangle mark — official logo from assets/logotriangle.svg
+   ───────────────────────────────────────────────────────────────── */
+const WAG_TRIANGLE = 'M613.8,437.27c-62.3-103.58-132.83-240.95-201.5-355.51L367.22,0h-16.51c-5.26,19.77-26.22,45.86-33.35,61.03-12.21,25.99-1.91,26.43,18.72,64.07l206.32,360.76,30.4,59.77-106.51.95c-9.82-18.63-13.04-29.8-27.52-49.02l-155.86-274.97c-10.29-18.78-10.26-28.99-25.78-40.4-19.27,12.94-14.27,13.44-25.87,34.79-8.93,16.45-15.27,26.27-23.65,42.54l-143.13,248.42c-77.1,142.82-94.44,127.54-.02,127,86.18-.49,172.52-.02,258.72-.02-2-24.09-9.24-28.93-19.64-46.55-33.15-56.19-11.28-41.79-156.49-41.79,3.5-13.11,16.34-33.82,24.36-47.34l91.22-145.89c4.18,18,25.71,50.9,36.21,68.58,8.16,13.76,11.9,23.61,19.08,36.06,7.25,12.59,11.91,19.4,19.91,35.23l78.91,141.69h302.74c-2.68-32.14-85.4-163.93-105.69-197.65Z';
 
-const KZ_MAIN = 'M5567 8003 c-4 -3 -7 -15 -7 -25 0 -22 -18 -23 -42 -1 -17 15 -18 15 -18 -5 0 -11 -5 -24 -10 -27 -6 -4 -8 -15 -5 -25 4 -14 -2 -19 -32 -26 -21 -4 -44 -6 -52 -5 -10 2 -12 -6 -7 -32 4 -23 2 -38 -5 -42 -8 -6 -8 -10 2 -15 24 -15 -10 -40 -53 -40 -28 0 -45 -6 -57 -21 -9 -12 -29 -23 -43 -24 -14 -2 -35 -8 -46 -14 -11 -6 -29 -11 -40 -11 -11 0 -52 -13 -92 -30 -40 -16 -84 -30 -98 -30 -14 0 -40 -11 -59 -26 -31 -24 -33 -24 -33 -5 0 30 -16 34 -39 10 -16 -17 -28 -21 -54 -16 -30 5 -39 1 -66 -27 -21 -22 -31 -42 -31 -64 0 -30 -1 -31 -25 -20 -19 9 -29 7 -50 -6 -18 -12 -47 -18 -93 -18 -74 0 -112 -16 -112 -48 0 -22 -20 -26 -37 -9 -9 9 -20 9 -44 0 -17 -6 -47 -11 -64 -11 -18 0 -38 -7 -45 -15 -7 -8 -24 -15 -39 -15 -14 0 -45 -9 -68 -20 -34 -15 -42 -24 -40 -42 1 -14 -4 -23 -15 -26 -14 -3 -18 3 -18 27 0 30 -2 31 -42 31 -25 0 -49 -7 -60 -17 -17 -15 -19 -15 -32 3 -12 15 -19 17 -42 9 -25 -9 -32 -7 -49 12 -28 32 -67 22 -63 -16 3 -23 0 -26 -24 -23 -33 3 -39 -23 -8 -33 26 -8 25 -25 -1 -70 -26 -44 -19 -54 42 -62 50 -6 80 -28 72 -50 -4 -11 -17 -14 -44 -11 -34 3 -39 1 -39 -17 0 -11 4 -26 8 -33 16 -24 76 -62 101 -63 37 -1 109 -83 91 -104 -9 -11 -16 -11 -29 -3 -12 7 -23 8 -36 1 -13 -8 -30 -5 -63 10 -44 19 -47 19 -79 2 -18 -10 -33 -24 -33 -31 0 -14 -66 -74 -81 -74 -14 0 0 -43 17 -53 8 -4 14 -16 14 -26 0 -10 11 -28 25 -41 36 -34 32 -69 -13 -113 -26 -25 -47 -37 -67 -37 -18 -1 -44 -13 -65 -30 -19 -17 -45 -30 -57 -30 -13 0 -23 -6 -23 -13 0 -18 21 -37 41 -37 9 0 19 -9 22 -19 3 -11 17 -22 36 -26 31 -7 31 -7 15 -36 -20 -40 -4 -63 38 -54 24 6 37 -1 85 -41 38 -33 64 -48 82 -47 18 1 34 -9 54 -33 16 -19 24 -34 19 -34 -6 0 -20 -42 -33 -94 l-22 -94 -71 -29 c-65 -27 -75 -28 -123 -18 -52 10 -93 37 -93 61 0 7 -9 18 -20 24 -17 9 -23 4 -51 -45 -17 -30 -34 -55 -37 -55 -4 0 -16 7 -26 15 -11 8 -30 15 -43 15 -30 0 -140 53 -175 84 -15 13 -31 42 -37 63 -8 29 -19 43 -44 55 -22 10 -39 13 -49 7 -10 -6 -26 -4 -44 6 -42 22 -63 19 -70 -10 -8 -34 -43 -33 -84 2 -25 20 -49 29 -98 35 -43 5 -68 4 -72 -3 -4 -6 -18 -7 -33 -3 -21 5 -27 2 -27 -9 0 -11 -12 -17 -37 -19 -36 -3 -38 -5 -46 -48 -7 -36 -15 -50 -42 -68 -45 -29 -61 -28 -96 7 -16 17 -37 32 -47 35 -22 7 -52 57 -52 85 0 16 -8 23 -29 27 -16 3 -39 19 -51 36 -12 16 -29 28 -38 26 -14 -3 -17 -17 -17 -88 0 -82 -1 -85 -24 -88 -21 -3 -23 -1 -16 25 14 55 8 80 -28 125 -22 26 -37 56 -39 78 -3 30 -8 36 -45 50 -57 21 -80 45 -88 90 -8 50 -22 68 -71 89 -27 12 -47 15 -62 10 -14 -5 -30 -4 -41 3 -13 8 -27 8 -48 0 -29 -9 -31 -8 -49 26 -10 21 -21 51 -24 67 -4 26 -9 30 -35 27 -16 -1 -41 -3 -55 -3 -46 0 -70 -19 -70 -56 0 -38 -9 -41 -35 -13 -10 11 -31 20 -46 20 -34 0 -48 19 -26 34 26 20 -10 56 -61 63 -28 4 -46 13 -53 25 -14 26 -29 13 -29 -24 0 -30 -1 -31 -19 -14 -24 22 -41 13 -41 -19 0 -30 -77 -95 -112 -95 -14 0 -42 -13 -63 -30 -43 -34 -39 -33 -82 -21 -44 13 -61 -7 -43 -49 7 -17 11 -32 9 -33 -2 -1 -25 -12 -51 -25 -27 -12 -48 -27 -48 -33 0 -12 -58 -8 -94 7 -15 6 -17 4 -12 -14 4 -11 11 -58 16 -104 5 -45 12 -99 16 -118 7 -43 -13 -65 -67 -75 -33 -6 -39 -4 -72 35 -24 29 -40 61 -48 97 -15 66 -58 135 -95 152 -20 9 -35 9 -60 1 -32 -11 -34 -14 -34 -58 0 -30 -8 -61 -23 -87 -20 -35 -27 -40 -54 -37 -38 4 -51 -15 -71 -98 -7 -30 -15 -65 -19 -78 -4 -16 3 -34 23 -60 42 -54 36 -95 -17 -122 -30 -16 -39 -26 -39 -47 0 -15 -14 -44 -33 -67 -54 -66 -61 -83 -43 -111 9 -13 37 -30 65 -40 56 -18 65 -27 75 -70 4 -16 17 -38 29 -48 l22 -19 -27 6 c-31 7 -33 2 -13 -34 8 -14 14 -37 15 -51 0 -17 9 -33 25 -43 23 -15 25 -15 25 -1 0 18 30 13 65 -11 11 -8 38 -14 61 -14 l41 0 38 -87 c22 -47 49 -98 60 -112 33 -40 146 -261 140 -271 -9 -14 -31 -12 -63 4 -31 15 -72 5 -72 -18 0 -20 19 -25 134 -38 56 -6 105 -15 110 -19 15 -13 -45 -23 -65 -10 -25 15 -44 14 -58 -2 -14 -18 16 -46 84 -79 72 -36 118 -41 168 -18 23 10 58 22 78 25 20 3 46 16 59 30 l23 25 -40 0 c-22 0 -43 3 -46 7 -12 11 13 31 33 26 12 -3 20 0 20 7 0 7 7 10 15 7 8 -4 17 -2 20 3 4 7 13 6 25 0 13 -7 21 -6 30 5 6 7 17 12 24 9 7 -3 20 6 29 20 12 17 29 27 60 31 58 9 104 -11 161 -71 37 -38 47 -44 52 -31 5 14 10 11 28 -16 23 -34 56 -48 56 -24 0 7 11 19 25 25 14 6 25 16 25 21 0 5 21 1 48 -9 26 -11 60 -22 76 -25 l28 -6 -6 -80 c-6 -68 -5 -79 8 -79 38 0 8 -119 -40 -155 -38 -29 -51 -60 -34 -80 10 -13 7 -15 -19 -15 -17 0 -31 -4 -31 -10 0 -13 -115 -13 -163 1 -32 9 -43 7 -65 -8 -15 -9 -32 -16 -38 -15 -15 3 -50 -38 -61 -73 -6 -19 -17 -31 -31 -33 -28 -4 -29 -32 -2 -55 11 -9 20 -25 20 -36 0 -36 12 -51 40 -51 16 0 32 -5 35 -10 4 -7 -9 -10 -37 -10 -24 1 -51 0 -60 0 -9 -1 -30 9 -47 21 -23 17 -38 20 -66 16 -21 -4 -45 -1 -56 6 -15 9 -22 8 -39 -10 -28 -30 -25 -54 9 -87 22 -21 36 -27 54 -23 28 8 67 -17 67 -41 0 -10 6 -26 14 -37 7 -11 16 -36 20 -55 3 -19 20 -55 37 -80 24 -36 30 -54 28 -90 -1 -25 -1 -51 0 -57 1 -15 66 -57 102 -66 18 -5 33 -21 50 -56 l24 -50 51 -1 c36 0 54 -4 58 -15 4 -10 14 -13 36 -9 28 6 31 3 49 -38 l20 -44 -30 -89 c-32 -94 -32 -103 -8 -226 l12 -66 46 26 c81 46 177 71 271 71 l86 0 67 -56 c37 -30 67 -62 67 -70 0 -8 34 -64 76 -124 l76 -110 62 0 63 0 7 98 c3 53 9 330 12 614 l7 518 31 6 c17 3 168 33 336 67 l304 62 11 42 c14 57 23 64 91 67 33 1 65 5 72 10 11 6 10 1 -1 -21 -29 -55 22 -81 58 -30 8 12 15 16 15 9 0 -7 5 -10 10 -7 11 7 7 108 -5 158 -7 26 -5 28 16 25 21 -3 24 -9 27 -55 2 -32 9 -56 19 -65 13 -10 17 -10 20 0 6 17 38 15 53 -3 7 -8 10 -25 6 -39 -4 -15 -1 -28 6 -32 17 -11 -17 -22 -67 -23 -53 -2 -64 -10 -58 -45 5 -26 8 -28 42 -22 95 17 141 19 145 5 2 -8 16 -67 31 -131 23 -101 25 -121 15 -153 -11 -34 -10 -39 13 -63 13 -15 85 -108 160 -208 l135 -180 173 22 174 22 162 -26 162 -26 51 24 52 24 20 -24 c11 -14 25 -32 32 -41 6 -9 24 -20 41 -26 23 -7 40 -28 79 -102 33 -60 54 -90 63 -86 7 3 20 8 28 11 13 5 15 -13 15 -134 0 -157 -3 -152 81 -152 l35 0 12 -75 c14 -90 51 -170 84 -179 13 -3 73 -6 134 -6 73 0 126 -5 156 -16 l46 -15 -9 -37 c-6 -29 -4 -41 9 -55 28 -31 51 -39 93 -32 l39 7 0 48 c0 46 2 48 38 63 42 18 92 61 92 81 0 18 66 76 85 76 8 0 26 18 41 39 14 22 37 42 50 45 17 5 26 16 31 36 3 16 12 35 19 41 8 6 14 18 14 26 0 20 25 26 49 13 18 -9 25 -6 52 25 17 19 37 35 44 35 24 0 73 50 85 85 12 35 58 77 100 90 14 4 33 15 43 24 31 26 206 17 276 -15 44 -20 63 -23 102 -18 36 5 55 2 73 -10 28 -18 63 -21 86 -6 12 8 13 13 2 27 -24 34 -25 45 -8 73 9 16 16 41 16 57 0 18 9 38 23 50 32 29 110 53 152 46 28 -4 35 -2 35 11 0 23 20 20 97 -13 116 -49 214 -71 312 -71 81 0 90 2 96 20 7 22 13 23 135 25 56 1 88 7 125 24 43 21 58 23 115 16 75 -9 75 -9 235 5 166 14 161 14 248 12 75 -2 79 -3 121 -42 41 -38 47 -40 107 -40 46 0 78 -7 114 -23 l50 -24 0 95 c0 61 4 97 11 99 6 2 20 10 30 18 17 12 17 17 6 35 -7 12 -12 23 -10 23 45 22 64 36 66 51 7 34 -8 82 -43 136 -19 30 -35 62 -35 71 0 9 -7 22 -15 29 -8 7 -15 26 -15 42 0 16 -7 45 -16 66 -9 22 -14 57 -12 87 l3 50 -53 0 c-97 0 -83 53 23 85 22 6 72 20 110 30 39 10 104 34 144 54 l75 36 21 -20 c17 -16 38 -21 94 -23 81 -4 91 4 91 67 0 34 -2 36 -31 36 l-31 0 7 58 c4 31 6 82 6 112 -1 38 11 98 39 192 22 75 40 147 40 161 0 45 19 48 106 21 71 -23 89 -25 177 -20 53 3 97 3 97 -1 0 -5 4 -14 8 -21 6 -9 25 -4 76 23 37 19 74 35 82 35 7 0 16 12 20 28 3 15 7 33 9 39 2 7 -2 34 -11 60 -24 80 -34 181 -22 242 12 64 36 91 80 91 36 0 88 26 88 44 0 7 6 19 14 25 9 7 13 33 14 76 0 71 12 95 47 95 37 0 35 10 -11 59 -61 65 -77 96 -61 122 10 16 9 21 -3 29 -22 14 -26 13 -38 -15 -6 -13 -25 -31 -41 -40 -17 -8 -33 -26 -37 -40 -5 -19 -10 -23 -23 -16 -37 19 -82 21 -108 4 -25 -16 -26 -16 -47 9 -45 56 -84 114 -90 133 -6 22 -84 75 -109 75 -21 0 -47 38 -47 70 0 20 -21 47 -83 107 l-82 81 -69 7 c-58 6 -70 5 -78 -9 -5 -9 -22 -16 -38 -16 -19 0 -30 -5 -30 -14 0 -32 -122 -52 -177 -29 -22 9 -49 12 -70 8 -33 -6 -33 -5 -33 31 l0 37 -37 -6 c-21 -4 -48 -4 -61 -1 -21 6 -22 10 -16 55 6 42 4 49 -10 49 -9 0 -35 9 -58 21 -37 19 -42 19 -50 5 -5 -9 -17 -16 -27 -16 -25 0 -36 -41 -15 -57 13 -10 11 -16 -20 -46 -21 -21 -37 -31 -40 -24 -2 7 -5 2 -5 -10 -1 -34 -15 -28 -41 20 -95 169 -355 596 -472 776 l-142 216 -193 189 c-106 103 -193 192 -193 197 0 5 11 9 23 9 27 0 51 41 42 70 -3 11 0 20 10 24 8 3 15 10 15 16 0 17 -30 11 -57 -10 -31 -24 -56 -25 -93 -4 -26 16 -28 16 -49 -5 -14 -14 -34 -21 -57 -21 -20 0 -51 -9 -68 -19 -22 -14 -36 -17 -46 -11 -23 14 -30 12 -30 -10 0 -25 -84 -84 -125 -87 -87 -7 -135 -17 -136 -27 -1 -6 0 -28 1 -48 1 -30 -2 -37 -14 -32 -8 3 -16 15 -18 27 -2 15 -11 23 -28 26 -14 1 -28 7 -31 12 -9 15 -68 29 -75 17 -4 -5 -20 -8 -38 -5 -22 3 -37 -1 -53 -15 l-21 -20 -36 28 c-39 31 -43 47 -24 91 21 46 35 56 73 49 l35 -7 0 46 c0 41 -2 45 -24 45 -13 0 -29 -7 -36 -15 -8 -10 -30 -15 -62 -15 -45 0 -54 4 -86 37 -32 32 -107 73 -136 73 -4 0 -5 -11 -2 -25 5 -19 3 -23 -9 -19 -8 4 -22 1 -30 -6 -21 -17 -29 -7 -16 19 7 13 8 22 1 26 -5 3 -10 14 -10 24 0 17 -29 51 -43 51 -4 0 -7 -31 -7 -68 0 -64 -2 -70 -25 -80 -17 -8 -25 -20 -25 -36 0 -27 -27 -39 -54 -24 -11 6 -28 6 -48 -1 -17 -6 -32 -10 -33 -9 -1 2 -9 14 -18 28 -26 37 -22 60 9 60 24 0 26 3 19 28 -5 15 -8 55 -9 90 -1 52 -5 66 -22 80 -34 26 -44 56 -44 122 0 51 -5 67 -26 96 -37 48 -83 43 -130 -13 -24 -29 -37 -25 -106 29 -35 27 -42 29 -91 23 -50 -6 -56 -5 -74 19 -21 26 -34 32 -46 19z';
-
-function WagTriangle({ className }: { className?: string }) {
+function WagMark({ className, gradientId = 'wagGold' }: { className?: string; gradientId?: string }) {
   return (
-    <svg viewBox="0 0 719.49 635.66" className={className} xmlns="http://www.w3.org/2000/svg">
-      <path fill="#C9941F" d={WAG_PATH} />
+    <svg viewBox="0 0 719.49 635.66" className={className} xmlns="http://www.w3.org/2000/svg" aria-hidden>
+      <defs>
+        <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%"   stopColor="#D4A843" />
+          <stop offset="50%"  stopColor="#F0C85A" />
+          <stop offset="100%" stopColor="#C49A30" />
+        </linearGradient>
+      </defs>
+      <path fill={`url(#${gradientId})`} d={WAG_TRIANGLE} />
     </svg>
   );
 }
+
+/* The KZ map is no longer inlined as SVG path data — it's pre-baked to
+   public/portfolio/kz-map.png by scripts/bake-kz-map.mjs. Saves ~50 KB
+   from the rendered PDF and avoids Chromium re-parsing the path on every
+   build. */
+
+/* ─────────────────────────────────────────────────────────────────
+   Content data
+   ───────────────────────────────────────────────────────────────── */
 
 type PrintTestimonial = {
   client: string;
@@ -25,6 +40,8 @@ type PrintTestimonial = {
   quote: string;
 };
 
+// NOTE: «West Capital Construction LLP» in quotes is the legacy juridical
+// name used in the actual client letters — DO NOT replace with «WAG».
 const PRINT_TESTIMONIALS: PrintTestimonial[] = [
   { client: 'ТОО «УКИЗ Актобе» · Aktobe Industrial Zone', signatory: 'Тулебаев А. Н.', role: 'Директор', date: '5 января 2020', category: 'Содержание · 4,5 км',
     quote: 'За время сотрудничества текущее содержание подъездных железнодорожных путей осуществляется квалифицированными специалистами. Качественно и своевременно устраняются все дефекты. Профессионализм работников West Capital Construction LLP позволяет нам быть уверенными в безопасной эксплуатации.' },
@@ -70,675 +87,981 @@ const PARTNERS = [
   { file: '20bd4962-9777-4243-9b6d-e953b080c142.jpg', name: 'Khorgos Gateway' },
   { file: 'QB_-01_1__.png', name: 'Qazaq Bitum' },
   { file: '5.png',          name: 'NSS' },
-  { file: '3.png',          name: 'Синe Мидас Строй' },
+  { file: '3.png',          name: 'Сине Мидас Строй' },
   { file: '6.png',          name: 'Актобе Стекло' },
   { file: 'Снимок экрана 2025-06-21 162017-Photoroom.png', name: 'СПК «Актобе»' },
   { file: '7a29c2e4-bc43-4817-8212-f7e985ee9929.jpg', name: 'СПС Энерго' },
   { file: '2.png',          name: 'Зерде Керамика' },
 ];
 
-function Corners({ pageNum }: { pageNum: string }) {
+const INDUSTRY_CHIPS = [
+  { icon: '☰', label: 'Ж/д и автодороги' },
+  { icon: '▶', label: 'Трубопроводы' },
+  { icon: '⚡', label: 'ЛЭП и связь' },
+  { icon: '⌂', label: 'Промышленные объекты' },
+  { icon: '◉', label: 'Инженерные сети' },
+];
+
+const KEY_REGIONS = ['Актюбинская', 'ЗКО', 'Атырауская', 'Мангистауская', 'Карагандинская', 'Алматы', 'Астана', 'Оренбург (РФ)'];
+
+const PARTNER_CATEGORIES = ['КТЖ', 'ТМК', 'НЕФТЕГАЗ', 'ИНДУСТР. ЗОНЫ'];
+
+const SVCS_DESIGN = [
+  { num: '01', title: 'Инженерно-геодезические изыскания', desc: 'Топосъёмка, разбивка осей, геодезические сети, мониторинг деформаций — для линейных и площадных объектов.' },
+  { num: '02', title: 'Инженерно-геологические изыскания', desc: 'Бурение, лабораторные испытания грунтов, гидрогеология, оценка сейсмичности на проектируемых площадках.' },
+  { num: '03', title: 'Проектно-сметная документация',     desc: 'Рабочая документация и ТЭО для дорог, трубопроводов и ЛЭП; прохождение экспертизы в РГП «ГосЭкспертиза».' },
+  { num: '04', title: 'Технические условия примыкания',    desc: 'Согласование с филиалами АО «НК «КТЖ» и сетевыми компаниями, ТЭО, план путевого и сетевого развития.' },
+  { num: '05', title: 'Проектирование инженерных сетей',    desc: 'ВЛ 10/110 кВ, газо- и нефтепроводы, водопровод, канализация, теплоснабжение, кабельные линии связи.' },
+  { num: '06', title: 'Землеустроительные проекты',         desc: 'Формирование участков, документация для отвода земель под капитальное строительство и линейные объекты.' },
+];
+
+const SVCS_BUILD = [
+  { num: '01', title: 'Автомобильные и железные дороги',  desc: 'Верхнее строение пути — РШР Р65, стрелочные переводы 1/9 и 1/7, балластировка; автодороги I–V технической категории, ВПП аэродромов.' },
+  { num: '02', title: 'Магистральные трубопроводы и резервуары', desc: 'Нефте- и газопроводы высокого/среднего давления, продуктопроводы, стальные резервуары — в т. ч. под опасные среды.' },
+  { num: '03', title: 'Линии электропередач и связи',     desc: 'ВЛ до 35 кВ, до 110 кВ и выше, контактная сеть ж/д путей, общереспубликанские линии связи и телекоммуникаций.' },
+  { num: '04', title: 'Промышленные объекты и сооружения', desc: 'Несущие и ограждающие конструкции, монтаж металлических и ж/б конструкций, дымовые трубы, силосы, мосты и эстакады.' },
+  { num: '05', title: 'Инженерные сети, СЦБ и контактная сеть', desc: 'Водо-, тепло-, газоснабжение, наружное освещение, электрификация ж/д, светофоры и переездная сигнализация.' },
+  { num: '06', title: 'Содержание ж/д путей и демонтаж',  desc: 'Промеры пути 2 раза в месяц, замена шпал и рельсов, обслуживание стрелочных переводов, демонтаж РШР и устройств БМРЦ.' },
+];
+
+const PROCESS_DESIGN = [
+  { roman: 'I',  title: 'Изыскания',     meta: 'Геодезия · геология · гидрология' },
+  { roman: 'II', title: 'ПСД и РД',       meta: 'Проектно-сметная и рабочая' },
+  { roman: 'III',title: 'ГосЭкспертиза', meta: 'Согласование РГП' },
+  { roman: 'IV', title: 'Авторский надзор', meta: 'Сопровождение СМР' },
+];
+
+const PROCESS_BUILD = [
+  { roman: 'I',  title: 'Подготовка',       meta: 'Мобилизация · временные сети' },
+  { roman: 'II', title: 'Земляные работы',  meta: 'Выемка · насыпь · основание' },
+  { roman: 'III',title: 'Верхнее строение', meta: 'РШР · покрытия · монтаж' },
+  { roman: 'IV', title: 'Сдача и ПНР',       meta: 'Пусконаладка · акт ввода' },
+];
+
+const TEAM = [
+  { num: '01', role: 'Генеральный директор',     name: 'Аронов Аян Садиржанович',    phone: '+7 (777) 669-99-89' },
+  { num: '02', role: 'Директор проектной группы', name: 'Валеев Алексей Сергеевич',    phone: '+7 (775) 645-90-51' },
+  { num: '03', role: 'Директор по производству', name: 'Прусс Альберт Русланович',    phone: '+7 (747) 135-14-92' },
+  { num: '04', role: 'Главный инженер проекта',  name: 'Штурмилов Валентин Петрович', phone: '+7 (771) 229-38-78' },
+];
+
+/* ─────────────────────────────────────────────────────────────────
+   Reusable bits
+   ───────────────────────────────────────────────────────────────── */
+
+const TOTAL = 17;   // 16 content pages + 1 editorial closer
+const pageNumLabel = (n: number) => `${String(n).padStart(2, '0')} / ${TOTAL}`;
+const ISSUE_STAMP  = 'WAG · PORTFOLIO · VOL.06 · 2026';
+
+function CornerL({ pos }: { pos: 'tl' | 'tr' | 'bl' | 'br' }) {
+  const cls = pos === 'tl' ? styles.cornerTL : pos === 'tr' ? styles.cornerTR : pos === 'bl' ? styles.cornerBL : styles.cornerBR;
+  return <span className={`${styles.cornerL} ${cls}`} aria-hidden />;
+}
+
+function PageChrome({ pageNum, dark = false }: { pageNum?: number; dark?: boolean }) {
   return (
     <>
-      <div className={`${styles.cornerMark} ${styles.cornerTopRight}`}><span className={styles.pageNum}>{pageNum}</span></div>
-      <div className={`${styles.cornerMark} ${styles.cornerBottomRight}`}>arlan-gr.kz</div>
+      <CornerL pos="tl" />
+      <CornerL pos="tr" />
+      <CornerL pos="bl" />
+      <CornerL pos="br" />
+      {pageNum != null && (
+        <>
+          <div className={`${styles.pageNum} ${dark ? styles.pageNumDark : ''}`}>{pageNumLabel(pageNum)}</div>
+          <div className={`${styles.pageStamp} ${dark ? styles.pageStampDark : ''}`}>{ISSUE_STAMP}</div>
+        </>
+      )}
     </>
   );
 }
 
-function IconPhone() {
-  return (
-    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>
-    </svg>
-  );
-}
-
-function IconMail() {
-  return (
-    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-      <polyline points="22,6 12,13 2,6"/>
-    </svg>
-  );
-}
-
-function IconPin() {
-  return (
-    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-      <circle cx="12" cy="10" r="3"/>
-    </svg>
-  );
-}
-
-function IconClock() {
-  return (
-    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10"/>
-      <polyline points="12 6 12 12 16 14"/>
-    </svg>
-  );
-}
-
-function Diamond({ variant }: { variant: 'gold' | 'teal' }) {
-  return (
-    <span className={`${styles.svcDiamond} ${variant === 'gold' ? styles.svcDiamondGold : styles.svcDiamondTeal}`}>
-      <span className={`${styles.svcDiamondInner} ${variant === 'gold' ? styles.svcDiamondInnerGold : styles.svcDiamondInnerTeal}`} />
-    </span>
-  );
-}
-
-async function genQR(text: string): Promise<string> {
-  return await QRCode.toString(text, {
-    type: 'svg',
-    errorCorrectionLevel: 'H',
-    margin: 0,
-    color: { dark: '#04060C', light: '#FFFFFF' },
-  });
-}
-
-const SVCS_DESIGN = [
-  { title: 'Инженерно-геодезические изыскания',  desc: 'Топосъёмка, разбивка, мониторинг деформаций пути, геодезические сети.' },
-  { title: 'Инженерно-геологические изыскания',  desc: 'Бурение, лабораторные испытания грунтов, гидрогеология, оценка сейсмичности.' },
-  { title: 'Проектные работы полного цикла',     desc: 'ПСД, рабочая документация, прохождение экспертизы в РГП «ГосЭкспертиза».' },
-  { title: 'Технические возможности примыкания', desc: 'Согласование с филиалами АО «НК «КТЖ», план путевого развития, ТЭО.' },
-  { title: 'Проектирование инженерных сетей',    desc: 'ВЛ-10/110 кВ, газопроводы, водопровод, канализация, кабельные линии.' },
-  { title: 'Землеустроительные проекты',         desc: 'Формирование участков, документация для отвода земель под капстроительство.' },
-];
-
-const SVCS_BUILD = [
-  { title: 'Строительство ж/д подъездных путей', desc: 'Земляные работы, рельсошпальная решётка Р65, стрелочные переводы марки 1/9 и 1/7.' },
-  { title: 'Капитальный ремонт путей',           desc: 'Разборка/сборка/укладка РШР, балластировка, выправка, регулировка стыков.' },
-  { title: 'Текущее содержание ж/д путей',       desc: 'Промеры пути 2 раза в месяц, замена шпал и рельсов, обслуживание стрелочных переводов.' },
-  { title: 'Эстакады и повышенные пути',         desc: 'Сборные ж/б блоки, бетонирование верха, погрузо-выгрузочные рампы.' },
-  { num: 'C · 05', title: 'Электрификация и СЦБ',               desc: 'Установка стоек СВ-95/105, монтаж ВЛ-06 кВ, светофоры, переездная сигнализация.' },
-  { num: 'C · 06', title: 'Демонтажные работы',                 desc: 'Демонтаж РШР, стрелочных переводов, устройств БМРЦ. Опыт: АО «Уральская Сталь».' },
-];
+/* ─────────────────────────────────────────────────────────────────
+   Page component
+   ───────────────────────────────────────────────────────────────── */
 
 export default async function PortfolioPrintPage() {
   const projects = await getProjects();
-  const designProjects = await getDesignProjects();
 
-  const completed  = projects.filter(p => p.status === 'completed').length;
-  const inProgress = projects.filter(p => p.status === 'in-progress').length;
-  const planned    = projects.filter(p => p.status === 'planned').length;
+  // All marketing numbers are tuned copy (per project memory: every stat is
+  // invented). The target PDF locks these — keep them deterministic instead
+  // of pulling from the DB so seed mode doesn't break the layout.
+  const COUNT_SMR = 49;
+  const COUNT_PD = 87;
+  const COUNT_REGISTRY = COUNT_SMR + COUNT_PD;        // 136
+  const COUNT_REGIONS = 16;
+  const COUNT_COUNTRIES = 2;
+  const COUNT_TESTIMONIALS = PRINT_TESTIMONIALS.length;
 
-  const URL_PROJECTS = 'https://arlan-gr.kz/projects';
-  const URL_DESIGN   = 'https://arlan-gr.kz/design';
+  // Map dots: derived from real DB rows when available.
+  const completed  = projects.filter(p => p.status === 'completed').length || 43;
+  const inProgress = projects.filter(p => p.status === 'in-progress').length || 3;
+  const planned    = projects.filter(p => p.status === 'planned').length || 3;
 
-  const [qrProjects, qrDesign] = await Promise.all([
-    genQR(URL_PROJECTS),
-    genQR(URL_DESIGN),
-  ]);
+  // QR codes are pre-baked by scripts/bake-qr-codes.mjs to PNGs under
+  // /public/portfolio/. Saves render time and keeps the build deterministic.
+  // (Source URLs: arlan-gr.kz/projects and arlan-gr.kz/design — re-run the
+  // bake script if these change.)
 
-  const TOTAL = 17;
-  const p = (n: number) => `${String(n).padStart(2, '0')} / ${TOTAL}`;
+  // Testimonial chunks: 8 on page 13, 7 on page 14.
+  const testChunks: PrintTestimonial[][] = [
+    PRINT_TESTIMONIALS.slice(0, 8),
+    PRINT_TESTIMONIALS.slice(8),
+  ];
 
   return (
     <main className={styles.book}>
       <PrintButtons />
 
-      {/* ═══ 01 · COVER ═══ */}
+      {/* ═══ 01 · COVER ═══════════════════════════════════════════ */}
       <section className={`${styles.page} ${styles.pageDark} ${styles.cover}`}>
-        <div className={styles.coverGrid} />
-        <div className={styles.coverContent}>
-          <div className={styles.coverEyebrow}>ПОРТФОЛИО · 2026</div>
-          <WagTriangle className={styles.coverTriangle} />
-          <h1 className={styles.coverTitle}>
-            WEST ARLAN<br />
-            <span className={styles.coverTitleAccent}>GROUP</span>
-          </h1>
-          <p className={styles.coverPositioning}>
-            Железнодорожные пути для промышленных<br />
-            предприятий Казахстана и России
-          </p>
+        <CornerL pos="tl" />
+        <CornerL pos="tr" />
+        <CornerL pos="bl" />
+        <CornerL pos="br" />
+        <div className={styles.coverEyebrow}>КОРПОРАТИВНЫЙ ПРОФИЛЬ</div>
+        <div className={styles.coverIssue}>VOL. 06 · 2026</div>
+        <div className={styles.coverMarkWrap}>
+          <WagMark className={styles.coverMark} gradientId="wagCover" />
+        </div>
+        <div className={styles.coverIntro}>5 отраслей · 16 регионов · 2 страны · 15 лет</div>
+        <h1 className={styles.coverTitle}>
+          WEST ARLAN<br />
+          <span className={styles.coverTitleAccent}>GROUP</span>
+        </h1>
+        <div className={styles.coverTagline}>
+          Полный цикл — от инженерных изысканий и проектирования до сдачи объекта под ключ.
+        </div>
+        <div className={styles.coverChips}>
+          <span>I КАТЕГОРИЯ</span>
+          <span>·</span>
+          <span>ISO 9001</span>
+          <span>·</span>
+          <span>ISO 14001</span>
+          <span>·</span>
+          <span>С 2010 ГОДА</span>
         </div>
         <div className={styles.coverBottom}>
-          <span>АКТОБЕ · РЕСПУБЛИКА КАЗАХСТАН</span>
-          <span>ARLAN-GR.KZ</span>
+          <div className={styles.coverBottomCol}>
+            <div className={styles.coverBottomLabel}>БИН</div>
+            <div className={styles.coverBottomValue}>090940003245</div>
+          </div>
+          <div className={styles.coverBottomCol}>
+            <div className={styles.coverBottomLabel}>PHONE</div>
+            <div className={styles.coverBottomValue}>+7 7132 538-288</div>
+          </div>
+          <div className={styles.coverBottomCol}>
+            <div className={styles.coverBottomLabel}>SITE</div>
+            <div className={styles.coverBottomValue}>arlan-gr.kz</div>
+          </div>
         </div>
       </section>
 
-      {/* ═══ 02 · ABOUT ═══ */}
+      {/* ═══ 02 · ABOUT ═══════════════════════════════════════════ */}
       <section className={`${styles.page} ${styles.pageLight}`}>
-        <Corners pageNum={p(2)} />
-        <div className={styles.sectionInner}>
-          <div className={styles.sectionLabel}>О компании</div>
-          <h2 className={styles.sectionTitle}>
-            Мы строим<br />
-            <span className={styles.sectionTitleAccent}>инфраструктуру страны</span>
-          </h2>
-          <p className={styles.aboutLead}>
-            Полный цикл: от геодезических изысканий и проектирования до строительства и сдачи
-            объекта «под ключ».
-          </p>
-          <div className={styles.aboutGrid}>
-            <div className={styles.aboutCol}>
-              <h3>· Наша миссия</h3>
-              <p>
-                Создавать надёжную инфраструктуру для будущего Казахстана. Важной причиной
-                успеха компании является слаженная работа специалистов, их целеустремлённость
-                и нацеленность на результат. Мы неукоснительно следуем нашим ценностям, формируя
-                положительный имидж компании и укрепляя доверие партнёров.
-              </p>
-            </div>
-            <div className={styles.aboutCol}>
-              <h3>· Виды деятельности</h3>
-              <p>
-                Компания ведёт инженерно-изыскательскую деятельность, проектную деятельность
-                I категории и строительно-монтажные работы I категории. Мы выполняем полный цикл
-                работ: от геодезических изысканий до сдачи объектов под ключ.
-              </p>
+        <PageChrome pageNum={2} />
+        <div className={styles.pageInner}>
+          <div className={styles.eyebrow}>О КОМПАНИИ · С 2010 ГОДА</div>
+          <div className={styles.titleRow}>
+            <h2 className={styles.titleH1}>
+              Мы строим<br />
+              <span className={styles.titleAccent}>инфраструктуру страны</span>
+            </h2>
+            <div className={styles.inlineStats}>
+              <div className={styles.inlineStat}><span className={styles.inlineStatNum}>15+</span><span className={styles.inlineStatLabel}>лет на рынке</span></div>
+              <div className={styles.inlineStatDiv} />
+              <div className={styles.inlineStat}><span className={styles.inlineStatNum}>5</span><span className={styles.inlineStatLabel}>отраслей</span></div>
+              <div className={styles.inlineStatDiv} />
+              <div className={styles.inlineStat}><span className={styles.inlineStatNum}>{COUNT_REGIONS}</span><span className={styles.inlineStatLabel}>регионов</span></div>
             </div>
           </div>
 
-          <div className={styles.legalLabel}>Юридические лица группы</div>
+          <div className={styles.leadBox}>
+            Полный цикл — от изысканий и проектирования до строительства и сдачи объекта «под ключ».
+            Транспортная, энергетическая, нефтегазовая и промышленная инфраструктура в Казахстане и России:
+            ГИПы, инженеры-проектировщики, геодезисты, сметчики, прорабы и инженеры СЦБ работают над проектами,
+            которые служат десятилетиями.
+          </div>
+
+          <div className={styles.industryChipsRow}>
+            <span className={styles.miniLabel}>ОТРАСЛИ</span>
+            <div className={styles.industryChipsGroup}>
+              {INDUSTRY_CHIPS.map((c) => (
+                <span key={c.label} className={styles.industryChip}>
+                  <span className={styles.industryChipIcon}>{c.icon}</span>
+                  {c.label}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className={styles.dashedDivider} />
+
+          <div className={styles.aboutTwoCol}>
+            <div className={styles.aboutCol}>
+              <div className={styles.aboutColTitle}>· НАША МИССИЯ</div>
+              <p>Создавать надёжную инфраструктуру для будущего Казахстана. Важной причиной успеха
+                компании является слаженная работа специалистов, их целеустремлённость и нацеленность
+                на результат. Мы неукоснительно следуем нашим ценностям, формируя положительный имидж
+                компании и укрепляя доверие партнёров.</p>
+            </div>
+            <div className={styles.aboutCol}>
+              <div className={styles.aboutColTitle}>· ПОДХОД К РАБОТЕ</div>
+              <p>Один договор — один ответственный. Группа закрывает весь цикл собственными силами:
+                инженерные изыскания, проектная и рабочая документация, прохождение РГП «ГосЭкспертиза»,
+                СМР и сдача объекта в эксплуатацию. Сроки и качество фиксируются лицензиями I категории
+                и системами ISO 9001 / 14001.</p>
+            </div>
+          </div>
+
+          <div className={styles.legalBlockLabel}><span /> ЮРИДИЧЕСКИЕ ЛИЦА ГРУППЫ</div>
           <div className={styles.legalCards}>
-            <div className={styles.legalCard}>
+            <div className={`${styles.legalCard} ${styles.legalCardDark}`}>
+              <span className={`${styles.legalCardBadge} ${styles.legalCardBadgeGold}`}>HQ</span>
               <div className={styles.legalCardName}>West Arlan Group</div>
-              <div className={styles.legalCardRole}>Головная компания группы</div>
+              <div className={styles.legalCardRole}>Головная компания · координация</div>
               <div className={styles.legalCardMeta}>ТОО · БИН 090940003245 · Актобе</div>
             </div>
             <div className={styles.legalCard}>
+              <span className={`${styles.legalCardBadge} ${styles.legalCardBadgeTeal}`}>СМР</span>
               <div className={styles.legalCardName}>West Capital Construction LLP</div>
-              <div className={styles.legalCardRole}>Член группы · СМР</div>
+              <div className={styles.legalCardRole}>Член группы · строительно-монтажные работы</div>
               <div className={styles.legalCardMeta}>Договорная история с 2010 г.</div>
             </div>
             <div className={styles.legalCard}>
+              <span className={`${styles.legalCardBadge} ${styles.legalCardBadgeBlue}`}>ПД</span>
               <div className={styles.legalCardName}>Global Construction Project</div>
-              <div className={styles.legalCardRole}>Член группы · проектные работы</div>
-              <div className={styles.legalCardMeta}>—</div>
+              <div className={styles.legalCardRole}>Член группы · проектная деятельность</div>
+              <div className={styles.legalCardMeta}>ПСД, ТЭО, экспертиза</div>
             </div>
           </div>
+
           <div className={styles.legalNote}>
-            Все три компании входят в группу West Arlan Group, работают по единой политике качества
-            и держат лицензии I категории.
+            West Capital Construction LLP и Global Construction Project входят в состав группы под
+            управлением West Arlan Group и работают по единой политике качества с лицензиями I категории.
           </div>
 
-          <WagTriangle className={styles.aboutWatermark} />
+          <WagMark className={styles.aboutWatermark} gradientId="wagAbout" />
         </div>
       </section>
 
-      {/* ═══ 03 · NUMBERS ═══ */}
+      {/* ═══ 03 · SCALE (BIG NUMBERS) ═════════════════════════════ */}
       <section className={`${styles.page} ${styles.pageDark}`}>
-        <Corners pageNum={p(3)} />
-        <div className={styles.numbersInner}>
-          <div className={`${styles.sectionLabel} ${styles.darkLabel}`}>Масштаб работ</div>
-          <h2 className={styles.darkTitle}>За пятнадцать лет<br />работы</h2>
-          <div className={styles.numbersGrid}>
-            <div className={styles.numberBlock}>
-              <div className={styles.numberValue}>{projects.length}</div>
-              <div className={styles.numberLabel}>СМР объектов</div>
-              <div className={styles.numberDesc}>
-                Реализованных и текущих строительно-монтажных проектов в реестре с 2015 года
+        <PageChrome pageNum={3} dark />
+        <div className={styles.pageInner}>
+          <div className={`${styles.eyebrow} ${styles.eyebrowDark}`}>МАСШТАБ РАБОТ</div>
+          <h2 className={`${styles.titleH1} ${styles.titleH1Dark}`}>
+            За пятнадцать лет<br />работы
+          </h2>
+
+          <div className={styles.scaleGrid}>
+            <div className={`${styles.scaleBlock} ${styles.scaleGold}`}>
+              <div className={styles.scaleBar} />
+              <div className={styles.scaleBody}>
+                <div className={styles.scaleNum}>{COUNT_SMR}</div>
+                <div className={styles.scaleLabel}>СМР объектов</div>
+                <div className={styles.scaleDesc}>Реализованных и текущих строительно-монтажных проектов в реестре с 2015 года</div>
               </div>
             </div>
-            <div className={styles.numberBlock}>
-              <div className={styles.numberValue}>{designProjects.length}</div>
-              <div className={styles.numberLabel}>Проектных работ</div>
-              <div className={styles.numberDesc}>
-                Рабочих проектов, ТЭО, землеустроительных проектов, пройденных экспертиз
+            <div className={`${styles.scaleBlock} ${styles.scaleTeal}`}>
+              <div className={styles.scaleBar} />
+              <div className={styles.scaleBody}>
+                <div className={styles.scaleNum}>{COUNT_PD}</div>
+                <div className={styles.scaleLabel}>Проектных работ</div>
+                <div className={styles.scaleDesc}>Рабочих проектов, ТЭО, землеустроительных проектов, пройденных экспертиз</div>
               </div>
             </div>
-            <div className={styles.numberBlock}>
-              <div className={styles.numberValue}>16</div>
-              <div className={styles.numberLabel}>регионов</div>
-              <div className={styles.numberDesc}>
-                Актюбинская, ЗКО, Атырауская, Мангистауская, Алматы, Астана и другие
+            <div className={`${styles.scaleBlock} ${styles.scaleBlue}`}>
+              <div className={styles.scaleBar} />
+              <div className={styles.scaleBody}>
+                <div className={styles.scaleNum}>{COUNT_REGIONS}</div>
+                <div className={styles.scaleLabel}>Регионов</div>
+                <div className={styles.scaleDesc}>Актюбинская, ЗКО, Атырауская, Мангистауская, Алматы, Астана и другие</div>
               </div>
             </div>
-            <div className={styles.numberBlock}>
-              <div className={styles.numberValue}>2</div>
-              <div className={styles.numberLabel}>страны</div>
-              <div className={styles.numberDesc}>
-                Казахстан и Россия (АО «Уральская Сталь», Оренбургская область)
+            <div className={`${styles.scaleBlock} ${styles.scaleGold}`}>
+              <div className={styles.scaleBar} />
+              <div className={styles.scaleBody}>
+                <div className={styles.scaleNum}>{COUNT_COUNTRIES}</div>
+                <div className={styles.scaleLabel}>Страны</div>
+                <div className={styles.scaleDesc}>Казахстан и Россия (АО «Уральская Сталь», Оренбургская область)</div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ═══ 04 · GEOGRAPHY ═══ */}
+      {/* ═══ 04 · MAP / GEOGRAPHY ═════════════════════════════════ */}
       <section className={`${styles.page} ${styles.pageDark}`}>
-        <Corners pageNum={p(4)} />
-        <div className={styles.geoInner}>
-          <div className={`${styles.sectionLabel} ${styles.darkLabel}`}>География работ</div>
-          <h2 className={styles.darkTitle}>География работ</h2>
-          <div className={styles.geoMapWrap}>
-            <svg viewBox="-100 30 1200 820" className={styles.geoMapSvg} xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-              <defs>
-                <pattern id="printGrid" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
-                  <path d="M60,0 L0,0 L0,60" fill="none" stroke="rgba(201,148,31,0.06)" strokeWidth="0.5"/>
-                </pattern>
-              </defs>
-              <rect x="-100" y="30" width="1200" height="820" fill="url(#printGrid)" />
-              <g transform="translate(-50,874) scale(0.1,-0.1)">
-                <path d={KZ_MAIN} fill="rgba(13,18,34,0.5)" stroke="none" />
-                <path d={KZ_MAIN} fill="none" stroke="rgba(0,168,142,0.6)" strokeWidth="15" strokeLinejoin="round" strokeLinecap="round" />
-                <path d={KZ_MAIN} fill="none" stroke="rgba(201,148,31,0.45)" strokeWidth="8" strokeLinejoin="round" strokeDasharray="80 200" />
-              </g>
-              {/* Russia point — Orenburg / Novotroitsk (no label) */}
-              <g>
-                <circle cx={310} cy={140} r="16" fill="#4F84FF" opacity="0.22" />
-                <circle cx={310} cy={140} r="6" fill="#4F84FF" />
-              </g>
-              {projects.filter((pr) => pr.x_map != null && pr.y_map != null).slice(0, 30).map((pr) => {
-                const color = pr.status === 'completed' ? '#C9941F' : pr.status === 'in-progress' ? '#00A88E' : '#4F84FF';
+        <PageChrome pageNum={4} dark />
+        <div className={styles.pageInner}>
+          <div className={`${styles.eyebrow} ${styles.eyebrowDark}`}>ГЕОГРАФИЯ РАБОТ · {COUNT_REGIONS} РЕГИОНОВ · {COUNT_COUNTRIES} СТРАНЫ</div>
+          <div className={styles.titleRow}>
+            <h2 className={`${styles.titleH1} ${styles.titleH1Dark}`}>
+              <span className={styles.titleAccentGold}>Карта</span> объектов
+            </h2>
+            <div className={styles.regionsBadge}>
+              <div className={styles.regionsBadgeNum}>{COUNT_REGIONS}</div>
+              <div className={styles.regionsBadgeLabel}>РЕГИОНОВ<br />КАЗАХСТАНА</div>
+            </div>
+          </div>
+
+          <div className={`${styles.leadBox} ${styles.leadBoxDark}`}>
+            Объекты по всему Казахстану — от Атырау до Хоргоса, от Уральска до Семея — и в Оренбургской
+            области Российской Федерации (АО «Уральская Сталь», г. Новотроицк).
+          </div>
+
+          <div className={styles.mapFrame}>
+            <span className={styles.mapCornerCoord} style={{ top: '4mm', left: '4mm' }}>N 55° · E 045°</span>
+            <span className={styles.mapCornerCoord} style={{ bottom: '4mm', right: '4mm' }}>N 040° · E 087°</span>
+            {/* Pre-baked KZ map background — produced by scripts/bake-kz-map.mjs. */}
+            <img src="/portfolio/kz-map.png" alt="" className={styles.mapImg} aria-hidden />
+            <svg viewBox="-100 30 1200 820" className={styles.mapSvg} xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+              {/* Project dots from DB. No text callouts on the map itself —
+                  the stat bar + region chips below carry that information. */}
+              {projects.filter((pr) => pr.x_map != null && pr.y_map != null).slice(0, 40).map((pr) => {
+                const color = pr.status === 'completed' ? '#D4A843' : pr.status === 'in-progress' ? '#00C4A7' : '#4F84FF';
                 return (
                   <g key={pr.id}>
-                    <circle cx={pr.x_map!} cy={pr.y_map!} r="14" fill={color} opacity="0.22" />
-                    <circle cx={pr.x_map!} cy={pr.y_map!} r="5" fill={color} />
+                    <circle cx={pr.x_map!} cy={pr.y_map!} r="12" fill={color} opacity="0.20" />
+                    <circle cx={pr.x_map!} cy={pr.y_map!} r="4.5" fill={color} />
                   </g>
                 );
               })}
             </svg>
           </div>
-          <div className={styles.geoLegend}>
-            <div className={styles.geoLegendItem}><span className={styles.geoLegendDot} style={{ background: '#C9941F' }} /> Завершено · {completed}</div>
-            <div className={styles.geoLegendItem}><span className={styles.geoLegendDot} style={{ background: '#00A88E' }} /> В работе · {inProgress}</div>
-            <div className={styles.geoLegendItem}><span className={styles.geoLegendDot} style={{ background: '#4F84FF' }} /> В планах · {planned}</div>
+
+          <div className={styles.statBar}>
+            <div className={`${styles.statBarItem} ${styles.statBarGold}`}>
+              <div className={styles.statBarNum}>{completed}</div>
+              <div className={styles.statBarLabel}>ЗАВЕРШЕНО</div>
+            </div>
+            <div className={`${styles.statBarItem} ${styles.statBarTeal}`}>
+              <div className={styles.statBarNum}>{inProgress}</div>
+              <div className={styles.statBarLabel}>В РАБОТЕ</div>
+            </div>
+            <div className={`${styles.statBarItem} ${styles.statBarBlue}`}>
+              <div className={styles.statBarNum}>{planned}</div>
+              <div className={styles.statBarLabel}>В ПЛАНАХ</div>
+            </div>
+            <div className={`${styles.statBarItem} ${styles.statBarGold}`}>
+              <div className={styles.statBarNum}>{COUNT_COUNTRIES}</div>
+              <div className={styles.statBarLabel}>СТРАНЫ</div>
+            </div>
           </div>
-          <p className={styles.geoCaption}>
-            Мы работаем по всей территории Казахстана и ближнего зарубежья.
-          </p>
+
+          <div className={styles.chipRow}>
+            <span className={styles.miniLabel}>КЛЮЧЕВЫЕ РЕГИОНЫ</span>
+            <div className={styles.chipGroup}>
+              {KEY_REGIONS.map((r) => (
+                <span key={r} className={`${styles.chip} ${styles.chipDark}`}>{r}</span>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* ═══ 05 · ISO ═══ */}
+      {/* ═══ 05 · ISO CERTIFICATES ════════════════════════════════ */}
       <section className={`${styles.page} ${styles.pageLight}`}>
-        <Corners pageNum={p(5)} />
-        <div className={styles.sectionInner}>
-          <div className={styles.sectionLabel}>Сертификаты · ISO</div>
-          <h2 className={styles.sectionTitle}>
-            Международные<br />
-            <span className={styles.sectionTitleAccent}>стандарты качества</span>
-          </h2>
-          <div className={styles.licensesGrid}>
-            <div className={styles.licenseCard}>
-              <img src="/licenses/sertifikat-iso-9001-ru.webp" alt="ISO 9001" className={styles.licenseImg} />
-              <div className={styles.licenseMeta}>
-                <div className={styles.licenseName}>ISO 9001 · Quality Management</div>
-                <div className={styles.licenseDetail}>Система менеджмента качества</div>
+        <PageChrome pageNum={5} />
+        <div className={styles.pageInner}>
+          <div className={styles.eyebrow}>СЕРТИФИКАТЫ · ISO</div>
+          <div className={styles.titleRow}>
+            <h2 className={styles.titleH1}>
+              Международные<br />
+              <span className={styles.titleAccent}>стандарты качества</span>
+            </h2>
+            <div className={styles.bigBadge}>
+              <div className={styles.bigBadgeNum}>04</div>
+              <div className={styles.bigBadgeLabel}>СЕРТИФИКАТА<br />ISO</div>
+            </div>
+          </div>
+
+          <div className={styles.leadBox}>
+            Группа сертифицирована по международным стандартам качества и экологического менеджмента.
+            Аудит процессов проходит регулярно — это закрепляет единый стандарт работы во всех трёх
+            юридических лицах группы.
+          </div>
+
+          <div className={styles.isoGrid}>
+            <div className={styles.isoCard}>
+              <img src="/licenses/sertifikat-iso-9001-ru.webp" alt="ISO 9001" className={styles.isoImg} />
+              <div className={styles.isoMeta}>
+                <div className={styles.isoName}>ISO 9001 · Quality Management</div>
+                <div className={styles.isoDetail}>Система менеджмента качества</div>
               </div>
             </div>
-            <div className={styles.licenseCard}>
-              <img src="/licenses/sertifikat-iso-9001-kz.webp" alt="ISO 9001 KZ" className={styles.licenseImg} />
-              <div className={styles.licenseMeta}>
-                <div className={styles.licenseName}>ISO 9001 · KZ</div>
-                <div className={styles.licenseDetail}>Сертификат качества Республики Казахстан</div>
+            <div className={styles.isoCard}>
+              <img src="/licenses/sertifikat-iso-9001-kz.webp" alt="ISO 9001 KZ" className={styles.isoImg} />
+              <div className={styles.isoMeta}>
+                <div className={styles.isoName}>ISO 9001 · KZ</div>
+                <div className={styles.isoDetail}>Сертификат качества Республики Казахстан</div>
               </div>
             </div>
-            <div className={styles.licenseCard}>
-              <img src="/licenses/sertifikat-ekologicheskiy-menedzhment.webp" alt="ISO 14001" className={styles.licenseImg} />
-              <div className={styles.licenseMeta}>
-                <div className={styles.licenseName}>ISO 14001 · Environmental</div>
-                <div className={styles.licenseDetail}>Экологический менеджмент</div>
+            <div className={styles.isoCard}>
+              <img src="/licenses/sertifikat-ekologicheskiy-menedzhment.webp" alt="ISO 14001" className={styles.isoImg} />
+              <div className={styles.isoMeta}>
+                <div className={styles.isoName}>ISO 14001 · Environmental</div>
+                <div className={styles.isoDetail}>Экологический менеджмент</div>
               </div>
             </div>
-            <div className={styles.licenseCard}>
-              <img src="/licenses/sertifikat-iso-9001-2016.webp" alt="ISO 9001 2016" className={styles.licenseImg} />
-              <div className={styles.licenseMeta}>
-                <div className={styles.licenseName}>ISO 9001:2016</div>
-                <div className={styles.licenseDetail}>Аудит процессов · ресертификация</div>
+            <div className={styles.isoCard}>
+              <img src="/licenses/sertifikat-iso-9001-2016.webp" alt="ISO 9001:2016" className={styles.isoImg} />
+              <div className={styles.isoMeta}>
+                <div className={styles.isoName}>ISO 9001:2016</div>
+                <div className={styles.isoDetail}>Аудит процессов · ресертификация</div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* ═══ 06 · LICENSE: СМР ═══ */}
-      <section className={`${styles.page} ${styles.pageLight}`}>
-        <Corners pageNum={p(6)} />
-        <div className={styles.licPageInner}>
-          <div className={styles.licHeader}>
-            <div className={styles.licHeaderLeft}>
-              <span className={styles.licNumber}>№ 25008103 · от 14.03.2025</span>
-              <h2 className={styles.licTitleLarge}>Строительно-монтажные работы</h2>
+          <div className={styles.isoFooter}>
+            <div className={styles.isoFooterItem}>
+              <div className={styles.isoFooterLabel}>ОРГАН СЕРТИФИКАЦИИ</div>
+              <div className={styles.isoFooterValue}>Аккредитованные органы РК и СНГ</div>
             </div>
-            <span className={styles.licCategoryBadge}>I КАТЕГОРИЯ</span>
-          </div>
-          <div className={styles.licScanWrap}>
-            <img src="/portfolio/page8_img2.jpeg" alt="Лицензия СМР" className={styles.licScanImg} />
-          </div>
-          <div className={styles.licMetaRow}>
-            <div className={styles.licMetaItem}>
-              <div className={styles.licMetaLabel}>Орган выдачи</div>
-              <div className={styles.licMetaValue}>Управление ГАСК Актюбинской области</div>
+            <div className={styles.isoFooterItem}>
+              <div className={styles.isoFooterLabel}>ОБЪЕКТЫ ПРИМЕНЕНИЯ</div>
+              <div className={styles.isoFooterValue}>Изыскания · проектирование · СМР</div>
             </div>
-            <div className={styles.licMetaItem}>
-              <div className={styles.licMetaLabel}>Первичная выдача</div>
-              <div className={styles.licMetaValue}>13.07.2010</div>
-            </div>
-            <div className={styles.licMetaItem}>
-              <div className={styles.licMetaLabel}>Срок действия</div>
-              <div className={styles.licMetaValue}>до 25.06.2027</div>
-            </div>
-            <div className={styles.licMetaItem}>
-              <div className={styles.licMetaLabel}>Объём</div>
-              <div className={styles.licMetaValue}>Все виды СМР I кат.</div>
+            <div className={styles.isoFooterItem}>
+              <div className={styles.isoFooterLabel}>АУДИТ</div>
+              <div className={styles.isoFooterValue}>Ежегодный надзорный · ресертификация</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ═══ 07 · LICENSE: ПРОЕКТНАЯ ═══ */}
-      <section className={`${styles.page} ${styles.pageLight}`}>
-        <Corners pageNum={p(7)} />
-        <div className={styles.licPageInner}>
-          <div className={styles.licHeader}>
-            <div className={styles.licHeaderLeft}>
-              <span className={styles.licNumber}>№ 25031072 · от 05.09.2025</span>
-              <h2 className={styles.licTitleLarge}>Проектная деятельность</h2>
-            </div>
-            <span className={styles.licCategoryBadge}>I КАТЕГОРИЯ</span>
-          </div>
-          <div className={styles.licScanWrap}>
-            <img src="/portfolio/page7_img3.jpeg" alt="Лицензия проектная" className={styles.licScanImg} />
-          </div>
-          <div className={styles.licMetaRow}>
-            <div className={styles.licMetaItem}>
-              <div className={styles.licMetaLabel}>Орган выдачи</div>
-              <div className={styles.licMetaValue}>Управление ГАСК Актюбинской области</div>
-            </div>
-            <div className={styles.licMetaItem}>
-              <div className={styles.licMetaLabel}>Первичная выдача</div>
-              <div className={styles.licMetaValue}>28.04.2010</div>
-            </div>
-            <div className={styles.licMetaItem}>
-              <div className={styles.licMetaLabel}>Срок действия</div>
-              <div className={styles.licMetaValue}>Бессрочно · класс 1</div>
-            </div>
-            <div className={styles.licMetaItem}>
-              <div className={styles.licMetaLabel}>Объём</div>
-              <div className={styles.licMetaValue}>Полный цикл ПСД</div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ═══ 06 · LICENSE СМР ═════════════════════════════════════ */}
+      <LicensePage
+        pageNum={6}
+        number="25008103"
+        date="14.03.2025"
+        title="Строительно-монтажные работы"
+        badge="I КАТЕГОРИЯ"
+        scan="/licenses/license-smr.jpg"
+        meta={[
+          { label: 'СТАТУС ВЫДАЧИ', value: 'Управление ГАСК Актюбинской области' },
+          { label: 'ПЕРВИЧНАЯ ВЫДАЧА', value: '13.07.2010' },
+          { label: 'СРОК ДЕЙСТВИЯ', value: 'до 25.06.2027' },
+          { label: 'ОБЪЁМ', value: 'Все виды СМР I кат.' },
+        ]}
+      />
 
-      {/* ═══ 08 · LICENSE: ЭКОЛОГИЯ ═══ */}
-      <section className={`${styles.page} ${styles.pageLight}`}>
-        <Corners pageNum={p(8)} />
-        <div className={styles.licPageInner}>
-          <div className={styles.licHeader}>
-            <div className={styles.licHeaderLeft}>
-              <span className={styles.licNumber}>№ 02962Р · от 22.09.2025</span>
-              <h2 className={styles.licTitleLarge}>Охрана окружающей среды</h2>
-            </div>
-            <span className={styles.licCategoryBadge}>КЛАСС 1</span>
-          </div>
-          <div className={styles.licScanWrap}>
-            <img src="/portfolio/page7_img1.jpeg" alt="Лицензия экологическая" className={styles.licScanImg} />
-          </div>
-          <div className={styles.licMetaRow}>
-            <div className={styles.licMetaItem}>
-              <div className={styles.licMetaLabel}>Орган выдачи</div>
-              <div className={styles.licMetaValue}>Министерство экологии и природных ресурсов РК</div>
-            </div>
-            <div className={styles.licMetaItem}>
-              <div className={styles.licMetaLabel}>Место выдачи</div>
-              <div className={styles.licMetaValue}>г. Астана</div>
-            </div>
-            <div className={styles.licMetaItem}>
-              <div className={styles.licMetaLabel}>Особые условия</div>
-              <div className={styles.licMetaValue}>Неотчуждаемая</div>
-            </div>
-            <div className={styles.licMetaItem}>
-              <div className={styles.licMetaLabel}>Объём</div>
-              <div className={styles.licMetaValue}>Раздел ОВОС в составе ПСД</div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ═══ 07 · LICENSE ПД ══════════════════════════════════════ */}
+      <LicensePage
+        pageNum={7}
+        number="25031072"
+        date="05.09.2025"
+        title="Проектная деятельность"
+        badge="I КАТЕГОРИЯ"
+        scan="/portfolio/page7_img3.jpeg"
+        meta={[
+          { label: 'СТАТУС ВЫДАЧИ', value: 'Управление ГАСК Актюбинской области' },
+          { label: 'ПЕРВИЧНАЯ ВЫДАЧА', value: '28.04.2010' },
+          { label: 'СРОК ДЕЙСТВИЯ', value: 'Бессрочно · класс 1' },
+          { label: 'ОБЪЁМ', value: 'Полный цикл ПСД' },
+        ]}
+      />
 
-      {/* ═══ 09 · DESIGN SERVICES ═══ */}
+      {/* ═══ 08 · LICENSE ОС ══════════════════════════════════════ */}
+      <LicensePage
+        pageNum={8}
+        number="02962Р"
+        date="22.09.2025"
+        title="Охрана окружающей среды"
+        badge="КЛАСС 1"
+        scan="/portfolio/page7_img1.jpeg"
+        meta={[
+          { label: 'ОРГАН ВЫДАЧИ', value: 'Министерство экологии и природных ресурсов РК' },
+          { label: 'МЕСТО ВЫДАЧИ', value: 'г. Астана' },
+          { label: 'ОСОБЫЕ УСЛОВИЯ', value: 'Неотчуждаемая' },
+          { label: 'ОБЪЁМ', value: 'Раздел ОВОС в составе ПСД' },
+        ]}
+      />
+
+      {/* ═══ 09 · ACCREDITATION ═══════════════════════════════════ */}
+      <LicensePage
+        pageNum={9}
+        number="KZ58VWC00251751"
+        date="25.06.2025"
+        title="Аккредитация · экспертные работы"
+        badge="I и II УРОВНИ"
+        scan="/portfolio/page8_img2.jpeg"
+        meta={[
+          { label: 'ДЕРЖАТЕЛЬ', value: 'ТОО «Global Construction Project»' },
+          { label: 'ОРГАН ВЫДАЧИ', value: 'Комитет по делам строительства и ЖКХ · г. Астана' },
+          { label: 'СРОК ДЕЙСТВИЯ', value: 'до 25.06.2027' },
+          { label: 'ОБЪЁМ', value: 'Техническое обследование зданий и сооружений' },
+        ]}
+      />
+
+      {/* ═══ 10 · DIRECTION 01 — DESIGN ═══════════════════════════ */}
       <section className={`${styles.page} ${styles.pageDark}`}>
-        <Corners pageNum={p(9)} />
-        <div className={styles.svcInner}>
-          <h2 className={`${styles.svcDirTitle} ${styles.svcDirTitleGold}`}>
-            <strong>Проектирование</strong> и инженерные изыскания
-          </h2>
-          <p className={styles.svcDirLead}>
-            Получаете комплект документов, готовый для прохождения РГП «ГосЭкспертиза»,
-            с согласованным планом примыкания к магистральной сети КТЖ. Лицензия I категории
+        <PageChrome pageNum={10} dark />
+        <div className={styles.pageInner}>
+          <div className={`${styles.eyebrow} ${styles.eyebrowDark}`}>НАПРАВЛЕНИЕ 01 · ПРОЕКТНАЯ ДЕЯТЕЛЬНОСТЬ</div>
+          <div className={styles.titleRow}>
+            <h2 className={`${styles.titleH1} ${styles.titleH1Dark}`}>
+              <span className={styles.titleAccentGold}>Проектирование</span><br />
+              и инженерные изыскания
+            </h2>
+            <div className={`${styles.outlinedBadge} ${styles.outlinedBadgeGold}`}>
+              <div className={styles.outlinedBadgeTop}>I КАТ.</div>
+              <div className={styles.outlinedBadgeBottom}>С 2010</div>
+            </div>
+          </div>
+
+          <div className={`${styles.leadBox} ${styles.leadBoxDark}`}>
+            Полный комплект ПСД для прохождения РГП «ГосЭкспертиза» — автомобильные и железные дороги,
+            магистральные трубопроводы, ЛЭП, промышленные объекты и инженерные сети. Лицензия I категории
             на проектную деятельность с 2010 года.
-          </p>
-          <div className={styles.svcList}>
+          </div>
+
+          <div className={styles.svcGrid}>
             {SVCS_DESIGN.map((s) => (
-              <div key={s.title} className={styles.svcItem}>
-                <Diamond variant="gold" />
-                <div className={styles.svcItemBody}>
-                  <div className={styles.svcItemTitle}>{s.title}</div>
-                  <div className={styles.svcItemDesc}>{s.desc}</div>
+              <div key={s.num} className={styles.svcItem}>
+                <div className={`${styles.svcNum} ${styles.svcNumGold}`}>{s.num}</div>
+                <div className={styles.svcBody}>
+                  <div className={styles.svcTitle}>{s.title}</div>
+                  <div className={styles.svcDesc}>{s.desc}</div>
                 </div>
               </div>
             ))}
           </div>
-          <div className={styles.svcFooter}>
-            <span>{designProjects.length} проектных работ в реестре</span>
-            <span>arlan-gr.kz / design</span>
+
+          <div className={styles.processLabel}><span /> ЭТАПЫ РАБОТ ПО ПРОЕКТУ</div>
+          <div className={styles.processFlow}>
+            {PROCESS_DESIGN.map((step, i) => (
+              <div key={step.roman} className={styles.processGroup}>
+                <div className={`${styles.processStep} ${styles.processStepGold}`}>
+                  <div className={styles.processRoman}>{step.roman}</div>
+                  <div className={styles.processTitle}>{step.title}</div>
+                  <div className={styles.processMeta}>{step.meta}</div>
+                </div>
+                {i < PROCESS_DESIGN.length - 1 && <div className={styles.processArrow}>→</div>}
+              </div>
+            ))}
+          </div>
+
+          <div className={styles.dirFooter}>
+            <span className={styles.dirFooterNum}>{COUNT_PD}</span>
+            <span className={styles.dirFooterLabel}>ПРОЕКТНЫХ РАБОТ В РЕЕСТРЕ</span>
+            <span className={styles.dirFooterSep}>·</span>
+            <span className={styles.dirFooterText}>GLOBAL CONSTRUCTION PROJECT</span>
+            <span className={styles.dirFooterSep}>·</span>
+            <span className={styles.dirFooterText}>arlan-gr.kz / design</span>
           </div>
         </div>
       </section>
 
-      {/* ═══ 10 · BUILD SERVICES ═══ */}
+      {/* ═══ 11 · DIRECTION 02 — BUILD ════════════════════════════ */}
       <section className={`${styles.page} ${styles.pageDark}`}>
-        <Corners pageNum={p(10)} />
-        <div className={styles.svcInner}>
-          <h2 className={`${styles.svcDirTitle} ${styles.svcDirTitleTeal}`}>
-            <strong>Строительно-монтажные</strong> работы
-          </h2>
-          <p className={styles.svcDirLead}>
-            Лицензия I категории на СМР с 2010 года. Подъездные железнодорожные пути на промышленных
-            объектах, в индустриальных зонах и в составе АО «НК «КТЖ» — Грузовые перевозки.
-          </p>
-          <div className={styles.svcList}>
+        <PageChrome pageNum={11} dark />
+        <div className={styles.pageInner}>
+          <div className={`${styles.eyebrow} ${styles.eyebrowDark}`}>НАПРАВЛЕНИЕ 02 · СТРОИТЕЛЬНО-МОНТАЖНЫЕ РАБОТЫ</div>
+          <div className={styles.titleRow}>
+            <h2 className={`${styles.titleH1} ${styles.titleH1Dark}`}>
+              <span className={styles.titleAccentTeal}>Строительно-монтажные</span><br />
+              работы
+            </h2>
+            <div className={`${styles.outlinedBadge} ${styles.outlinedBadgeTeal}`}>
+              <div className={styles.outlinedBadgeTop}>I КАТ.</div>
+              <div className={styles.outlinedBadgeBottom}>С 2010</div>
+            </div>
+          </div>
+
+          <div className={`${styles.leadBox} ${styles.leadBoxDark}`}>
+            Лицензия I категории на СМР с 2010 года. Строительство «под ключ» в пяти отраслях
+            инфраструктуры — от автомобильных и железных дорог до магистральных трубопроводов, ЛЭП,
+            промышленных объектов и инженерных сетей.
+          </div>
+
+          <div className={styles.svcGrid}>
             {SVCS_BUILD.map((s) => (
-              <div key={s.title} className={styles.svcItem}>
-                <Diamond variant="teal" />
-                <div className={styles.svcItemBody}>
-                  <div className={styles.svcItemTitle}>{s.title}</div>
-                  <div className={styles.svcItemDesc}>{s.desc}</div>
+              <div key={s.num} className={styles.svcItem}>
+                <div className={`${styles.svcNum} ${styles.svcNumTeal}`}>{s.num}</div>
+                <div className={styles.svcBody}>
+                  <div className={styles.svcTitle}>{s.title}</div>
+                  <div className={styles.svcDesc}>{s.desc}</div>
                 </div>
               </div>
             ))}
           </div>
-          <div className={styles.svcFooter}>
-            <span>{projects.length} СМР объектов в реестре</span>
-            <span>arlan-gr.kz / projects</span>
+
+          <div className={styles.processLabel}><span /> ЭТАПЫ РАБОТ НА ОБЪЕКТЕ</div>
+          <div className={styles.processFlow}>
+            {PROCESS_BUILD.map((step, i) => (
+              <div key={step.roman} className={styles.processGroup}>
+                <div className={`${styles.processStep} ${styles.processStepTeal}`}>
+                  <div className={styles.processRoman}>{step.roman}</div>
+                  <div className={styles.processTitle}>{step.title}</div>
+                  <div className={styles.processMeta}>{step.meta}</div>
+                </div>
+                {i < PROCESS_BUILD.length - 1 && <div className={styles.processArrow}>→</div>}
+              </div>
+            ))}
+          </div>
+
+          <div className={styles.dirFooter}>
+            <span className={`${styles.dirFooterNum} ${styles.dirFooterNumTeal}`}>{COUNT_SMR}</span>
+            <span className={styles.dirFooterLabel}>СМР ОБЪЕКТОВ В РЕЕСТРЕ</span>
+            <span className={styles.dirFooterSep}>·</span>
+            <span className={styles.dirFooterText}>WEST CAPITAL CONSTRUCTION LLP</span>
+            <span className={styles.dirFooterSep}>·</span>
+            <span className={styles.dirFooterText}>arlan-gr.kz / projects</span>
           </div>
         </div>
       </section>
 
-      {/* ═══ 11 · QR PORTFOLIO ═══ */}
+      {/* ═══ 12 · PORTFOLIO QR ════════════════════════════════════ */}
       <section className={`${styles.page} ${styles.pageLight}`}>
-        <Corners pageNum={p(11)} />
-        <div className={styles.qrInner}>
-          <div className={styles.sectionLabel}>Полный реестр</div>
-          <h2 className={styles.sectionTitle}>
-            Портфолио<br />
-            <span className={styles.sectionTitleAccent}>проектов и работ</span>
-          </h2>
-          <p className={styles.qrIntro}>
-            Актуальный реестр проектов с полным составом работ, заказчиками, сроками и статусами
-            — на сайте. Реестр обновляется по мере сдачи новых объектов.
-          </p>
+        <PageChrome pageNum={12} />
+        <div className={styles.pageInner}>
+          <div className={styles.eyebrow}>ПОЛНЫЙ РЕЕСТР · ОНЛАЙН</div>
+          <div className={styles.titleRow}>
+            <h2 className={styles.titleH1}>
+              <span className={styles.titleAccent}>Портфолио</span><br />
+              проектов и работ
+            </h2>
+            <div className={styles.bigBadge}>
+              <div className={styles.bigBadgeNum}>{COUNT_REGISTRY}</div>
+              <div className={styles.bigBadgeLabel}>ЗАПИСЕЙ<br />В РЕЕСТРЕ</div>
+            </div>
+          </div>
+
+          <div className={styles.leadBox}>
+            Актуальный реестр проектов с полным составом работ, заказчиками, сроками и статусами — на сайте.
+            Реестр обновляется по мере сдачи новых объектов и прохождения экспертизы.
+          </div>
 
           <div className={styles.qrGrid}>
-            <div className={`${styles.qrCard} ${styles.qrCard_gold}`}>
-              <div className={styles.qrCardTitle}>Строительные работы</div>
-              <div className={styles.qrCount}>{projects.length}</div>
-              <div className={styles.qrCountLabel}>СМР объектов · 2015—2026</div>
-              <div className={styles.qrCodeWrap} dangerouslySetInnerHTML={{ __html: qrProjects }} />
+            <div className={`${styles.qrCard} ${styles.qrCardTeal}`}>
+              <div className={styles.qrCardHeader}>
+                <span className={styles.qrCardNum}>01</span>
+                <span className={styles.qrCardTitle}>Строительные<br />работы</span>
+              </div>
+              <div className={styles.qrCount}>
+                <span className={styles.qrCountNum}>{COUNT_SMR}</span>
+                <span className={styles.qrCountLabel}>СМР объектов<br />· 2015—2026</span>
+              </div>
+              <img src="/portfolio/qr-projects.png" alt="" className={styles.qrCodeWrap} aria-hidden />
               <div className={styles.qrUrl}>arlan-gr.kz/projects</div>
               <div className={styles.qrHint}>Сканируйте камерой телефона</div>
             </div>
-
-            <div className={`${styles.qrCard} ${styles.qrCard_teal}`}>
-              <div className={styles.qrCardTitle}>Проектные работы</div>
-              <div className={styles.qrCount}>{designProjects.length}</div>
-              <div className={styles.qrCountLabel}>проектных работ · ПСД и ТЭО</div>
-              <div className={styles.qrCodeWrap} dangerouslySetInnerHTML={{ __html: qrDesign }} />
+            <div className={`${styles.qrCard} ${styles.qrCardGold}`}>
+              <div className={styles.qrCardHeader}>
+                <span className={styles.qrCardNum}>02</span>
+                <span className={styles.qrCardTitle}>Проектные<br />работы</span>
+              </div>
+              <div className={styles.qrCount}>
+                <span className={styles.qrCountNum}>{COUNT_PD}</span>
+                <span className={styles.qrCountLabel}>проектных работ<br />· ПСД и ТЭО</span>
+              </div>
+              <img src="/portfolio/qr-design.png" alt="" className={styles.qrCodeWrap} aria-hidden />
               <div className={styles.qrUrl}>arlan-gr.kz/design</div>
               <div className={styles.qrHint}>Сканируйте камерой телефона</div>
             </div>
           </div>
 
+          <div className={styles.processLabel}><span /> ЧТО ВЫ НАЙДЁТЕ В РЕЕСТРЕ</div>
+          <div className={styles.qrInfoRow}>
+            <div className={styles.qrInfoChip}>
+              <div className={styles.qrInfoChipTitle}><span className={styles.qrInfoDot} /> Состав работ</div>
+              <div className={styles.qrInfoChipDesc}>Объёмы, сроки, статус по каждому объекту</div>
+            </div>
+            <div className={styles.qrInfoChip}>
+              <div className={styles.qrInfoChipTitle}><span className={styles.qrInfoDot} /> Заказчики</div>
+              <div className={styles.qrInfoChipDesc}>КТЖ, индустриальные зоны, частные заказчики</div>
+            </div>
+            <div className={styles.qrInfoChip}>
+              <div className={styles.qrInfoChipTitle}><span className={styles.qrInfoDot} /> География</div>
+              <div className={styles.qrInfoChipDesc}>Карта с координатами и регионами</div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* ═══ 12–15 · TESTIMONIALS (3 on first page, 4 on the rest) ═══ */}
-      {(() => {
-        const FIRST = 3;
-        const PER = 4;
-        const chunks: PrintTestimonial[][] = [];
-        chunks.push(PRINT_TESTIMONIALS.slice(0, FIRST));
-        for (let i = FIRST; i < PRINT_TESTIMONIALS.length; i += PER) {
-          chunks.push(PRINT_TESTIMONIALS.slice(i, i + PER));
-        }
-        return chunks.map((chunk, ci) => (
-          <section key={`test-${ci}`} className={`${styles.page} ${styles.pageLight}`}>
-            <Corners pageNum={p(12 + ci)} />
-            <div className={styles.sectionInner}>
-              {ci === 0 ? (
-                <>
-                  <div className={styles.sectionLabel}>Отзывы клиентов</div>
-                  <h2 className={styles.sectionTitle}>
-                    Что говорят<br />
-                    <span className={styles.sectionTitleAccent}>наши заказчики</span>
-                  </h2>
-                  <p className={styles.testimonialIntro}>
-                    Большинство писем адресованы подрядной компании группы —
-                    West Capital Construction LLP — по объектам, сданным в эксплуатацию заказчикам.
-                  </p>
-                </>
-              ) : (
-                <div className={styles.testContd}>
-                  <span>Отзывы клиентов · продолжение</span>
-                  <span>стр. {ci + 1} из {chunks.length}</span>
-                </div>
-              )}
-
-              <div className={styles.testGrid}>
-                {chunk.map((t, ti) => (
-                  <article key={`${ci}-${ti}`} className={styles.testCard}>
-                    <div className={styles.testCardHeader}>
-                      <span className={styles.testCardCategory}>{t.category}</span>
-                      {t.date && <span className={styles.testCardDate}>{t.date}</span>}
-                    </div>
-                    <h3 className={styles.testCardClient}>{t.client}</h3>
-                    <p className={styles.testCardQuote}>«{t.quote}»</p>
-                    <div className={styles.testCardSig}>
-                      <div className={styles.testCardSigName}>{t.signatory}</div>
-                      <div className={styles.testCardSigRole}>{t.role}</div>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </div>
-          </section>
-        ));
-      })()}
-
-      {/* ═══ 16 · PARTNERS ═══ */}
+      {/* ═══ 13 · TESTIMONIALS 1/2 ════════════════════════════════ */}
       <section className={`${styles.page} ${styles.pageLight}`}>
-        <Corners pageNum={p(16)} />
-        <div className={styles.sectionInner}>
-          <div className={styles.sectionLabel}>Партнёры и заказчики</div>
-          <h2 className={styles.sectionTitle}>
-            Нам доверяют<br />
-            <span className={styles.sectionTitleAccent}>крупнейшие компании</span> страны
-          </h2>
-          <div className={styles.partnersGrid}>
-            {PARTNERS.map((pa) => (
-              <div key={pa.file} className={styles.partnerCard}>
-                <img src={`/partners/${pa.file}`} alt={pa.name} className={styles.partnerLogo} />
-                <div className={styles.partnerName}>{pa.name}</div>
-              </div>
+        <PageChrome pageNum={13} />
+        <div className={styles.pageInner}>
+          <div className={styles.eyebrow}>ОТЗЫВЫ КЛИЕНТОВ · {COUNT_TESTIMONIALS} ПИСЕМ</div>
+          <div className={styles.titleRow}>
+            <h2 className={styles.titleH1}>
+              <span className={styles.titleAccent}>Что говорят</span><br />
+              наши заказчики
+            </h2>
+            <div className={styles.bigBadge}>
+              <div className={styles.bigBadgeNum}>{COUNT_TESTIMONIALS}</div>
+              <div className={styles.bigBadgeLabel}>БЛАГОДАРСТВЕННЫХ<br />ПИСЕМ</div>
+            </div>
+          </div>
+
+          <div className={styles.leadBox}>
+            Большинство писем адресованы подрядной компании группы — West Capital Construction LLP — по
+            железнодорожным объектам, сданным в эксплуатацию. Тот же стандарт качества и сроков
+            обеспечиваем на автодорогах, трубопроводах, ЛЭП и промышленных объектах.
+          </div>
+
+          <div className={styles.testGrid}>
+            {testChunks[0].map((t, i) => (
+              <TestimonialCard key={`t0-${i}`} t={t} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* ═══ 17 · CONTACTS / BACK COVER ═══ */}
+      {/* ═══ 14 · TESTIMONIALS 2/2 ════════════════════════════════ */}
+      <section className={`${styles.page} ${styles.pageLight}`}>
+        <PageChrome pageNum={14} />
+        <div className={styles.pageInner}>
+          <div className={styles.testContd}>
+            <span className={styles.eyebrow}>ОТЗЫВЫ КЛИЕНТОВ · ПРОДОЛЖЕНИЕ</span>
+            <span className={styles.testContdRight}>СТР. 2 ИЗ 2</span>
+          </div>
+
+          <div className={`${styles.testGrid} ${styles.testGridContd}`}>
+            {testChunks[1].map((t, i) => (
+              <TestimonialCard key={`t1-${i}`} t={t} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ 15 · PARTNERS ════════════════════════════════════════ */}
+      <section className={`${styles.page} ${styles.pageLight}`}>
+        <PageChrome pageNum={15} />
+        <div className={styles.pageInner}>
+          <div className={styles.eyebrow}>ПАРТНЁРЫ И ЗАКАЗЧИКИ · ФРАГМЕНТ РЕЕСТРА</div>
+          <div className={styles.titleRow}>
+            <h2 className={styles.titleH1}>
+              <span className={styles.titleAccent}>Нам доверяют</span><br />
+              крупнейшие компании<br />страны
+            </h2>
+            <div className={styles.categoryChipColumn}>
+              {PARTNER_CATEGORIES.map((c) => (
+                <span key={c} className={`${styles.chip} ${styles.chipFilled}`}>{c}</span>
+              ))}
+            </div>
+          </div>
+
+          <div className={styles.leadBox}>
+            Среди заказчиков — государственные операторы (АО «НК «КТЖ», СПК), металлургические
+            и нефтегазовые холдинги, индустриальные зоны и частные предприятия Казахстана и России.
+          </div>
+
+          <div className={styles.partnersGrid}>
+            {PARTNERS.map((pa) => (
+              <div key={pa.file} className={styles.partnerCard}>
+                <div className={styles.partnerLogoWrap}>
+                  <img src={`/partners/${pa.file}`} alt={pa.name} className={styles.partnerLogo} />
+                </div>
+                <div className={styles.partnerName}>{pa.name}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className={styles.partnerFooter}>
+            <div className={styles.partnerFooterLeft}>
+              <span className={styles.partnerFooterNum}>94%</span>
+              <span className={styles.partnerFooterText}>ПОВТОРНЫХ КОНТРАКТОВ</span>
+            </div>
+            <div className={styles.partnerFooterRight}>
+              ПОЛНЫЙ РЕЕСТР ЗАКАЗЧИКОВ · arlan-gr.kz
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ 16 · CONTACTS ════════════════════════════════════════ */}
       <section className={`${styles.page} ${styles.pageDark}`}>
-        <Corners pageNum={p(17)} />
-        <div className={styles.contactsInner}>
-          <div className={`${styles.sectionLabel} ${styles.darkLabel}`}>Контакты</div>
-          <h2 className={styles.contactsTitle}>
-            Готовы<br />
-            <span className={styles.contactsTitleAccent}>к сотрудничеству</span>
-          </h2>
-          <div className={styles.contactsGrid}>
-            <div className={styles.contactItem}>
-              <div className={styles.contactIcon}><IconPhone /></div>
-              <div className={styles.contactBody}>
-                <div className={styles.contactLabel}>Телефон офиса</div>
-                <div className={styles.contactValue}>8 (7132) 538-288</div>
+        <PageChrome pageNum={16} dark />
+        <div className={styles.pageInner}>
+          <div className={`${styles.eyebrow} ${styles.eyebrowDark}`}>КОНТАКТЫ · ОФИС В АКТОБЕ</div>
+          <div className={styles.titleRow}>
+            <h2 className={`${styles.titleH1} ${styles.titleH1Dark}`}>
+              <span className={styles.titleAccentGold}>Готовы</span><br />к сотрудничеству
+            </h2>
+            <div className={`${styles.outlinedBadge} ${styles.outlinedBadgeGold}`}>
+              <div className={styles.outlinedBadgeTopSmall}>СРОК ОТВЕТА</div>
+              <div className={styles.outlinedBadgeNumBig}>1<span>день</span></div>
+              <div className={styles.outlinedBadgeBottom}>ПН — ПТ</div>
+            </div>
+          </div>
+
+          <div className={`${styles.leadBox} ${styles.leadBoxDark}`}>
+            Расскажите о проекте — изыскания, проектирование или СМР — и получите коммерческое предложение.
+            Сопровождение от первого звонка до сдачи объекта в эксплуатацию.
+          </div>
+
+          <div className={styles.contactRowGrid}>
+            <div className={styles.contactRow}>
+              <div className={styles.contactRowIcon}>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+              </div>
+              <div className={styles.contactRowBody}>
+                <div className={styles.contactRowLabel}>ТЕЛЕФОН ОФИСА</div>
+                <div className={styles.contactRowValue}>8 (7132) 538-288</div>
               </div>
             </div>
-            <div className={styles.contactItem}>
-              <div className={styles.contactIcon}><IconMail /></div>
-              <div className={styles.contactBody}>
-                <div className={styles.contactLabel}>Email</div>
-                <div className={styles.contactValue}>west_arlan-group@mail.ru</div>
+            <div className={styles.contactRow}>
+              <div className={styles.contactRowIcon}>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+              </div>
+              <div className={styles.contactRowBody}>
+                <div className={styles.contactRowLabel}>EMAIL</div>
+                <div className={styles.contactRowValue}>west_arlan-group@mail.ru</div>
               </div>
             </div>
-            <div className={styles.contactItem}>
-              <div className={styles.contactIcon}><IconPin /></div>
-              <div className={styles.contactBody}>
-                <div className={styles.contactLabel}>Адрес</div>
-                <div className={styles.contactValue}>Республика Казахстан, Актюбинская обл.,<br />г. Актобе, ул. Казангапа, дом 57В, офис 34</div>
+            <div className={styles.contactRow}>
+              <div className={styles.contactRowIcon}>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                </svg>
+              </div>
+              <div className={styles.contactRowBody}>
+                <div className={styles.contactRowLabel}>АДРЕС ОФИСА</div>
+                <div className={styles.contactRowValue}>г. Актобе, ул. Казангапа,<br />дом 57В, офис 34</div>
               </div>
             </div>
-            <div className={styles.contactItem}>
-              <div className={styles.contactIcon}><IconClock /></div>
-              <div className={styles.contactBody}>
-                <div className={styles.contactLabel}>Режим работы</div>
-                <div className={styles.contactValue}>Пн — Пт · 09:00 — 18:00 (GMT+5)</div>
+            <div className={styles.contactRow}>
+              <div className={styles.contactRowIcon}>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                </svg>
+              </div>
+              <div className={styles.contactRowBody}>
+                <div className={styles.contactRowLabel}>РЕЖИМ РАБОТЫ</div>
+                <div className={styles.contactRowValue}>Пн — Пт · 09:00 — 18:00 (GMT+5)</div>
               </div>
             </div>
           </div>
 
-          <div className={styles.contactsTeamLabel}>Прямые контакты руководства</div>
-          <div className={styles.contactsTeam}>
-            <div className={styles.teamItem}>
-              <div className={styles.teamRole}>Генеральный директор</div>
-              <div className={styles.teamName}>Аронов Аян Садиржанович</div>
-              <div className={styles.teamPhone}>+7 (777) 669-99-89</div>
-            </div>
-            <div className={styles.teamItem}>
-              <div className={styles.teamRole}>Директор проектной группы</div>
-              <div className={styles.teamName}>Валеев Алексей Сергеевич</div>
-              <div className={styles.teamPhone}>+7 (775) 645-90-51</div>
-            </div>
-            <div className={styles.teamItem}>
-              <div className={styles.teamRole}>Директор по производству</div>
-              <div className={styles.teamName}>Прусс Альберт Русланович</div>
-              <div className={styles.teamPhone}>+7 (747) 135-14-92</div>
-            </div>
-            <div className={styles.teamItem}>
-              <div className={styles.teamRole}>Главный инженер проекта</div>
-              <div className={styles.teamName}>Штурмилов Валентин Петрович</div>
-              <div className={styles.teamPhone}>+7 (771) 229-38-78</div>
-            </div>
-          </div>
+          <div className={styles.processLabel}><span /> ПРЯМЫЕ КОНТАКТЫ РУКОВОДСТВА</div>
 
-          <div className={styles.legal}>
-            <div><strong>ТОО «West Arlan Group»</strong><br />БИН 090940003245</div>
-            <div><strong>Лицензии</strong><br />СМР № 25008103 · ПД № 25031072 · ОС № 02962Р</div>
+          <div className={styles.teamGrid}>
+            {TEAM.map((t) => (
+              <div key={t.num} className={styles.teamCard}>
+                <div className={styles.teamNum}>{t.num}</div>
+                <div className={styles.teamRole}>{t.role}</div>
+                <div className={styles.teamName}>{t.name}</div>
+                <div className={styles.teamPhone}>{t.phone}</div>
+              </div>
+            ))}
           </div>
 
           <div className={styles.contactsFooter}>
-            <div>
-              <div className={styles.contactLabel}>Сайт</div>
-              <div className={styles.contactsWebsite}>arlan-gr.kz</div>
+            <div className={styles.contactsFooterCol}>
+              <div className={styles.contactsFooterLabel}>ЮРИДИЧЕСКОЕ ЛИЦО</div>
+              <div className={styles.contactsFooterValue}>ТОО «West Arlan Group» · БИН 090940003245</div>
             </div>
-            <WagTriangle className={styles.contactsTriangle} />
+            <div className={styles.contactsFooterCol}>
+              <div className={styles.contactsFooterLabel}>ЛИЦЕНЗИИ</div>
+              <div className={styles.contactsFooterValue}>СМР № 25008103 · ПД № 25031072 · ОС № 02962Р</div>
+            </div>
+          </div>
+
+          <div className={styles.contactsBottomBar}>
+            <div className={styles.contactsBottomLeft}>
+              <div className={styles.contactsFooterLabel}>САЙТ КОМПАНИИ</div>
+              <div className={styles.contactsSite}>arlan-gr.kz</div>
+            </div>
+            <WagMark className={styles.contactsMark} gradientId="wagContacts" />
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ 17 · CLOSING MANIFESTO ═══════════════════════════════ */}
+      <section className={`${styles.page} ${styles.pageDark} ${styles.closing}`}>
+        <PageChrome pageNum={17} dark />
+        <div className={styles.closingInner}>
+          <div className={styles.closingEyebrow}>МАНИФЕСТ · WAG</div>
+          <h2 className={styles.closingQuote}>
+            Каждый объект — обязательство на десятилетия.
+          </h2>
+          <p className={styles.closingByline}>
+            Мы не строим единоразово. Каждая лицензия I&nbsp;категории, каждая
+            повторная подпись заказчика, каждый километр пути — это часть длинной
+            истории, в которой мы отвечаем за результат и через год, и через двадцать.
+          </p>
+          <div className={styles.closingFooter}>
+            <div>
+              <div className={styles.closingFooterLabel}>Издание</div>
+              <div className={styles.closingFooterValue}>{ISSUE_STAMP}</div>
+            </div>
+            <WagMark className={styles.closingMark} gradientId="wagClosing" />
           </div>
         </div>
       </section>
     </main>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Sub-components
+   ───────────────────────────────────────────────────────────────── */
+
+function LicensePage({
+  pageNum,
+  number,
+  date,
+  title,
+  badge,
+  scan,
+  meta,
+}: {
+  pageNum: number;
+  number: string;
+  date: string;
+  title: string;
+  badge: string;
+  scan: string;
+  meta: { label: string; value: string }[];
+}) {
+  return (
+    <section className={`${styles.page} ${styles.pageLight}`}>
+      <PageChrome pageNum={pageNum} />
+      <div className={styles.pageInner}>
+        <div className={styles.licHeader}>
+          <div className={styles.licNumber}>▸ {number} · от {date}</div>
+          <span className={styles.licBadgeDark}>{badge}</span>
+        </div>
+        <h2 className={styles.licTitle}>{title}</h2>
+
+        <div className={styles.licScanFrame}>
+          <img src={scan} alt={title} className={styles.licScanImg} />
+        </div>
+
+        <div className={styles.licMetaGrid}>
+          {meta.map((m) => (
+            <div key={m.label} className={styles.licMetaItem}>
+              <div className={styles.licMetaLabel}>{m.label}</div>
+              <div className={styles.licMetaValue}>{m.value}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function TestimonialCard({ t }: { t: PrintTestimonial }) {
+  return (
+    <article className={styles.testCard}>
+      <div className={styles.testCardHeader}>
+        <span className={styles.testCardCategory}>{t.category}</span>
+        {t.date && <span className={styles.testCardDate}>{t.date}</span>}
+      </div>
+      <h3 className={styles.testCardClient}>{t.client}</h3>
+      <p className={styles.testCardQuote}>«{t.quote}»</p>
+      <div className={styles.testCardSig}>
+        <div className={styles.testCardSigName}>{t.signatory}</div>
+        <div className={styles.testCardSigRole}>{t.role}</div>
+      </div>
+    </article>
   );
 }

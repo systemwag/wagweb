@@ -256,11 +256,19 @@ export default function KazakhstanMap({ projects, stats }: Props) {
               <animate attributeName="strokeDashoffset" from="1" to="0" dur="4s" begin="0.3s"
                 fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.4 0 0.2 1" />
             </path>
-            <path d={KZ_MAIN} fill="none" stroke="rgba(212,168,67,0.3)" strokeWidth="10"
-              strokeLinejoin="round" strokeDasharray="80 400"
-              pathLength="1" strokeDashoffset="1">
-              <animate attributeName="strokeDashoffset" from="1" to="0" dur="4s" begin="0.3s"
-                fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.4 0 0.2 1" />
+            {/* Бегущие золотые «частицы» по контуру — бесконечный цикл (радар-эффект) */}
+            <path d={KZ_MAIN} fill="none" stroke="rgba(212,168,67,0.5)" strokeWidth="10"
+              strokeLinejoin="round" strokeDasharray="40 460"
+              pathLength="1">
+              <animate attributeName="strokeDashoffset" from="0" to="-1" dur="6s"
+                repeatCount="indefinite" />
+            </path>
+            {/* Тонкая встречная teal-метка — обратное направление, медленнее */}
+            <path d={KZ_MAIN} fill="none" stroke="rgba(0,196,167,0.45)" strokeWidth="4"
+              strokeLinejoin="round" strokeDasharray="20 480"
+              pathLength="1">
+              <animate attributeName="strokeDashoffset" from="0" to="1" dur="9s"
+                repeatCount="indefinite" />
             </path>
           </g>
 

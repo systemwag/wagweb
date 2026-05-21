@@ -22,13 +22,25 @@
   background-position: center;
   width: 120%;
   left: -10%;
-  animation: bgPan 18s ease-in-out infinite -5s;
+  animation: bgPan calc(var(--cycle) * 6) ease-in-out infinite calc(var(--cycle) * -1.5);
 }
 
 @keyframes bgPan {
   0%   { transform: translateX(0); }
   50%  { transform: translateX(-8%); }
   100% { transform: translateX(0); }
+}
+
+@supports (animation-timeline: view()) {
+  .section::after {
+    animation: bgParallaxAbout linear;
+    animation-timeline: view();
+    animation-range: entry 0% exit 100%;
+  }
+  @keyframes bgParallaxAbout {
+    from { transform: translate(0, -10%); }
+    to   { transform: translate(-3%, 10%); }
+  }
 }
 
 /* ── 2-col grid: header | manifesto, both vertically centered ── */

@@ -1,0 +1,114 @@
+.main {
+  min-height: 100vh;
+  padding: calc(var(--header-height) + var(--space-xl)) 0 var(--space-3xl);
+}
+
+.header {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 clamp(24px, 4vw, 64px);
+  margin-bottom: var(--space-2xl);
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-lg);
+  transition: color var(--t-base);
+}
+
+.back:hover { color: var(--gold); }
+
+.title {
+  margin: 0 0 var(--space-md);
+  font-size: clamp(2rem, 3.5vw, 3rem);
+}
+
+.lead {
+  max-width: 720px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  font-size: 1rem;
+}
+
+.lead code {
+  font-family: ui-monospace, 'JetBrains Mono', monospace;
+  font-size: 0.85em;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(212, 168, 67, 0.08);
+  color: var(--gold-light);
+}
+
+.row {
+  max-width: var(--max-width);
+  margin: 0 auto var(--space-3xl);
+  padding: 0 clamp(24px, 4vw, 64px);
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: var(--space-2xl);
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .row { grid-template-columns: 1fr; gap: var(--space-lg); }
+}
+
+.rowHeader {
+  position: sticky;
+  top: calc(var(--header-height) + 24px);
+}
+
+.rowTitle {
+  margin: 0 0 var(--space-md);
+}
+
+.rowDesc {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  font-size: 0.95rem;
+}
+
+.rowDesc code {
+  font-family: ui-monospace, 'JetBrains Mono', monospace;
+  font-size: 0.85em;
+  color: var(--gold-light);
+}
+
+.stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(
+      0deg, transparent, transparent 3px,
+      rgba(255,255,255,0.011) 3px, rgba(255,255,255,0.011) 4px
+    ),
+    radial-gradient(ellipse at center, rgba(13,18,34,0.6) 0%, var(--bg-primary) 70%);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(212, 168, 67, 0.05);
+}
+
+.footnote {
+  max-width: var(--max-width);
+  margin: var(--space-2xl) auto 0;
+  padding: var(--space-lg) clamp(24px, 4vw, 64px);
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  line-height: 1.7;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.footnote code {
+  font-family: ui-monospace, 'JetBrains Mono', monospace;
+  color: var(--gold-light);
+}

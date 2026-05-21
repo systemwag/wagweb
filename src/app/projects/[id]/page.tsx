@@ -49,8 +49,11 @@ export default async function ProjectPage({ params }: Props) {
           </div>
         </div>
 
-        {/* ── Project hero ── */}
-        <section className={styles.hero}>
+        {/* ── Project hero — morphs from the matching card on /projects ── */}
+        <section
+          className={styles.hero}
+          style={{ viewTransitionName: `project-${project.slug}` }}
+        >
           <div className="container">
             <span className={styles.category}>{project.category}</span>
             <h1 className={`heading-1 ${styles.title}`}>{project.title}</h1>

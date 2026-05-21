@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import styles from './Header.module.css';
@@ -20,6 +20,7 @@ export default function Header() {
   const [scrollPct, setScrollPct]   = useState(0);
   const [menuOpen, setMenuOpen]     = useState(false);
   const pathname = usePathname();
+  const logoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onScroll = () => {
@@ -36,6 +37,37 @@ export default function Header() {
     document.body.style.overflow = menuOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [menuOpen]);
+
+  // WAG triangle tilts toward the cursor (desktop, motion-friendly users only).
+  // Activates within ~280px radius for a soft "magnetic" feel.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!window.matchMedia('(pointer: fine)').matches) return;
+    const RADIUS = 280;
+    let raf = 0;
+    const onMove = (e: MouseEvent) => {
+      const el = logoRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const cy = r.top  + r.height / 2;
+      const dx = e.clientX - cx;
+      const dy = e.clientY - cy;
+      const dist = Math.hypot(dx, dy);
+      const k = Math.max(0, 1 - dist / RADIUS);
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        el.style.setProperty('--logo-ry', `${(dx / RADIUS) * 18 * k}deg`);
+        el.style.setProperty('--logo-rx', `${(-dy / RADIUS) * 12 * k}deg`);
+      });
+    };
+    window.addEventListener('mousemove', onMove);
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
 
   const isActive = (href: string) => {
     const base = href.split('#')[0];
@@ -56,7 +88,7 @@ export default function Header() {
 
         {/* ── Logo ──────────────────────────────────── */}
         <Link href="/" className={styles.logo} onClick={() => setMenuOpen(false)}>
-          <div className={styles.wagIconWrap}>
+          <div ref={logoRef} className={styles.wagIconWrap}>
             <svg
               className={styles.wagIcon}
               viewBox="0 0 719.49 635.66"

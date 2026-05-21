@@ -14,13 +14,26 @@
   background-position: center;
   width: 120%;
   left: -10%;
-  animation: bgPan 32s ease-in-out infinite -20s;
+  animation: bgPan calc(var(--cycle) * 10) ease-in-out infinite calc(var(--cycle) * -6);
 }
 
 @keyframes bgPan {
   0%   { transform: translateX(0); }
   50%  { transform: translateX(-8%); }
   100% { transform: translateX(0); }
+}
+
+/* Scroll-driven vertical drift — replaces the loop in supporting browsers */
+@supports (animation-timeline: view()) {
+  .section::after {
+    animation: bgParallax linear;
+    animation-timeline: view();
+    animation-range: entry 0% exit 100%;
+  }
+  @keyframes bgParallax {
+    from { transform: translate(0, -8%); }
+    to   { transform: translate(-4%, 8%); }
+  }
 }
 
 /* ── Header — 2-col: title left, side-stats right ─────── */
@@ -168,7 +181,6 @@
 }
 
 .dirCard {
-  --stripe-color: var(--gold);
   position: relative;
   padding: var(--space-xl) var(--space-xl) var(--space-xl);
   border-radius: var(--radius-xl);
@@ -182,18 +194,53 @@
   overflow: hidden;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  transition: var(--t-base);
+  /* 3D-tilt от курсора (см. Tilt.tsx). Переменные обновляются на mousemove. */
+  transform: perspective(1000px)
+    rotateX(var(--tilt-x, 0deg))
+    rotateY(var(--tilt-y, 0deg))
+    scale3d(var(--tilt-scale, 1), var(--tilt-scale, 1), 1);
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition:
+    transform var(--t-base),
+    box-shadow var(--t-base),
+    border-color var(--t-base);
+}
+
+/* Вращающийся «луч» по периметру карточки —
+ * conic-gradient + mask:xor для изоляции рамки.
+ * @property делает custom property анимируемой. */
+@property --card-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes cardBeam {
+  to { --card-angle: 360deg; }
 }
 
 .dirCard::before {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--stripe-color) 0%, transparent 65%);
-  animation: svcStripePulse 3s ease-in-out infinite;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--card-angle),
+    transparent 58%,
+    rgba(0, 196, 167, 0.55) 76%,
+    rgba(212, 168, 67, 0.95) 90%,
+    transparent 100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  animation: cardBeam 5.5s linear infinite;
   pointer-events: none;
-  z-index: 1;
+  z-index: 2;
 }
 
 .dirCard::after {
@@ -208,14 +255,15 @@
 }
 
 .dirCard:hover {
-  transform: translateY(-6px);
+  /* transform управляется через 3D-tilt; здесь только shadow + border */
   box-shadow: var(--shadow-card-hover);
 }
 
-.dirCard_gold { --stripe-color: var(--gold); border-color: rgba(212,168,67,0.2); }
-.dirCard_teal { --stripe-color: var(--teal); border-color: rgba(0,196,167,0.15); }
+.dirCard_gold { border-color: rgba(212,168,67,0.2); }
+.dirCard_teal { border-color: rgba(0,196,167,0.15); }
 
-.dirCard_teal::before { animation-delay: -1s; }
+/* Teal-вариант — луч начинает оборот со смещением (визуальная асимметрия) */
+.dirCard_teal::before { animation-delay: -2.75s; }
 .dirCard_teal::after  { border-color: transparent transparent rgba(0,196,167,0.18) transparent; }
 
 .dirCard_gold:hover { border-color: rgba(212,168,67,0.38); box-shadow: var(--shadow-card-hover), var(--shadow-gold); }

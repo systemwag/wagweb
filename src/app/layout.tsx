@@ -1,10 +1,37 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
+import { Space_Grotesk, Onest, Outfit } from 'next/font/google';
 import './globals.css';
 import GlobalAnim from '@/components/ui/GlobalAnim';
-import GlobalVerticalBg from '@/components/ui/GlobalVerticalBgMulti';
+// Экспериментальный двух-рельсовый вариант (single/dual режим).
+// Чтобы откатить — поменяй обратно на '@/components/ui/GlobalVerticalBgMulti'.
+import GlobalVerticalBg from '@/components/ui/GlobalVerticalBgDual';
 import HeaderWrapper from '@/components/Header/HeaderWrapper';
 import SmoothScroll from '@/components/ui/SmoothScroll';
+import Tilt from '@/components/ui/Tilt';
+
+/* Space Grotesk and Outfit have no Cyrillic subset; Russian/Kazakh glyphs
+   automatically fall back to Onest in the CSS font-family chain. */
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+  variable: '--font-heading',
+});
+
+const onest = Onest({
+  subsets: ['latin', 'cyrillic'],
+  weight: ['300', '400', '500', '600', '700'],
+  display: 'swap',
+  variable: '--font-body',
+});
+
+const outfit = Outfit({
+  subsets: ['latin'],
+  weight: ['700', '800', '900'],
+  display: 'swap',
+  variable: '--font-display',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://west-arlan.kz'),
@@ -75,8 +102,9 @@ const jsonLd = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const fontVars = `${spaceGrotesk.variable} ${onest.variable} ${outfit.variable}`;
   return (
-    <html lang="ru" data-scroll-behavior="smooth">
+    <html lang="ru" data-scroll-behavior="smooth" className={fontVars}>
       <head>
         <Script
           id="json-ld-org"
@@ -90,6 +118,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <HeaderWrapper />
         {children}
         <GlobalAnim />
+        <Tilt />
       </body>
     </html>
   );

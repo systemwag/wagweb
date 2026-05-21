@@ -1,12 +1,10 @@
 'use client';
 
-import Image from 'next/image';
 import styles from './Hero.module.css';
 import HeroAnimatedBackground from './HeroAnimatedBackground';
+import InteractiveCanvasBg from './InteractiveCanvasBg';
 import HeroEngineeringAnim from './HeroEngineeringAnim';
 
-// Trust strip uses PNGs only (transparent backgrounds).
-// JPG partners (Тенгизшевройл, Khorgos) live in the lower Partners marquee.
 const trustLogos = [
   { file: '9.png',                          name: 'Қазақстан Темір Жолы' },
   { file: '1.png',                          name: 'Русская Медная Компания' },
@@ -16,10 +14,10 @@ const trustLogos = [
 ];
 
 export default function Hero() {
-
   return (
-    <section className={styles.hero}>
+    <section className={`${styles.hero} filmgrain`}>
       <HeroAnimatedBackground />
+      <InteractiveCanvasBg />
       <HeroEngineeringAnim />
       {/* Radial glow orbs */}
       <div className={styles.orb1} aria-hidden="true" />
@@ -35,7 +33,9 @@ export default function Hero() {
         </div>
 
         <h1 className={`heading-1 ${styles.title}`}>
-          Проектируем. Строим. Обслуживаем.
+          Проектируем.<br />
+          Строим.<br />
+          Обслуживаем.
         </h1>
 
         <div className={styles.subtitle}>
@@ -70,7 +70,7 @@ export default function Hero() {
               <path d="M3.5 9h11M10 4.5l4.5 4.5-4.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </a>
-          <a href="/portfolio/print" target="_blank" rel="noopener" className={`btn btn-outline ${styles.downloadBtn}`}>
+          <a href="/portfolio.pdf" download="WAG-portfolio.pdf" className={`btn btn-outline ${styles.downloadBtn}`}>
             <svg className={styles.downloadIcon} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
               <g className={styles.downloadArrow}>
@@ -95,15 +95,16 @@ export default function Hero() {
           <span className={styles.trustStripLabel}>Нам доверяют</span>
           <div className={styles.trustStripDivider} aria-hidden="true" />
           <div className={styles.trustStripLogos}>
-            {trustLogos.map((c) => (
+            {trustLogos.map((c, i) => (
               <div key={c.file} className={styles.trustLogoBox} title={c.name}>
-                <Image
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src={`/partners/${encodeURIComponent(c.file)}`}
                   alt={c.name}
-                  width={160}
-                  height={52}
                   className={styles.trustLogo}
-                  unoptimized
+                  loading={i < 3 ? 'eager' : 'lazy'}
+                  decoding="async"
+                  fetchPriority={i < 3 ? 'high' : 'auto'}
                 />
               </div>
             ))}
@@ -112,8 +113,8 @@ export default function Hero() {
 
       </div>
 
-      {/* Big WAG triangle — decorative center */}
-      <div className={styles.heroLogo} aria-hidden="true">
+      {/* Big WAG triangle — 3D centerpiece with continuous rotation */}
+      <div className={`${styles.heroLogo} no-select`} aria-hidden="true">
         <svg
           viewBox="0 0 719.49 635.66"
           xmlns="http://www.w3.org/2000/svg"

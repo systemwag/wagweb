@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import styles from './HeroEngineeringAnim.module.css';
 
 function buildSinePath(cycles: number, period: number, amplitude: number, cy: number): string {
@@ -14,25 +15,25 @@ function buildSinePath(cycles: number, period: number, amplitude: number, cy: nu
 }
 
 // ── Compass — выровнен ровно над двумя панелями графиков ─────────────────────
-// Центр совпадает с центром панелей по X (PANEL_X + PANEL_W/2 = 880 + 98 = 978)
-const CX = 978;
-const CY = 290;
-const R  = 95;
+// Компас и панели уменьшены ~35% (без сдвига вправо — лого теперь меньше).
+// CX = PANEL_X + PANEL_W/2 = 880 + 70 = 950
+const CX = 950;
+const CY = 280;
+const R  = 62;
 const SWEEP_AX = (CX + R * Math.sin(-Math.PI / 3)).toFixed(1);
 const SWEEP_AY = (CY - R * Math.cos(-Math.PI / 3)).toFixed(1);
 
-// ── Panel layout — two panels stacked vertically (-30% in size) ────────────────
-// Both panels: width=196, height=80, same x, gap=10px
+// ── Panel layout — two panels stacked vertically (compact версия) ─────────────
 const PANEL_X  = 880;
-const PANEL_W  = 196;
-const PANEL_H  = 80;
+const PANEL_W  = 140;
+const PANEL_H  = 56;
 const PANEL_A_Y = 470;
-const PANEL_B_Y = PANEL_A_Y + PANEL_H + 10; // 560
-const PANEL_A_CY = PANEL_A_Y + PANEL_H / 2; // 510
-const PANEL_B_BASELINE = PANEL_B_Y + PANEL_H - 10; // 630
+const PANEL_B_Y = PANEL_A_Y + PANEL_H + 8;  // 534
+const PANEL_A_CY = PANEL_A_Y + PANEL_H / 2; // 498
+const PANEL_B_BASELINE = PANEL_B_Y + PANEL_H - 8; // 582
 
 // ── Panel A: animated sine wave (cy = center of panel A) ─────────────────────
-const SINE_PATH_PANEL = buildSinePath(12, 100, 13, PANEL_A_CY);
+const SINE_PATH_PANEL = buildSinePath(14, 70, 9, PANEL_A_CY);
 
 // ── Panel B: terrain elevation — computed relative to PANEL_X ─────────────────
 // Original x: 80–1380 (range 1300), original y: 753–815 (baseline 815, range 62)
@@ -44,14 +45,14 @@ const terrainX0 = PANEL_X + 5;
 const terrainW  = PANEL_W - 10;
 const MINI_TERRAIN_PTS = SRC_TERRAIN.map(([x, y]): [number, number] => [
   terrainX0 + (x - 80) * terrainW / 1300,
-  PANEL_B_BASELINE - (815 - y) * 35 / 62,
+  PANEL_B_BASELINE - (815 - y) * 24 / 62,
 ]);
 const MINI_TERRAIN_PATH = MINI_TERRAIN_PTS
   .map(([x, y], i) => `${i === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`)
   .join(' ');
 const lastX = MINI_TERRAIN_PTS[MINI_TERRAIN_PTS.length - 1][0].toFixed(1);
 const MINI_TERRAIN_PATH_CLOSED = MINI_TERRAIN_PATH + ` L ${lastX} ${PANEL_B_BASELINE} L ${terrainX0} ${PANEL_B_BASELINE} Z`;
-const MINI_TERRAIN_LEN = 420;
+const MINI_TERRAIN_LEN = 300;
 
 // ── GPS survey nodes — confined to right visual zone (X > 800) ────────────────
 // Left half is reserved for text content (eyebrow, H1, paragraph, CTAs, trust strip)
@@ -67,9 +68,55 @@ export default function HeroEngineeringAnim() {
   const clipW      = PANEL_W - 10;
   const clipInnerH = PANEL_H - 28; // leave room for top/bottom labels
 
+  const svgRef = useRef<SVGSVGElement>(null);
+  const needleGroupRef = useRef<SVGGElement>(null);
+  const azimuthTextRef = useRef<SVGTextElement>(null);
+
+  // Стрелка теодолита поворачивается за курсором (cursor-driven azimuth tracker)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!window.matchMedia('(pointer: fine)').matches) return;
+
+    const svg = svgRef.current;
+    const needle = needleGroupRef.current;
+    if (!svg || !needle) return;
+
+    let raf = 0;
+    const handleMove = (e: MouseEvent) => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        // Переводим экранные координаты курсора в SVG-координаты
+        const ctm = svg.getScreenCTM();
+        if (!ctm) return;
+        const pt = svg.createSVGPoint();
+        pt.x = e.clientX;
+        pt.y = e.clientY;
+        const svgPt = pt.matrixTransform(ctm.inverse());
+
+        const dx = svgPt.x - CX;
+        const dy = svgPt.y - CY;
+        // atan2 даёт угол от востока, добавляем 90° чтобы получить азимут (0° = север)
+        const angleDeg = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+        const normalized = ((angleDeg % 360) + 360) % 360;
+        needle.setAttribute('transform', `rotate(${normalized.toFixed(1)} ${CX} ${CY})`);
+        if (azimuthTextRef.current) {
+          azimuthTextRef.current.textContent = `α = ${normalized.toFixed(1)}°`;
+        }
+      });
+    };
+
+    window.addEventListener('mousemove', handleMove, { passive: true });
+    return () => {
+      window.removeEventListener('mousemove', handleMove);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
   return (
     <div className={styles.wrapper} aria-hidden="true">
       <svg
+        ref={svgRef}
         viewBox="0 0 1440 900"
         fill="none"
         preserveAspectRatio="xMidYMid slice"
@@ -98,10 +145,10 @@ export default function HeroEngineeringAnim() {
             dur="40s" repeatCount="indefinite" />
         </circle>
 
-        <circle cx={CX} cy={CY} r={90}
+        <circle cx={CX} cy={CY} r={59}
           stroke="var(--gold)" strokeWidth="0.5" strokeOpacity="0.18" />
 
-        <circle cx={CX} cy={CY} r={64}
+        <circle cx={CX} cy={CY} r={42}
           stroke="var(--teal)" strokeWidth="1" strokeDasharray="4 4" strokeOpacity="0.28" />
 
         {Array.from({ length: 24 }).map((_, i) => {
@@ -109,7 +156,7 @@ export default function HeroEngineeringAnim() {
           const angleRad = (angleDeg * Math.PI) / 180;
           const isCardinal = angleDeg % 90 === 0;
           const is30      = angleDeg % 30 === 0;
-          const rInner    = isCardinal ? 97 : is30 ? 106 : 110;
+          const rInner    = isCardinal ? 64 : is30 ? 69 : 72;
           const x1 = CX + R * Math.sin(angleRad);
           const y1 = CY - R * Math.cos(angleRad);
           const x2 = CX + rInner * Math.sin(angleRad);
@@ -126,7 +173,7 @@ export default function HeroEngineeringAnim() {
 
         {([0, 90, 180, 270] as const).map(deg => {
           const rad    = (deg * Math.PI) / 180;
-          const rLabel = 132;
+          const rLabel = 86;
           return (
             <text key={deg}
               x={(CX + rLabel * Math.sin(rad)).toFixed(1)}
@@ -138,10 +185,8 @@ export default function HeroEngineeringAnim() {
           );
         })}
 
-        <g>
-          <animateTransform attributeName="transform" type="rotate"
-            from={`0 ${CX} ${CY}`} to={`360 ${CX} ${CY}`}
-            dur="20s" repeatCount="indefinite" />
+        {/* Стрелка-визир теодолита — поворачивается за курсором (см. useEffect) */}
+        <g ref={needleGroupRef}>
           <path
             d={`M ${CX} ${CY} L ${SWEEP_AX} ${SWEEP_AY} A ${R} ${R} 0 0 1 ${CX} ${CY - R} Z`}
             fill="rgba(0,196,167,0.06)"
@@ -153,27 +198,26 @@ export default function HeroEngineeringAnim() {
             stroke="var(--gold)" strokeWidth="1" strokeOpacity="0.5" />
         </g>
 
-        <line x1={CX - 16} y1={CY} x2={CX + 16} y2={CY}
+        <line x1={CX - 11} y1={CY} x2={CX + 11} y2={CY}
           stroke="var(--gold)" strokeWidth="0.8" strokeOpacity="0.65" />
-        <line x1={CX} y1={CY - 16} x2={CX} y2={CY + 16}
+        <line x1={CX} y1={CY - 11} x2={CX} y2={CY + 11}
           stroke="var(--gold)" strokeWidth="0.8" strokeOpacity="0.65" />
-        <circle cx={CX} cy={CY} r={4}
+        <circle cx={CX} cy={CY} r={3}
           fill="var(--bg-primary)" stroke="var(--gold)" strokeWidth="1.5" />
-        <circle cx={CX} cy={CY} r={1.5} fill="var(--gold)" />
+        <circle cx={CX} cy={CY} r={1.2} fill="var(--gold)" />
 
-        <line x1={CX} y1={CY - R - 10} x2={CX} y2={CY - R + 6}
+        <line x1={CX} y1={CY - R - 7} x2={CX} y2={CY - R + 4}
           stroke="var(--teal)" strokeWidth="2" strokeOpacity="0.7" />
 
-        <text x={CX - R - 18} y={CY - 8}
-          fill="var(--teal)" fontSize="10" fontFamily="monospace"
-          textAnchor="end" opacity="0.55" letterSpacing="2px">
+        <text x={CX - R - 55} y={CY - 6}
+          fill="var(--teal)" fontSize="8" fontFamily="monospace"
+          textAnchor="end" opacity="0.55" letterSpacing="1.5px">
           ТЕОДОЛИТ T-02
         </text>
-        <text x={CX - R - 18} y={CY + 10}
-          fill="var(--gold)" fontSize="11" fontFamily="monospace"
-          textAnchor="end" letterSpacing="1px">
-          α = 247.3°
-          <animate attributeName="opacity" values="0.85;0.3;0.85" dur="2.8s" repeatCount="indefinite" />
+        <text ref={azimuthTextRef} x={CX - R - 55} y={CY + 8}
+          fill="var(--gold)" fontSize="9" fontFamily="monospace"
+          textAnchor="end" letterSpacing="0.5px">
+          α = 0.0°
         </text>
 
         {/* ══════════════════════════════════════════════════════════

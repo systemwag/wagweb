@@ -104,10 +104,14 @@
     inset 0 1px 0 rgba(255,255,255,0.9);
 }
 
-/* The logo image itself */
+/* The logo image itself.
+ * width/height: auto — сохраняем intrinsic aspect ratio (требование Next/Image).
+ * max-width/height: 100% — изображение не выходит за пределы карточки. */
 .logoImg {
-  width: 100%;
-  height: 100%;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
   filter: contrast(1.08) saturate(0.95);
   transition: filter 0.2s ease;

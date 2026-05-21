@@ -38,6 +38,17 @@ const NAV = [
       </svg>
     ),
   },
+  {
+    href: '/admin/portfolio',
+    label: 'Портфолио PDF',
+    icon: (
+      <svg viewBox="0 0 16 16" fill="none" className={styles.navIcon}>
+        <path d="M3 1.5h7l3 3V14a.5.5 0 01-.5.5h-9A.5.5 0 013 14V2a.5.5 0 010-.5z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+        <path d="M10 1.5V4.5h3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+        <path d="M5.5 8.5h5M5.5 11h3.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+      </svg>
+    ),
+  },
 ];
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {

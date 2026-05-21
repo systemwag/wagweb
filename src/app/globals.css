@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Onest:wght@300;400;500;600;700&family=Outfit:wght@700;800;900&display=swap');
+/* Fonts are loaded via next/font in layout.tsx (provides --font-heading,
+   --font-body, --font-display on <html>). Fallback chains live below. */
 
 /* ============================================
    DESIGN TOKENS
@@ -49,9 +50,10 @@
   --text-secondary:     #8892A4;
   --text-muted:         #4A5568;
 
-  /* Typography */
-  --font-heading: 'Space Grotesk', sans-serif;
-  --font-body:    'Onest', sans-serif;
+  /* Typography fallbacks — next/font overrides these via html className */
+  --font-heading: 'Space Grotesk', system-ui, sans-serif;
+  --font-body:    'Onest', system-ui, sans-serif;
+  --font-display: 'Outfit', 'Space Grotesk', system-ui, sans-serif;
 
   /* Spacing */
   --space-xs:  4px;
@@ -69,11 +71,20 @@
   --radius-xl:   24px;
   --radius-full: 999px;
 
-  /* Easing */
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --t-fast:   0.15s cubic-bezier(0.16, 1, 0.3, 1);
-  --t-base:   0.30s cubic-bezier(0.16, 1, 0.3, 1);
-  --t-slow:   0.60s cubic-bezier(0.16, 1, 0.3, 1);
+  /* ── Motion rhythm ────────────────────────────────────────────
+     A single beat is the smallest meaningful tick. All durations
+     should be multiples of --beat so the UI breathes in one tempo. */
+  --beat:       200ms;
+  --phrase:     calc(var(--beat) * 4);   /* 800ms  — full reveal */
+  --cycle:      calc(var(--beat) * 16);  /* 3.2s   — long loops  */
+  --cycle-slow: calc(var(--beat) * 48);  /* 9.6s   — ambient     */
+
+  /* Easings */
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: linear(0, 0.45, 0.78 22%, 0.99, 1.13, 1.16, 1.05, 0.99, 1);
+  --t-fast: 0.15s var(--ease-out);
+  --t-base: 0.30s var(--ease-out);
+  --t-slow: 0.60s var(--ease-out);
 
   /* Layout */
   --max-width:     1280px;
@@ -94,6 +105,9 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  /* Firefox scrollbar parity with the webkit styling further down */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212, 168, 67, 0.4) var(--bg-primary);
 }
 
 body {
@@ -103,10 +117,12 @@ body {
   line-height: 1.6;
   overflow-x: hidden;
   min-height: 100vh;
-  -webkit-user-select: none;
-  user-select: none;
-  cursor: default;
+  /* Text selection is allowed by default. Decorative SVG/canvas opt out
+     individually via .no-select utility below. */
 }
+
+/* Use on decorative SVG/canvas backgrounds where copy/paste makes no sense */
+.no-select { -webkit-user-select: none; user-select: none; }
 
 /* Subtle radial ambient glow */
 body::before {
@@ -129,21 +145,25 @@ ul, ol { list-style: none; }
    TYPOGRAPHY
    ============================================ */
 .heading-1 {
-  font-family: var(--font-heading);
+  font-family: var(--font-display);
   font-size: clamp(1.6rem, 7.5vw, 5.5rem);
   font-weight: 800;
+  font-variation-settings: 'wght' 850;
   line-height: 1.05;
   letter-spacing: -0.03em;
   color: var(--text-primary);
+  text-wrap: balance;
 }
 
 .heading-2 {
-  font-family: var(--font-heading);
+  font-family: var(--font-display);
   font-size: clamp(2rem, 4vw, 3.5rem);
   font-weight: 800;
+  font-variation-settings: 'wght' 820;
   line-height: 1.1;
   letter-spacing: -0.025em;
   color: var(--text-primary);
+  text-wrap: balance;
 }
 
 .heading-3 {
@@ -153,7 +173,10 @@ ul, ol { list-style: none; }
   line-height: 1.2;
   letter-spacing: -0.015em;
   color: var(--text-primary);
+  text-wrap: balance;
 }
+
+p { text-wrap: pretty; }
 
 /* Gold gradient text */
 .text-gradient-gold {
@@ -175,14 +198,9 @@ ul, ol { list-style: none; }
    ============================================ */
 .container {
   width: 100%;
-  max-width: 76vw;
+  max-width: var(--max-width);
+  margin: 0 auto;
   padding: 0 clamp(24px, 4vw, 64px);
-}
-
-@media (max-width: 900px) {
-  .container {
-    max-width: 100%;
-  }
 }
 
 .section { padding: var(--space-3xl) 0; }
@@ -247,8 +265,6 @@ ul, ol { list-style: none; }
   isolation: isolate;
 }
 
-/* Rotating conic border — only the 2px ring outside the button is visible    */
-/* (mask excludes the interior so the button's own background stays intact)   */
 .btn::before {
   content: '';
   position: absolute;
@@ -267,11 +283,10 @@ ul, ol { list-style: none; }
     linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  animation: btnBorderSpin 3s linear infinite;
+  animation: btnBorderSpin var(--cycle) linear infinite;
   pointer-events: none;
 }
 
-/* Outline button — use animated border instead of static one */
 .btn-outline {
   border-color: transparent;
 }
@@ -298,21 +313,26 @@ ul, ol { list-style: none; }
   position: relative;
   overflow: hidden;
   transition: var(--t-base);
+  /* 3D-tilt-on-hover (см. Tilt.tsx) — переменные обновляются на mousemove. */
+  transform: perspective(1000px)
+             rotateX(var(--tilt-x, 0deg))
+             rotateY(var(--tilt-y, 0deg))
+             scale3d(var(--tilt-scale, 1), var(--tilt-scale, 1), 1);
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 
-/* Animated gold top stripe */
 .glass-card::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 2px;
   background: linear-gradient(90deg, var(--gold) 0%, transparent 65%);
-  animation: glassStripePulse 3s ease-in-out infinite;
+  animation: glassStripePulse var(--cycle) ease-in-out infinite;
   pointer-events: none;
   z-index: 1;
 }
 
-/* Accent corner triangle */
 .glass-card::after {
   content: '';
   position: absolute;
@@ -327,7 +347,6 @@ ul, ol { list-style: none; }
 .glass-card:hover {
   border-color: rgba(212, 168, 67, 0.25);
   box-shadow: var(--shadow-card-hover);
-  transform: translateY(-4px);
 }
 
 /* ============================================
@@ -379,19 +398,19 @@ ul, ol { list-style: none; }
 .mask-reveal-wrap {
   overflow: hidden;
   display: block;
-  line-height: normal; /* To prevent clipping descenders */
-  padding-bottom: 5px; /* Safely keep g, y, j visible */
+  line-height: normal;
+  padding-bottom: 5px;
 }
 
 .mask-reveal {
   display: block;
   transform: translateY(110%);
-  animation: maskUp 1s var(--ease-out) forwards;
+  animation: maskUp var(--phrase) var(--ease-out) forwards;
   will-change: transform;
 }
 
-.mask-delay-1 { animation-delay: 0.15s; }
-.mask-delay-2 { animation-delay: 0.3s; }
+.mask-delay-1 { animation-delay: calc(var(--beat) * 0.75); }
+.mask-delay-2 { animation-delay: calc(var(--beat) * 1.5); }
 
 @keyframes maskUp {
   0% { transform: translateY(110%); }
@@ -399,12 +418,15 @@ ul, ol { list-style: none; }
 }
 
 /* ============================================
-   SCROLL REVEAL (Wow Effect)
+   SCROLL REVEAL
    ============================================ */
 .anim-el {
   opacity: 0;
   transform: translateY(40px);
-  transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+  transition:
+    opacity   var(--phrase) var(--ease-out),
+    transform var(--phrase) var(--ease-out);
+  transition-delay: var(--anim-delay, 0s);
   will-change: opacity, transform;
 }
 
@@ -413,12 +435,22 @@ ul, ol { list-style: none; }
   transform: translateY(0);
 }
 
-/* Авто-каскад для элементов в гридах или списках (карточки одни за другими) */
-.anim-el:nth-child(2) { transition-delay: 0.1s; }
-.anim-el:nth-child(3) { transition-delay: 0.2s; }
-.anim-el:nth-child(4) { transition-delay: 0.3s; }
-.anim-el:nth-child(5) { transition-delay: 0.4s; }
-.anim-el:nth-child(6) { transition-delay: 0.5s; }
+/* Scroll-driven version — replaces IntersectionObserver in supporting browsers.
+   Falls back gracefully: Firefox and older browsers keep the IO/class flow. */
+@supports (animation-timeline: view()) {
+  .anim-el {
+    /* Disable JS-driven transitions, let the timeline drive it */
+    transition: none;
+    animation: scrollReveal linear both;
+    animation-timeline: view();
+    animation-range: entry 5% cover 30%;
+    animation-delay: var(--anim-delay, 0s);
+  }
+  @keyframes scrollReveal {
+    from { opacity: 0; transform: translateY(40px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+}
 
 /* ============================================
    HOVER PARALLAX (Image Scale)
@@ -433,30 +465,24 @@ ul, ol { list-style: none; }
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.8s var(--ease-out);
+  transition: transform var(--cycle-slow) var(--ease-out);
   will-change: transform;
 }
 
 .hover-parallax-wrap:hover .hover-parallax-img {
-  transform: scale(1.08); /* Awwwards premium slow float zoom */
+  transform: scale(1.08);
 }
 
 /* ============================================
    PAGE TRANSITION
    ============================================ */
 @keyframes pageFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(15px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .page-transition-wrapper {
-  animation: pageFadeIn 0.7s var(--ease-out) forwards;
+  animation: pageFadeIn var(--phrase) var(--ease-out) forwards;
   will-change: opacity, transform;
 }
 
@@ -465,7 +491,37 @@ ul, ol { list-style: none; }
 }
 
 /* ============================================
-   FOCUS VISIBLE (keyboard nav accessibility)
+   VIEW TRANSITIONS (cross-document, native)
+   ============================================ */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--phrase);
+  animation-timing-function: var(--ease-out);
+}
+
+::view-transition-old(root) { animation-name: vt-fade-out; }
+::view-transition-new(root) { animation-name: vt-fade-in; }
+
+@keyframes vt-fade-out {
+  to { opacity: 0; transform: translateY(-8px); }
+}
+@keyframes vt-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+}
+
+/* Project / design card morph between list and detail page */
+::view-transition-old(project-card),
+::view-transition-new(project-card) {
+  animation-duration: calc(var(--phrase) * 1.4);
+  animation-timing-function: var(--ease-spring);
+}
+
+/* ============================================
+   FOCUS VISIBLE
    ============================================ */
 :focus-visible {
   outline: 2px solid var(--gold);
@@ -473,11 +529,9 @@ ul, ol { list-style: none; }
   border-radius: var(--radius-sm);
 }
 
-/* Suppress focus ring for mouse users */
 :focus:not(:focus-visible) {
   outline: none;
 }
-
 
 /* ============================================
    SCROLLBAR
@@ -493,10 +547,74 @@ ul, ol { list-style: none; }
 }
 
 /* ============================================
+   FILMGRAIN (cinematic overlay, opt-in via .filmgrain)
+   ============================================ */
+.filmgrain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.7 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background-size: 160px 160px;
+  animation: grainShift 1.6s steps(6) infinite;
+}
+
+@keyframes grainShift {
+  0%   { transform: translate(0, 0); }
+  20%  { transform: translate(-2%, 3%); }
+  40%  { transform: translate(3%, -2%); }
+  60%  { transform: translate(-3%, -3%); }
+  80%  { transform: translate(2%, 2%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* ============================================
+   BLUEPRINT GRID (opt-in via .blueprint-bg)
+   ============================================ */
+.blueprint-bg {
+  position: relative;
+}
+.blueprint-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.4;
+  background-image:
+    linear-gradient(rgba(212, 168, 67, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212, 168, 67, 0.04) 1px, transparent 1px),
+    linear-gradient(rgba(212, 168, 67, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212, 168, 67, 0.025) 1px, transparent 1px);
+  background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 35%, transparent 80%);
+          mask-image: radial-gradient(ellipse at center, #000 35%, transparent 80%);
+}
+
+/* ============================================
    RESPONSIVE
    ============================================ */
 @media (max-width: 768px) {
   .section { padding: var(--space-2xl) 0; }
   .container { padding: 0 var(--space-md); }
   :root { --header-height: 70px; }
+}
+
+/* ============================================
+   REDUCED MOTION (a11y)
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* Anim-el should still end visible, just without motion */
+  .anim-el { opacity: 1; transform: none; }
+  /* Filmgrain and ambient loops off */
+  .filmgrain::after { animation: none; }
 }

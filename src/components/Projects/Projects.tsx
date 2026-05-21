@@ -36,6 +36,8 @@ export default async function Projects() {
                 className={`${styles.card} ${styles[`card_${color}`]}`}
                 style={{
                   animationDelay: `${idx * 0.08}s`,
+                  /* Morphs into the matching element on /projects/[slug] */
+                  viewTransitionName: `project-${project.slug}`,
                   ...((project.image_url || (project.images && project.images.length > 0)) ? {
                     backgroundImage: `linear-gradient(to bottom, rgba(4,6,12,0.55) 0%, rgba(4,6,12,0.82) 55%, rgba(4,6,12,0.97) 100%), url(${project.image_url ?? project.images![0]})`,
                     backgroundSize: 'cover',

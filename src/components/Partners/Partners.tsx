@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import styles from './Partners.module.css';
 
@@ -126,13 +125,13 @@ export default function Partners() {
           {track.map((p, i) => (
             <div key={`${p.file}-${i}`} className={styles.logoCard}>
               <div className={styles.logoBox}>
-                <Image
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src={src(p.file)}
                   alt={p.name}
-                  width={192}
-                  height={80}
                   className={styles.logoImg}
-                  unoptimized
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
               <span className={styles.logoName}>
