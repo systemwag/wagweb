@@ -23,7 +23,10 @@ const COOKIE_NAME    = 'wag_admin_session';
 const SESSION_TOKEN  = 'wag-admin-authenticated';
 const OUT_PATH       = join(process.cwd(), 'public', 'portfolio.pdf');
 const LOCK_PATH      = join(process.cwd(), '.next', 'cache', 'portfolio-build.lock');
-const SCRIPT_PATH    = join(process.cwd(), 'scripts', 'build-pdf.mjs');
+// Computed via env var fallback so Turbopack can't statically resolve this
+// as a module import (it would treat spawn([literal]) as a module ref and
+// fail the build in production).
+const SCRIPT_PATH    = join(process.cwd(), process.env.WAG_PDF_BUILD_SCRIPT ?? 'scripts/build-pdf.mjs');
 
 function authorized(request: NextRequest): boolean {
   return request.cookies.get(COOKIE_NAME)?.value === SESSION_TOKEN;
