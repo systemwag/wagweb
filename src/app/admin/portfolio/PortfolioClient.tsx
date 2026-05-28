@@ -23,26 +23,8 @@ const fmtTime  = (iso: string | null) => iso ? new Date(iso).toLocaleString('ru-
 
 export function PortfolioClient({ stats, premium }: { stats: Stats; premium: Premium }) {
   const [tab, setTab]               = useState<'premium' | 'quick'>('premium');
-  const [building, setBuilding]     = useState(false);
   const [version, setVersion]       = useState(0);   // bumps to bust iframe cache
-  const [meta, setMeta]             = useState(premium);
-  const [error, setError]           = useState<string | null>(null);
-
-  const rebuild = async () => {
-    setBuilding(true);
-    setError(null);
-    try {
-      const res = await fetch('/api/admin/rebuild-portfolio', { method: 'POST' });
-      const body = await res.json();
-      if (!body.ok) throw new Error(body.error ?? 'rebuild failed');
-      setMeta({ exists: true, sizeBytes: body.sizeBytes, mtime: body.mtime });
-      setVersion((v) => v + 1);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setBuilding(false);
-    }
-  };
+  const meta                        = premium;
 
   const refreshQuick = () => setVersion((v) => v + 1);
 
@@ -99,25 +81,18 @@ export function PortfolioClient({ stats, premium }: { stats: Stats; premium: Pre
                   <Row label="Собран" value={fmtTime(meta.mtime)} />
                 </div>
                 <div className={styles.cardActions}>
-                  <button
-                    onClick={rebuild}
-                    className={styles.btnPrimary}
-                    disabled={building}
-                  >
-                    {building ? 'Сборка идёт…' : 'Пересобрать'}
-                  </button>
                   <a
                     href={premiumDownload}
                     download="WAG-portfolio.pdf"
-                    className={styles.btnSecondary}
+                    className={styles.btnPrimary}
                   >
                     Скачать
                   </a>
                 </div>
-                {error && <div className={styles.cardError}>{error}</div>}
                 <div className={styles.cardNote}>
                   Источник: <code>/portfolio/print</code>. Полный CSS, градиенты, тени.
-                  Сборка ~10-15 сек, размер 3-4 МБ. Эту версию читает Hero-кнопка сайта.
+                  Пересобрать локально: <code>node scripts/build-pdf.mjs</code> и закоммитить
+                  обновлённый <code>public/portfolio.pdf</code>. Эту версию читает Hero-кнопка сайта.
                 </div>
               </section>
             </>
