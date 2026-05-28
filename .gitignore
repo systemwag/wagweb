@@ -51,3 +51,16 @@ _design_extract.txt
 
 # Original unoptimized images (WebP versions are used in production)
 public/_originals/
+
+# Iteration artifacts from PDF brochure work (per-page renders, full builds
+# named v01_*, v02_* etc.) — local only, canonical file is public/portfolio.pdf
+/versions/
+
+# Local design / source assets that don't belong in production
+/_reference/
+/indesign/
+/tilda-sorted/
+/tilda-images/
+
+# Claude Code local state (slash command defs, settings, scheduled-task lock)
+/.claude/

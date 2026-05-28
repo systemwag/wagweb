@@ -26,8 +26,9 @@ const COLOR_DARK  = '#1A1A1A';
 const COLOR_LIGHT = '#F8EFE0';
 
 const targets = [
-  { url: 'https://arlan-gr.kz/projects', file: 'qr-projects.png' },
-  { url: 'https://arlan-gr.kz/design',   file: 'qr-design.png'   },
+  { url: 'https://arlan-gr.kz/projects',    file: 'qr-projects.png'    },
+  { url: 'https://arlan-gr.kz/maintenance', file: 'qr-maintenance.png' },
+  { url: 'https://arlan-gr.kz/design',      file: 'qr-design.png'      },
 ];
 
 async function main() {
