@@ -3,9 +3,6 @@ import Script from 'next/script';
 import { Space_Grotesk, Onest, Outfit } from 'next/font/google';
 import './globals.css';
 import GlobalAnim from '@/components/ui/GlobalAnim';
-// Экспериментальный двух-рельсовый вариант (single/dual режим).
-// Чтобы откатить — поменяй обратно на '@/components/ui/GlobalVerticalBgMulti'.
-import GlobalVerticalBg from '@/components/ui/GlobalVerticalBgDual';
 import HeaderWrapper from '@/components/Header/HeaderWrapper';
 import SmoothScroll from '@/components/ui/SmoothScroll';
 import Tilt from '@/components/ui/Tilt';
@@ -114,7 +111,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       </head>
       <body>
         <SmoothScroll />
-        <GlobalVerticalBg />
         <HeaderWrapper />
         {children}
         <GlobalAnim />

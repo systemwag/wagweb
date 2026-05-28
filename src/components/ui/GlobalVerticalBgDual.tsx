@@ -262,6 +262,15 @@ export default function GlobalVerticalBgDual() {
   const internalEndX = 800;
   const mainPath = `M ${internalEndX} -100 V ${PATH_HEIGHT}`;
 
+  // /about hero is a clean cycling-text stage — hide the blueprint until
+  // the hero scrolls past. Mask is in SVG-local coords and the SVG translates
+  // with scroll, so the hidden zone stays pinned to the top of the document.
+  const isAbout = pathname.startsWith('/about');
+  const HERO_HIDE_PX = 1080;
+  const heroMask = isAbout
+    ? `linear-gradient(to bottom, transparent 0, transparent ${HERO_HIDE_PX - 80}px, black ${HERO_HIDE_PX + 40}px)`
+    : undefined;
+
   const rightX = railXScreen(w, 'right');
   const leftX  = railXScreen(w, 'left');
   const rightTranslateX = rightX - internalEndX * RAIL_SCALE;
@@ -283,7 +292,14 @@ export default function GlobalVerticalBgDual() {
         ref={svgWrapperRef}
         width="100%"
         height={PATH_HEIGHT}
-        style={{ position: 'absolute', top: 0, left: 0, willChange: 'transform' }}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          willChange: 'transform',
+          WebkitMaskImage: heroMask,
+          maskImage: heroMask,
+        }}
       >
         <Rail
           idPrefix="r"

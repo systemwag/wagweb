@@ -29,6 +29,17 @@ const NAV = [
     ),
   },
   {
+    href: '/admin/maintenance',
+    label: 'Обслуживание',
+    icon: (
+      <svg viewBox="0 0 16 16" fill="none" className={styles.navIcon}>
+        <path d="M10.5 2.5l3 3-7 7-3-3 7-7z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+        <path d="M2 14l1.5-1.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+        <circle cx="13" cy="3" r="1.2" stroke="currentColor" strokeWidth="1.2"/>
+      </svg>
+    ),
+  },
+  {
     href: '/admin/map',
     label: 'Калибровка карты',
     icon: (

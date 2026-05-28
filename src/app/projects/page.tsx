@@ -145,6 +145,7 @@ export default async function ProjectsPage({
                     <Link
                       key={project.id}
                       href={`/projects/${project.slug}`}
+                      data-tilt
                       className={`${styles.card} ${index === 0 ? styles.cardFeatured : ''}`}
                       style={{
                         '--card-accent': accentColor,

@@ -6,13 +6,14 @@ import Link from 'next/link';
 import styles from './Header.module.css';
 
 const navLinks = [
-  { label: 'О компании',     href: '/about',        num: '01' },
-  { label: 'Услуги',         href: '/services',     num: '02' },
-  { label: 'Проектирование', href: '/design',       num: '03' },
-  { label: 'Строительство',  href: '/projects',     num: '04' },
-  { label: 'Лицензии',       href: '/licenses',     num: '05' },
-  { label: 'Отзывы',         href: '/testimonials', num: '06' },
-  { label: 'Контакты',       href: '/contacts',     num: '07' },
+  { label: 'О компании',     href: '/about'        },
+  { label: 'Услуги',         href: '/services'     },
+  { label: 'Проектирование', href: '/design'       },
+  { label: 'Строительство',  href: '/projects'     },
+  { label: 'Обслуживание',   href: '/maintenance'  },
+  { label: 'Лицензии',       href: '/licenses'     },
+  { label: 'Отзывы',         href: '/testimonials' },
+  { label: 'Контакты',       href: '/contacts'     },
 ];
 
 export default function Header() {
@@ -75,6 +76,7 @@ export default function Header() {
   };
 
   return (
+    <>
     <header className={`${styles.header} ${scrolled ? styles.scrolled : ''}`}>
 
       {/* Scroll progress bar */}
@@ -112,7 +114,6 @@ export default function Header() {
               className={`${styles.navLink} ${isActive(link.href) ? styles.active : ''}`}
               onClick={() => setMenuOpen(false)}
             >
-              <span className={styles.navNum}>{link.num}</span>
               <span className={styles.navLabel}>{link.label}</span>
               <span className={styles.navBar} aria-hidden="true" />
             </Link>
@@ -140,15 +141,17 @@ export default function Header() {
           <span /><span /><span />
         </button>
       </div>
+    </header>
 
-      {/* ── Mobile drawer ──────────────────────────────── */}
-      <>
-        <div
-          className={`${styles.drawerOverlay} ${menuOpen ? styles.drawerOverlayOpen : ''}`}
-          onClick={() => setMenuOpen(false)}
-          aria-hidden="true"
-        />
-        <aside className={`${styles.drawer} ${menuOpen ? styles.drawerOpen : ''}`} aria-label="Мобильная навигация">
+    {/* ── Mobile drawer (outside <header>: .header has transform, which
+           would make these `position: fixed` children anchor to the pill
+           instead of the viewport, and its overflow:hidden would clip them) ── */}
+      <div
+        className={`${styles.drawerOverlay} ${menuOpen ? styles.drawerOverlayOpen : ''}`}
+        onClick={() => setMenuOpen(false)}
+        aria-hidden="true"
+      />
+      <aside className={`${styles.drawer} ${menuOpen ? styles.drawerOpen : ''}`} aria-label="Мобильная навигация">
           <div className={styles.drawerHead}>
             <span className={styles.drawerTitle}>Навигация</span>
             <button className={styles.drawerClose} onClick={() => setMenuOpen(false)} aria-label="Закрыть">
@@ -167,7 +170,6 @@ export default function Header() {
                 onClick={() => setMenuOpen(false)}
                 style={{ animationDelay: `${i * 0.06}s` }}
               >
-                <span className={styles.drawerNum}>{link.num}</span>
                 <span className={styles.drawerLabel}>{link.label}</span>
                 <svg className={styles.drawerArrow} viewBox="0 0 16 16" fill="none" width="14" height="14">
                   <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -183,7 +185,6 @@ export default function Header() {
             <span className={styles.drawerCopy}>West Arlan Group · Казахстан</span>
           </div>
         </aside>
-      </>
-    </header>
+    </>
   );
 }

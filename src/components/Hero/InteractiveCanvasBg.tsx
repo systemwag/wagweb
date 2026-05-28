@@ -18,7 +18,11 @@
 
 import React, { useRef, useEffect } from 'react';
 
-export default function InteractiveCanvasBg() {
+export default function InteractiveCanvasBg({
+  particleCount = 60,
+}: {
+  particleCount?: number;
+} = {}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: -1000, y: -1000, active: false });
 
@@ -35,7 +39,6 @@ export default function InteractiveCanvasBg() {
     let width = 0;
     let height = 0;
     let particles: Particle[] = [];
-    const particleCount = 60;
     const connectionDist = 140;
     const mouseRadius = 160;
 
@@ -108,8 +111,9 @@ export default function InteractiveCanvasBg() {
       ctx.scale(dpr, dpr);
 
       particles = [];
-      const rows = 6;
-      const cols = 10;
+      // Derive grid from particleCount, biased toward wider strips (hero is wide).
+      const cols = Math.max(6, Math.round(Math.sqrt(particleCount * 1.6)));
+      const rows = Math.ceil(particleCount / cols);
       for (let i = 0; i < particleCount; i++) {
         const rIndex = Math.floor(i / cols);
         const cIndex = i % cols;
@@ -226,7 +230,7 @@ export default function InteractiveCanvasBg() {
       parent?.removeEventListener('mousemove', handleMouseMove);
       parent?.removeEventListener('mouseleave', handleMouseLeave);
     };
-  }, []);
+  }, [particleCount]);
 
   return (
     <canvas

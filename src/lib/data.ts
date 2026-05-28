@@ -6,12 +6,18 @@
 
 import { unstable_cache } from 'next/cache';
 import { createServerClient } from './supabase-server';
-import type { Project, Service, DesignProject } from './types';
+import type { Project, Service, DesignProject, MaintenanceProject, WorkType } from './types';
 import { SQL_PROJECTS } from './sql-projects';
+import { SQL_MAINTENANCE } from './sql-maintenance';
 
 // ── Seed data (used as fallback / initial content) ─────────────
-// Real 48 projects sourced from supabase_migration_projects.sql
-const SEED_PROJECTS: Project[] = SQL_PROJECTS;
+// Real projects sourced from supabase_migration_projects.sql.
+// After the maintenance migration, 21 projects move to maintenance_projects
+// (ids 3,4,5,6,9,10,11,13,14,17,19,20,24,25,27,28,29,30,33,34,36 in the original
+// projects table). Until sql-projects.ts is regenerated post-migration, we
+// filter them out from the dev seed so the СМР page stays consistent.
+const MAINTENANCE_LEGACY_IDS = new Set([3, 4, 5, 6, 9, 10, 11, 13, 14, 17, 19, 20, 24, 25, 27, 28, 29, 30, 33, 34, 36]);
+const SEED_PROJECTS: Project[] = SQL_PROJECTS.filter(p => !MAINTENANCE_LEGACY_IDS.has(p.id));
 
 // Legacy stub (kept disabled, was 10 placeholder projects)
 const _LEGACY_SEED_PROJECTS: Project[] = [
@@ -302,6 +308,75 @@ export async function getProjectSlugs(): Promise<string[]> {
     return (data ?? []).map((r: { slug: string }) => r.slug);
   } catch {
     return SEED_PROJECTS.map((p) => p.slug);
+  }
+}
+
+// ── Maintenance Projects ───────────────────────────────────────
+
+const SEED_MAINTENANCE: MaintenanceProject[] = SQL_MAINTENANCE;
+
+const _getAllMaintenanceProjects = unstable_cache(
+  async (): Promise<MaintenanceProject[]> => {
+    if (!isSupabaseConfigured()) return SEED_MAINTENANCE;
+
+    try {
+      const supabase = createServerClient();
+      const { data, error } = await supabase
+        .from('maintenance_projects')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return (data as MaintenanceProject[]) ?? [];
+    } catch {
+      return SEED_MAINTENANCE;
+    }
+  },
+  ['maintenance-all'],
+  { revalidate: 60 }
+);
+
+export async function getMaintenanceProjects(
+  workType?: WorkType
+): Promise<MaintenanceProject[]> {
+  const all = await _getAllMaintenanceProjects();
+  return workType ? all.filter((p) => p.work_type === workType) : all;
+}
+
+export async function getMaintenanceProjectBySlug(
+  slug: string
+): Promise<MaintenanceProject | null> {
+  if (!isSupabaseConfigured()) {
+    return SEED_MAINTENANCE.find((p) => p.slug === slug) ?? null;
+  }
+
+  try {
+    const supabase = createServerClient();
+    const { data, error } = await supabase
+      .from('maintenance_projects')
+      .select('*')
+      .eq('slug', slug)
+      .single();
+
+    if (error) throw error;
+    return data as MaintenanceProject;
+  } catch {
+    return SEED_MAINTENANCE.find((p) => p.slug === slug) ?? null;
+  }
+}
+
+export async function getMaintenanceSlugs(): Promise<string[]> {
+  if (!isSupabaseConfigured()) {
+    return SEED_MAINTENANCE.map((p) => p.slug);
+  }
+
+  try {
+    const supabase = createServerClient();
+    const { data, error } = await supabase.from('maintenance_projects').select('slug');
+    if (error) throw error;
+    return (data ?? []).map((r: { slug: string }) => r.slug);
+  } catch {
+    return SEED_MAINTENANCE.map((p) => p.slug);
   }
 }
 

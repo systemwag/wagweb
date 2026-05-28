@@ -3,24 +3,13 @@
 import { useEffect, useRef, useState } from 'react';
 import styles from './ServicesHeroAnim.module.css';
 
-const WAG_PATH =
-  'M613.8,437.27c-62.3-103.58-132.83-240.95-201.5-355.51L367.22,0h-16.51' +
-  'c-5.26,19.77-26.22,45.86-33.35,61.03-12.21,25.99-1.91,26.43,18.72,64.07' +
-  'l206.32,360.76,30.4,59.77-106.51.95c-9.82-18.63-13.04-29.8-27.52-49.02' +
-  'l-155.86-274.97c-10.29-18.78-10.26-28.99-25.78-40.4-19.27,12.94-14.27,' +
-  '13.44-25.87,34.79-8.93,16.45-15.27,26.27-23.65,42.54l-143.13,248.42' +
-  'c-77.1,142.82-94.44,127.54-.02,127,86.18-.49,172.52-.02,258.72-.02' +
-  '-2-24.09-9.24-28.93-19.64-46.55-33.15-56.19-11.28-41.79-156.49-41.79' +
-  ',3.5-13.11,16.34-33.82,24.36-47.34l91.22-145.89c4.18,18,25.71,50.9,' +
-  '36.21,68.58,8.16,13.76,11.9,23.61,19.08,36.06,7.25,12.59,11.91,19.4,' +
-  '19.91,35.23l78.91,141.69h302.74c-2.68-32.14-85.4-163.93-105.69-197.65Z';
-
-const LOGO_W = 719.49;
-const LOGO_H = 635.66;
+const CYCLE_MS = 3200;     // visible duration per motif
+const FADE_MS  = 600;      // crossfade duration
 
 export default function ServicesHeroAnim() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const [[w, h], setDims] = useState([1200, 520]);
+  const [idx, setIdx] = useState(0);
 
   useEffect(() => {
     const el = wrapRef.current;
@@ -36,61 +25,61 @@ export default function ServicesHeroAnim() {
     return () => ro.disconnect();
   }, []);
 
+  /* Cycle through 0 → 1 → 2 → 3 → 0 … */
+  useEffect(() => {
+    const id = setInterval(() => setIdx(i => (i + 1) % 4), CYCLE_MS);
+    return () => clearInterval(id);
+  }, []);
+
   /* ── Geometry ──────────────────────────────────
-     Layout (left → right, each tile the same visual size):
-       [LOGO] [DESIGN+CALC] [CRANE] [EXCAVATOR] [TRUCK]
-     The logo sits closest to the heading; motifs follow. */
+     Layout: WAG logo on the left, ONE motif slot in the centre-right.
+     All 4 motifs render into the same slot — only the active one is
+     visible (others fade to opacity 0). */
   const PAD     = 32;
   const zoneL   = w * 0.40;
   const zoneR   = w - PAD;
   const zoneW   = zoneR - zoneL;
 
-  /* Five equal tiles fit in the zone. Row width = 5 tiles + 4 gaps =
-     5 * 2.4u + 4 * 0.6u = 14.4u, so the divisor is sized to keep a
-     small breathing margin on either side. */
-  const unit    = Math.min(zoneW / 14.8, h * 0.27, 95);
+  /* Single large motif slot — the cycling animation is the hero's main visual. */
+  const unit    = Math.min(zoneW / 5.0, h * 0.36, 145);
   const tile    = unit * 2.4;
-  const gap     = unit * 0.6;
-  const rowW    = 5 * tile + 4 * gap;
-  const rowL    = zoneL + Math.max(unit * 0.1, (zoneW - rowW) / 2);
 
-  const slot1Cx = rowL + tile * 0.5;                 // LOGO
-  const slot2Cx = rowL + tile * 1.5 + gap * 1;       // DESIGN + CALC
-  const slot3Cx = rowL + tile * 2.5 + gap * 2;       // CRANE
-  const slot4Cx = rowL + tile * 3.5 + gap * 3;       // EXCAVATOR
-  const slot5Cx = rowL + tile * 4.5 + gap * 4;       // TRUCK (deliveries)
+  /* WAG triangle removed — motif anchors centre-right of the hero. */
+  const slot2Cx = zoneL + zoneW * 0.42;   // SINGLE MOTIF SLOT (all 4 share)
+  /* Aliases — geometry below was written assuming distinct positions;
+     unifying lets us keep that code with one shared centre. */
+  const slot3Cx = slot2Cx;
+  const slot4Cx = slot2Cx;
+  const slot5Cx = slot2Cx;
 
   const motifCy = h * 0.50;
   /* Shared baseline for all labels — placed below the deepest motif extent
      (crane base sits at motifCy + tile*0.45). */
   const labelY  = motifCy + tile * 0.55 + 18;
 
-  /* Logo — first tile, sized to match the others.
-     `ring` keeps the original 1:2.8 ratio with the logo width so the
-     decorative dashed circles sit naturally around it. */
-  const logoCx  = slot1Cx;
-  const logoCy  = motifCy;
-  const logoW   = tile;
-  const logoH   = (logoW / LOGO_W) * LOGO_H;
-  const ring    = logoW * 0.36;
+  /* Helper — generate the opacity style for one of the 4 cycling motifs. */
+  const motifStyle = (n: number): React.CSSProperties => ({
+    opacity: idx === n ? 1 : 0,
+    transition: `opacity ${FADE_MS}ms ease`,
+  });
+
+  /* Decorative ring radius — kept for the dashed circles around the
+     motif slot (the WAG logo itself is no longer rendered). */
+  const ring    = tile * 0.22;
 
   const GOLD = 'var(--gold)';
   const TEAL = 'var(--teal)';
   const BLUE = 'var(--blue)';
 
-  /* 02 — combined Design + Calculations: compass on the left, chart on the right.
-     The combined pair fills one tile. */
+  /* 01 — Blueprint sheet: architectural drawing on a paper sheet with
+     dimensions, title block and crosshair — reads as «engineering design».
+     Centred at slot2Cx / motifCy. */
   const design = {
-    compassCx: slot2Cx - tile * 0.27,
-    compassCy: motifCy,
-    compassR:  unit * 0.65,
-    chartX:    slot2Cx + tile * 0.02,
-    chartY:    motifCy - unit * 0.50,
-    chartW:    tile * 0.45,
-    chartH:    unit * 0.95,
-    color:     GOLD,
-    tag:       '01',
-    label:     'ПРОЕКТИРОВАНИЕ',
+    cx:    slot2Cx,
+    cy:    motifCy,
+    color: GOLD,
+    tag:   '01',
+    label: 'ПРОЕКТИРОВАНИЕ',
   };
 
   /* Crane sized to its tile */
@@ -164,132 +153,327 @@ export default function ServicesHeroAnim() {
           </g>
         ))}
 
-        {/* ── Halo behind logo ── */}
-        <circle cx={logoCx} cy={logoCy} r={tile * 0.55} fill="url(#shaGlow)" />
+        {/* ── Halo behind motif slot ── */}
+        <circle cx={slot2Cx} cy={motifCy} r={tile * 0.55} fill="url(#shaGlow)" />
 
-        {/* ── Outer ring (CW) ── */}
-        <circle cx={logoCx} cy={logoCy} r={ring * 1.32}
+        {/* ── Outer ring (CW) — around motif slot ── */}
+        <circle cx={slot2Cx} cy={motifCy} r={ring * 1.32}
           stroke={TEAL} strokeWidth="0.6" strokeDasharray="9 7"
           strokeOpacity="0.28" fill="none">
           <animateTransform attributeName="transform" type="rotate"
-            from={`0 ${logoCx} ${logoCy}`} to={`360 ${logoCx} ${logoCy}`}
+            from={`0 ${slot2Cx} ${motifCy}`} to={`360 ${slot2Cx} ${motifCy}`}
             dur="42s" repeatCount="indefinite" />
         </circle>
 
-        {/* ── Inner ring (CCW) ── */}
-        <circle cx={logoCx} cy={logoCy} r={ring * 0.98}
+        {/* ── Inner ring (CCW) — around motif slot ── */}
+        <circle cx={slot2Cx} cy={motifCy} r={ring * 0.98}
           stroke={GOLD} strokeWidth="0.45" strokeDasharray="3 8"
           strokeOpacity="0.22" fill="none">
           <animateTransform attributeName="transform" type="rotate"
-            from={`0 ${logoCx} ${logoCy}`} to={`-360 ${logoCx} ${logoCy}`}
+            from={`0 ${slot2Cx} ${motifCy}`} to={`-360 ${slot2Cx} ${motifCy}`}
             dur="26s" repeatCount="indefinite" />
         </circle>
 
         {/* ─────────────────────────────────────────
-            01 — COMPASS + CHART (Design & Calculations)
+            01 — BLUEPRINT SHEET (Design / Проектирование)
+            Architectural drawing on a paper sheet — building elevation,
+            dimension lines, title block. Reads instantly as «engineering design».
         ───────────────────────────────────────── */}
         {(() => {
           const d = design;
-          const points = Array.from({ length: 9 }).map((_, i) => {
-            const t = i / 8;
-            const px = d.chartX + t * d.chartW;
-            const py = d.chartY + d.chartH - Math.pow(t, 0.7) * d.chartH;
-            return `${px.toFixed(1)},${py.toFixed(1)}`;
-          }).join(' ');
 
-          /* Combined motif bbox for tag/label placement */
-          const bboxLeft  = d.compassCx - d.compassR;
-          const bboxRight = d.chartX + d.chartW;
-          const bboxTop   = Math.min(d.compassCy - d.compassR, d.chartY);
+          /* Sheet outline — slightly wider than tall, centred on (cx, cy) */
+          const sheetW  = tile * 1.05;
+          const sheetH  = tile * 0.82;
+          const sheetX  = d.cx - sheetW / 2;
+          const sheetY  = d.cy - sheetH / 2;
+          const sheetR  = d.cx + sheetW / 2;
+          const sheetB  = d.cy + sheetH / 2;
+
+          /* Inner drawing area (with margins for dimensions + title block) */
+          const padL = sheetW * 0.18;
+          const padR = sheetW * 0.10;
+          const padT = sheetH * 0.16;
+          const padB = sheetH * 0.20;
+          const innerL = sheetX + padL;
+          const innerR = sheetR - padR;
+          const innerT = sheetY + padT;
+          const innerB = sheetB - padB;
+          const innerW = innerR - innerL;
+          const innerH = innerB - innerT;
+
+          /* Bridge elevation geometry — beam bridge with 2 mid-piers (3 spans).
+             Spans full inner width; abutments at sides, piers at 1/3 and 2/3. */
+          const bldgW   = innerW * 0.86;
+          const bldgL   = innerL + (innerW - bldgW) / 2;
+          const bldgR   = bldgL + bldgW;
+          const bldgB   = innerB;                          // ground line
+          const deckT   = innerB - innerH * 0.42;          // top of deck
+          const deckH   = innerH * 0.08;                   // deck slab thickness
+          const beamH   = innerH * 0.10;                   // truss beam height
+          const beamT   = deckT + deckH;
+          const beamB   = beamT + beamH;
+          const pier1X  = bldgL + bldgW * 0.33;
+          const pier2X  = bldgL + bldgW * 0.67;
+          const pierW   = bldgW * 0.04;
+          /* Rail gauge on top of deck */
+          const railTop = deckT - 2;
+
+          /* Title block (bottom-right corner of sheet) */
+          const tbW = sheetW * 0.26;
+          const tbH = sheetH * 0.16;
+          const tbX = sheetR - tbW - sheetW * 0.03;
+          const tbY = sheetB - tbH - sheetH * 0.04;
 
           return (
-            <g key="design">
-              {/* Compass */}
-              <g transform={`translate(${d.compassCx}, ${d.compassCy})`}>
-                <circle r={d.compassR} fill="none" stroke={d.color} strokeOpacity="0.55" strokeWidth="0.9" />
-                <circle r={d.compassR * 0.74} fill="none" stroke={d.color} strokeOpacity="0.18"
-                  strokeWidth="0.5" strokeDasharray="2 4" />
-                {Array.from({ length: 12 }).map((_, i) => {
-                  const deg = i * 30;
-                  const rad = (deg * Math.PI) / 180;
-                  const r2 = d.compassR;
-                  const r1 = d.compassR - (i % 3 === 0 ? 6 : 3);
-                  return <line key={i}
-                    x1={Math.cos(rad) * r1} y1={Math.sin(rad) * r1}
-                    x2={Math.cos(rad) * r2} y2={Math.sin(rad) * r2}
-                    stroke={d.color}
-                    strokeOpacity={i % 3 === 0 ? '0.7' : '0.35'}
-                    strokeWidth={i % 3 === 0 ? '0.9' : '0.5'} />;
-                })}
-                <g className={styles.needleSpin}>
-                  <line x1={0} y1={-d.compassR * 0.85} x2={0} y2={d.compassR * 0.6}
+            <g key="design" style={motifStyle(0)}>
+              {/* Sheet (drawing paper) */}
+              <rect x={sheetX} y={sheetY} width={sheetW} height={sheetH}
+                fill="rgba(212,168,67,0.04)"
+                stroke={d.color} strokeWidth="1.2" strokeOpacity="0.75" />
+              {/* Corner brackets on sheet */}
+              {([
+                [sheetX,      sheetY,      1,  1],
+                [sheetR,      sheetY,     -1,  1],
+                [sheetX,      sheetB,      1, -1],
+                [sheetR,      sheetB,     -1, -1],
+              ] as [number, number, number, number][]).map(([bx, by, sx, sy], i) => (
+                <g key={`crn${i}`}>
+                  <line x1={bx} y1={by} x2={bx + sx * 12} y2={by}
                     stroke={d.color} strokeWidth="1.4" strokeOpacity="0.9" />
-                  <polygon
-                    points={`0,${-d.compassR * 0.85} -3,${-d.compassR * 0.65} 3,${-d.compassR * 0.65}`}
-                    fill={d.color} opacity="0.95" />
-                  <circle r="2.4" fill="var(--bg-primary, #04060c)" stroke={d.color} strokeWidth="1" />
+                  <line x1={bx} y1={by} x2={bx} y2={by + sy * 12}
+                    stroke={d.color} strokeWidth="1.4" strokeOpacity="0.9" />
                 </g>
-                <text y={-d.compassR - 5} fill={d.color} fontSize="6.5" fontFamily="monospace"
-                  textAnchor="middle" opacity="0.5">N</text>
-              </g>
-
-              {/* Chart axes */}
-              <line x1={d.chartX} y1={d.chartY + d.chartH} x2={d.chartX + d.chartW} y2={d.chartY + d.chartH}
-                stroke={d.color} strokeWidth="0.6" strokeOpacity="0.45" />
-              <line x1={d.chartX} y1={d.chartY} x2={d.chartX} y2={d.chartY + d.chartH}
-                stroke={d.color} strokeWidth="0.6" strokeOpacity="0.45" />
-              {/* Chart grid */}
-              {[0.25, 0.5, 0.75].map(t => (
-                <line key={t} x1={d.chartX} y1={d.chartY + d.chartH - t * d.chartH}
-                  x2={d.chartX + d.chartW} y2={d.chartY + d.chartH - t * d.chartH}
-                  stroke={d.color} strokeWidth="0.3" strokeOpacity="0.16" strokeDasharray="2 3" />
               ))}
-              {/* Filled area under curve */}
-              <polygon
-                points={`${d.chartX},${d.chartY + d.chartH} ${points} ${d.chartX + d.chartW},${d.chartY + d.chartH}`}
-                fill={d.color} opacity="0.10" />
-              {/* Curve */}
-              <polyline points={points} fill="none" stroke={d.color}
-                strokeWidth="1.5" strokeOpacity="0.9"
-                strokeDasharray="240" strokeDashoffset="240">
-                <animate attributeName="stroke-dashoffset"
-                  values="240;0" dur="2.6s" begin="0.3s" fill="freeze"
-                  calcMode="spline" keySplines="0.4 0 0.2 1" />
-              </polyline>
-              {/* Data points */}
-              {[2, 4, 6, 8].map(i => {
-                const t = i / 8;
-                const px = d.chartX + t * d.chartW;
-                const py = d.chartY + d.chartH - Math.pow(t, 0.7) * d.chartH;
-                return (
-                  <circle key={i} cx={px} cy={py} r="1.9"
-                    fill="var(--bg-primary, #04060c)" stroke={d.color} strokeWidth="1">
-                    <animate attributeName="opacity"
-                      values="0;1" dur="0.4s" begin={`${0.3 + i * 0.25}s`} fill="freeze" />
-                  </circle>
-                );
+
+              {/* Inner grid (subtle blueprint feel) */}
+              {Array.from({ length: 5 }).map((_, i) => {
+                const x = innerL + ((i + 1) * innerW) / 6;
+                return <line key={`vg${i}`} x1={x} y1={innerT} x2={x} y2={innerB}
+                  stroke={d.color} strokeWidth="0.3" strokeOpacity="0.10"
+                  strokeDasharray="2 3" />;
               })}
-              {/* Numerics under chart */}
-              <g fontFamily="monospace" fill={d.color}>
-                {[
-                  { dy: 9,  txt: 'L = 420.6 км',  delay: '0s'   },
-                  { dy: 18, txt: 'σ = 165 МПа',   delay: '1.2s' },
-                ].map((row, i) => (
-                  <text key={i} x={d.chartX} y={d.chartY + d.chartH + row.dy}
-                    fontSize="6.5" letterSpacing="0.4px"
-                    style={{ animation: `calcTick 3.6s ${row.delay} ease-in-out infinite` } as React.CSSProperties}>
-                    {row.txt}
-                  </text>
-                ))}
+              {Array.from({ length: 4 }).map((_, i) => {
+                const y = innerT + ((i + 1) * innerH) / 5;
+                return <line key={`hg${i}`} x1={innerL} y1={y} x2={innerR} y2={y}
+                  stroke={d.color} strokeWidth="0.3" strokeOpacity="0.10"
+                  strokeDasharray="2 3" />;
+              })}
+
+              {/* Ground line under the building */}
+              <line x1={innerL} y1={innerB} x2={innerR} y2={innerB}
+                stroke={d.color} strokeWidth="0.9" strokeOpacity="0.75" />
+              {/* Hatching under ground line */}
+              {Array.from({ length: 8 }).map((_, i) => {
+                const x0 = innerL + (i * innerW) / 7;
+                return <line key={`gh${i}`}
+                  x1={x0 + 6} y1={innerB} x2={x0} y2={innerB + 5}
+                  stroke={d.color} strokeWidth="0.5" strokeOpacity="0.55" />;
+              })}
+
+              {/* === Bridge elevation === */}
+              {/* Deck slab */}
+              <rect x={bldgL} y={deckT} width={bldgW} height={deckH}
+                fill="rgba(212,168,67,0.10)"
+                stroke={d.color} strokeWidth="1.6" strokeOpacity="0.95" />
+              {/* Deck top edge (highlight) */}
+              <line x1={bldgL} y1={deckT} x2={bldgR} y2={deckT}
+                stroke={d.color} strokeWidth="0.5" strokeOpacity="0.5" />
+
+              {/* Rails on top of deck — two parallel gold lines + sleepers */}
+              <line x1={bldgL + 4} y1={railTop} x2={bldgR - 4} y2={railTop}
+                stroke={d.color} strokeWidth="0.8" strokeOpacity="0.9" />
+              {Array.from({ length: 18 }).map((_, i) => {
+                const sx = bldgL + 6 + i * ((bldgW - 12) / 17);
+                return <line key={`slp${i}`}
+                  x1={sx} y1={railTop - 1.5} x2={sx} y2={deckT - 0.5}
+                  stroke={d.color} strokeWidth="0.5" strokeOpacity="0.55" />;
+              })}
+
+              {/* Truss beam under deck — top chord + bottom chord + zigzag diagonals */}
+              <line x1={bldgL} y1={beamT} x2={bldgR} y2={beamT}
+                stroke={d.color} strokeWidth="1.2" strokeOpacity="0.9" />
+              <line x1={bldgL} y1={beamB} x2={bldgR} y2={beamB}
+                stroke={d.color} strokeWidth="1.2" strokeOpacity="0.9" />
+              {/* Vertical truss posts and diagonal braces */}
+              {(() => {
+                const truss = 14;
+                const stepX = bldgW / truss;
+                return Array.from({ length: truss + 1 }).map((_, i) => {
+                  const x = bldgL + i * stepX;
+                  const next = bldgL + (i + 1) * stepX;
+                  return (
+                    <g key={`tr${i}`}>
+                      <line x1={x} y1={beamT} x2={x} y2={beamB}
+                        stroke={d.color} strokeWidth="0.5" strokeOpacity="0.55" />
+                      {i < truss && (
+                        <line x1={x} y1={beamT} x2={next} y2={beamB}
+                          stroke={d.color} strokeWidth="0.45" strokeOpacity="0.5" />
+                      )}
+                    </g>
+                  );
+                });
+              })()}
+
+              {/* Piers — two mid-piers + abutments */}
+              {/* Left abutment */}
+              <polygon
+                points={
+                  `${bldgL - pierW * 1.4},${beamB} ` +
+                  `${bldgL + pierW * 0.6},${beamB} ` +
+                  `${bldgL + pierW * 0.4},${bldgB} ` +
+                  `${bldgL - pierW * 1.6},${bldgB}`
+                }
+                fill="rgba(212,168,67,0.10)"
+                stroke={d.color} strokeWidth="1.2" strokeOpacity="0.9" />
+              {/* Right abutment */}
+              <polygon
+                points={
+                  `${bldgR - pierW * 0.6},${beamB} ` +
+                  `${bldgR + pierW * 1.4},${beamB} ` +
+                  `${bldgR + pierW * 1.6},${bldgB} ` +
+                  `${bldgR - pierW * 0.4},${bldgB}`
+                }
+                fill="rgba(212,168,67,0.10)"
+                stroke={d.color} strokeWidth="1.2" strokeOpacity="0.9" />
+              {/* Pier 1 (1/3) */}
+              <rect x={pier1X - pierW / 2} y={beamB} width={pierW} height={bldgB - beamB}
+                fill="rgba(212,168,67,0.12)"
+                stroke={d.color} strokeWidth="1.2" strokeOpacity="0.9" />
+              {/* Pier 2 (2/3) */}
+              <rect x={pier2X - pierW / 2} y={beamB} width={pierW} height={bldgB - beamB}
+                fill="rgba(212,168,67,0.12)"
+                stroke={d.color} strokeWidth="1.2" strokeOpacity="0.9" />
+              {/* Pier foundation pads (small flange at bottom) */}
+              {[pier1X, pier2X].map((px, i) => (
+                <rect key={`fnd${i}`}
+                  x={px - pierW * 0.9} y={bldgB - 2}
+                  width={pierW * 1.8} height="2"
+                  fill={d.color} opacity="0.6" />
+              ))}
+
+              {/* Stagger reveal on bridge elements */}
+              <g>
+                <animate attributeName="opacity"
+                  values="0;1" dur="0.35s" begin="0.7s" fill="freeze" />
               </g>
 
-              {/* Tag + combined label */}
-              <text x={bboxLeft} y={bboxTop - 6}
+              {/* === Dimension lines === */}
+              {/* Bottom horizontal dim — width */}
+              {(() => {
+                const dimY = sheetB - sheetH * 0.045;
+                const lExtY = innerB + 4;
+                return (
+                  <g>
+                    {/* Extension lines */}
+                    <line x1={bldgL} y1={lExtY} x2={bldgL} y2={dimY + 3}
+                      stroke={d.color} strokeWidth="0.5" strokeOpacity="0.55" />
+                    <line x1={bldgR} y1={lExtY} x2={bldgR} y2={dimY + 3}
+                      stroke={d.color} strokeWidth="0.5" strokeOpacity="0.55" />
+                    {/* Dimension line */}
+                    <line x1={bldgL} y1={dimY} x2={bldgR} y2={dimY}
+                      stroke={d.color} strokeWidth="0.7" strokeOpacity="0.8" />
+                    {/* Arrows */}
+                    <polygon points={`${bldgL},${dimY} ${bldgL + 5},${dimY - 2.5} ${bldgL + 5},${dimY + 2.5}`}
+                      fill={d.color} opacity="0.8" />
+                    <polygon points={`${bldgR},${dimY} ${bldgR - 5},${dimY - 2.5} ${bldgR - 5},${dimY + 2.5}`}
+                      fill={d.color} opacity="0.8" />
+                    {/* Text */}
+                    <text x={(bldgL + bldgR) / 2} y={dimY - 2.5}
+                      fill={d.color} fontSize="6.5" fontFamily="monospace"
+                      textAnchor="middle" fontWeight="bold" opacity="0.85">L = 48 м</text>
+                  </g>
+                );
+              })()}
+              {/* Left vertical dim — clearance (rail top to ground) */}
+              {(() => {
+                const dimX = sheetX + sheetW * 0.06;
+                const dimYTop = railTop;
+                const dimYBot = innerB;
+                return (
+                  <g>
+                    {/* Extension lines */}
+                    <line x1={dimX - 4} y1={dimYTop} x2={bldgL - 2} y2={dimYTop}
+                      stroke={d.color} strokeWidth="0.5" strokeOpacity="0.55" />
+                    <line x1={dimX - 4} y1={dimYBot} x2={bldgL - 2} y2={dimYBot}
+                      stroke={d.color} strokeWidth="0.5" strokeOpacity="0.55" />
+                    {/* Dimension line */}
+                    <line x1={dimX} y1={dimYTop} x2={dimX} y2={dimYBot}
+                      stroke={d.color} strokeWidth="0.7" strokeOpacity="0.8" />
+                    {/* Arrows */}
+                    <polygon points={`${dimX},${dimYTop} ${dimX - 2.5},${dimYTop + 5} ${dimX + 2.5},${dimYTop + 5}`}
+                      fill={d.color} opacity="0.8" />
+                    <polygon points={`${dimX},${dimYBot} ${dimX - 2.5},${dimYBot - 5} ${dimX + 2.5},${dimYBot - 5}`}
+                      fill={d.color} opacity="0.8" />
+                    {/* Text (rotated) */}
+                    <text x={dimX - 4} y={(dimYTop + dimYBot) / 2}
+                      fill={d.color} fontSize="6.5" fontFamily="monospace"
+                      textAnchor="middle" fontWeight="bold" opacity="0.85"
+                      transform={`rotate(-90, ${dimX - 4}, ${(dimYTop + dimYBot) / 2})`}>
+                      H = 12 м
+                    </text>
+                  </g>
+                );
+              })()}
+
+              {/* === Title block (bottom-right) === */}
+              <g>
+                <rect x={tbX} y={tbY} width={tbW} height={tbH}
+                  fill="rgba(212,168,67,0.06)"
+                  stroke={d.color} strokeWidth="0.7" strokeOpacity="0.7" />
+                {/* Internal divider */}
+                <line x1={tbX} y1={tbY + tbH * 0.40}
+                  x2={tbX + tbW} y2={tbY + tbH * 0.40}
+                  stroke={d.color} strokeWidth="0.4" strokeOpacity="0.55" />
+                <text x={tbX + 4} y={tbY + tbH * 0.30}
+                  fill={d.color} fontSize="5.5" fontFamily="monospace"
+                  opacity="0.85" fontWeight="bold" letterSpacing="0.4px">
+                  ЖД МОСТ МС-12
+                </text>
+                <text x={tbX + 4} y={tbY + tbH * 0.65}
+                  fill={d.color} fontSize="5" fontFamily="monospace"
+                  opacity="0.65" letterSpacing="0.3px">
+                  ПРОФИЛЬ  ·  М 1:200
+                </text>
+                <text x={tbX + 4} y={tbY + tbH * 0.90}
+                  fill={d.color} fontSize="5" fontFamily="monospace"
+                  opacity="0.65" letterSpacing="0.3px">
+                  WAG · ИНЖ. ОТД.
+                </text>
+              </g>
+
+              {/* === Drafting crosshair tracking across the sheet === */}
+              <g opacity="0.9">
+                <circle r="6" fill="none"
+                  stroke={d.color} strokeWidth="0.8" strokeOpacity="0.7">
+                  <animate attributeName="cx"
+                    values={`${innerL + 4}; ${innerR - 4}; ${innerR - 4}; ${innerL + 4}; ${innerL + 4}`}
+                    keyTimes="0; 0.45; 0.55; 0.95; 1"
+                    dur="6s" repeatCount="indefinite" />
+                  <animate attributeName="cy"
+                    values={`${innerT + 6}; ${innerT + 6}; ${innerB - 6}; ${innerB - 6}; ${innerT + 6}`}
+                    keyTimes="0; 0.30; 0.55; 0.85; 1"
+                    dur="6s" repeatCount="indefinite" />
+                </circle>
+                <circle r="1.2" fill={d.color}>
+                  <animate attributeName="cx"
+                    values={`${innerL + 4}; ${innerR - 4}; ${innerR - 4}; ${innerL + 4}; ${innerL + 4}`}
+                    keyTimes="0; 0.45; 0.55; 0.95; 1"
+                    dur="6s" repeatCount="indefinite" />
+                  <animate attributeName="cy"
+                    values={`${innerT + 6}; ${innerT + 6}; ${innerB - 6}; ${innerB - 6}; ${innerT + 6}`}
+                    keyTimes="0; 0.30; 0.55; 0.85; 1"
+                    dur="6s" repeatCount="indefinite" />
+                </circle>
+              </g>
+
+              {/* Tag (top-left of sheet) + bottom label */}
+              <text x={sheetX} y={sheetY - 6}
                 fill={d.color} fontSize="8" fontFamily="monospace" fontWeight="bold"
                 opacity="0.85" letterSpacing="0.5px">{d.tag}</text>
-              <text x={(bboxLeft + bboxRight) / 2} y={labelY}
-                fill={d.color} fontSize="11.5" fontFamily="monospace"
-                textAnchor="middle" fontWeight="bold" letterSpacing="1.6px" opacity="0.85">
+              <text x={d.cx} y={labelY}
+                fill={d.color} fontSize="12.5" fontFamily="monospace"
+                textAnchor="middle" fontWeight="bold" letterSpacing="1.2px" opacity="0.9">
                 {d.label}
               </text>
             </g>
@@ -310,7 +494,7 @@ export default function ServicesHeroAnim() {
           const segments = 9;
 
           return (
-            <g key="crane">
+            <g key="crane" style={motifStyle(1)}>
               {/* Mast (lattice tower) */}
               <line x1={baseX - halfMast} y1={baseY} x2={baseX - halfMast} y2={mastTop}
                 stroke={st} strokeWidth="1.3" strokeOpacity="0.78" />
@@ -423,8 +607,8 @@ export default function ServicesHeroAnim() {
                 fill={st} fontSize="8" fontFamily="monospace" fontWeight="bold"
                 opacity="0.85" letterSpacing="0.5px" textAnchor="end">{crane.tag}</text>
               <text x={baseX} y={labelY}
-                fill={st} fontSize="11.5" fontFamily="monospace"
-                textAnchor="middle" fontWeight="bold" letterSpacing="1.6px" opacity="0.85">
+                fill={st} fontSize="12.5" fontFamily="monospace"
+                textAnchor="middle" fontWeight="bold" letterSpacing="1.2px" opacity="0.9">
                 {crane.label}
               </text>
             </g>
@@ -453,7 +637,7 @@ export default function ServicesHeroAnim() {
           const stickEndY = boomEndY + unit * 0.85;
 
           return (
-            <g key="excavator">
+            <g key="excavator" style={motifStyle(2)}>
               {/* Ground line */}
               <line x1={cx - trackW * 0.65} y1={groundY} x2={cx + trackW * 0.65} y2={groundY}
                 stroke={st} strokeWidth="0.6" strokeOpacity="0.4" />
@@ -546,8 +730,8 @@ export default function ServicesHeroAnim() {
                 fill={st} fontSize="8" fontFamily="monospace" fontWeight="bold"
                 opacity="0.85" letterSpacing="0.5px">{excavator.tag}</text>
               <text x={cx} y={labelY}
-                fill={st} fontSize="11.5" fontFamily="monospace"
-                textAnchor="middle" fontWeight="bold" letterSpacing="1.6px" opacity="0.85">
+                fill={st} fontSize="12.5" fontFamily="monospace"
+                textAnchor="middle" fontWeight="bold" letterSpacing="1.2px" opacity="0.9">
                 {excavator.label}
               </text>
             </g>
@@ -592,7 +776,7 @@ export default function ServicesHeroAnim() {
           ];
 
           return (
-            <g key="truck">
+            <g key="truck" style={motifStyle(3)}>
               {/* Ground line */}
               <line x1={cx - truckW * 0.6} y1={groundY} x2={cx + truckW * 0.6} y2={groundY}
                 stroke={st} strokeWidth="0.6" strokeOpacity="0.4" />
@@ -696,27 +880,13 @@ export default function ServicesHeroAnim() {
                 fill={st} fontSize="8" fontFamily="monospace" fontWeight="bold"
                 opacity="0.85" letterSpacing="0.5px">{truck.tag}</text>
               <text x={cx} y={labelY}
-                fill={st} fontSize="11.5" fontFamily="monospace"
-                textAnchor="middle" fontWeight="bold" letterSpacing="1.6px" opacity="0.85">
+                fill={st} fontSize="12.5" fontFamily="monospace"
+                textAnchor="middle" fontWeight="bold" letterSpacing="1.2px" opacity="0.9">
                 {truck.label}
               </text>
             </g>
           );
         })()}
-
-        {/* ── WAG logo — centre ── */}
-        <svg
-          x={logoCx - logoW / 2}
-          y={logoCy - logoH / 2}
-          width={logoW}
-          height={logoH}
-          viewBox={`0 0 ${LOGO_W} ${LOGO_H}`}
-          overflow="visible"
-        >
-          <g className={styles.wagSpin}>
-            <path fill="var(--gold)" opacity="0.92" d={WAG_PATH} />
-          </g>
-        </svg>
 
         {/* ── Scan line ── */}
         <line x1={zoneL} y1={0} x2={w} y2={0}

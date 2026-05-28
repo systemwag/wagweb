@@ -17,7 +17,7 @@
 
 import { useEffect } from 'react';
 
-const SELECTOR = '.glass-card, [class*="dirCard"], [class*="serviceCard"], [class*="card_gold"], [class*="card_teal"], [class*="card_blue"]';
+const SELECTOR = '.glass-card, [class*="dirCard"], [class*="serviceCard"], [class*="card_gold"], [class*="card_teal"], [class*="card_blue"], [data-tilt]';
 const MAX_DEG  = 8;        // peak rotation (degrees) — больше чем было (6° → 8°)
 const SCALE_UP = 1.02;     // peak scale при наведении
 

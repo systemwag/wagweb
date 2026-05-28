@@ -71,7 +71,7 @@ export default function AboutHeroAnim() {
     { bx: leftX,  by: midY, label: 'ЛЕТ ОПЫТА', value: '15+',  color: 'gold', delay: '1.0s' },
     { bx: rightX, by: midY, label: 'РЕГИОНОВ',  value: '16',   color: 'teal', delay: '1.5s' },
     { bx: leftX,  by: botY, label: 'КОМАНДА',   value: '79+',  color: 'gold', delay: '2.0s' },
-    { bx: rightX, by: botY, label: 'КМ ПУТЕЙ',  value: '2800+', color: 'teal', delay: '2.5s' },
+    { bx: rightX, by: botY, label: 'СЕРТИФИКАТ', value: 'ISO',  color: 'teal', delay: '2.5s' },
   ] as const;
 
   // Leader: from ring edge → card nearest edge (L-elbow for top/bot, straight for mid)

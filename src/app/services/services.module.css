@@ -22,28 +22,6 @@
   pointer-events: none;
 }
 
-.heroBreadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-heading);
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: var(--space-lg);
-}
-
-.heroBreadcrumbSep {
-  color: var(--gold);
-  opacity: 0.5;
-}
-
-.heroBreadcrumbCurrent {
-  color: var(--gold);
-}
-
 .heroTitle {
   margin: var(--space-md) 0 var(--space-lg);
   max-width: 780px;
@@ -57,39 +35,12 @@
   margin-bottom: var(--space-xl);
 }
 
-.heroStats {
+
+.heroCtas {
   display: flex;
-  align-items: center;
-  gap: var(--space-xl);
   flex-wrap: wrap;
-}
-
-.heroStatDivider {
-  width: 1px;
-  height: 32px;
-  background: var(--glass-border);
-  flex-shrink: 0;
-}
-
-.heroStat {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.heroStatNum {
-  font-family: var(--font-heading);
-  font-size: 1.4rem;
-  font-weight: 800;
-  color: var(--gold);
-  line-height: 1;
-}
-
-.heroStatLabel {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  gap: var(--space-md);
+  margin-top: var(--space-xl);
 }
 
 .heroGlow {
@@ -233,7 +184,15 @@
   overflow: hidden;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+  /* transform owned by global Tilt — no transition on it */
+  transition: border-color 0.3s, box-shadow 0.3s;
+  /* 3D tilt via CSS vars updated by Tilt on mousemove */
+  transform: perspective(1000px)
+             rotateX(var(--tilt-x, 0deg))
+             rotateY(var(--tilt-y, 0deg))
+             scale3d(var(--tilt-scale, 1), var(--tilt-scale, 1), 1);
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 
 .serviceCard::before {
@@ -260,7 +219,6 @@
 
 .serviceCard:hover {
   border-color: rgba(212,168,67,0.28);
-  transform: translateY(-4px);
   box-shadow: var(--shadow-card-hover);
 }
 
@@ -320,6 +278,8 @@
   overflow: hidden;
   transition: border-color var(--t-base), box-shadow var(--t-base);
   border-left: 3px solid transparent;
+  /* Opt out of global Tilt 3D rotation — accordion needs a stable surface */
+  transform: none !important;
 }
 
 .accordionItem[open] {
@@ -435,6 +395,8 @@
   align-items: center;
   gap: var(--space-md);
   border-left: 3px solid var(--blue) !important;
+  /* Opt out of global Tilt 3D rotation */
+  transform: none !important;
 }
 
 .workTypeIconWrap {

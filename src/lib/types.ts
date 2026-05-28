@@ -61,6 +61,42 @@ export interface NavLink {
 
 export type DesignCategory = 'full-cycle' | 'design' | 'documentation' | 'feasibility';
 
+// ── Maintenance & Current Repair ─────────────────────────────────
+
+export type WorkType =
+  | 'current_maintenance'   // Текущее содержание
+  | 'current_repair'        // Текущий ремонт / Ремонт
+  | 'medium_repair'         // Средний ремонт
+  | 'capital_repair'        // Капитальный ремонт
+  | 'inspection'            // Осмотр и дефектация
+  | 'reconstruction';       // Реконструкция / Перебортовка / Укрепление
+
+export const WORK_TYPE_LABELS: Record<WorkType, string> = {
+  current_maintenance: 'Текущее содержание',
+  current_repair:      'Текущий ремонт',
+  medium_repair:       'Средний ремонт',
+  capital_repair:      'Капитальный ремонт',
+  inspection:          'Осмотр и дефектация',
+  reconstruction:      'Реконструкция',
+};
+
+export interface MaintenanceProject {
+  id:          number;
+  slug:        string;
+  title:       string;
+  description: string;
+  client:      string | null;
+  location:    string;
+  period:      string;         // free text: "2020" or "2018-2020" or "с 2020 по настоящее время"
+  work_type:   WorkType;
+  image_url:   string | null;
+  images:      string[] | null;
+  status:      'completed' | 'ongoing';
+  tags:        string[] | null;
+  featured:    boolean;
+  created_at:  string;
+}
+
 export interface DesignProject {
   id: number;
   number: number;

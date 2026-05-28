@@ -79,38 +79,27 @@ export default async function ServicesPage() {
         {/* ── Page Hero ── */}
         <section className={styles.hero}>
           <div className="container">
-            {/* Breadcrumb */}
-            <div className={styles.heroBreadcrumb}>
-              <Link href="/">Главная</Link>
-              <span className={styles.heroBreadcrumbSep}>/</span>
-              <span className={styles.heroBreadcrumbCurrent}>Услуги</span>
-            </div>
-
-            <span className="section-label">Что мы делаем</span>
             <h1 className={`heading-1 ${styles.heroTitle}`}>
-              <span className="text-gradient-gold">Услуги</span>
+              Услуги <span className="text-gradient-gold">полного цикла</span>
             </h1>
             <p className={styles.heroDesc}>
-              Полный цикл работ в сфере инженерной и железнодорожной инфраструктуры —
-              от геодезических изысканий до сдачи объектов «под ключ».
+              Проектирование, строительство и инженерный контроль. Полный цикл от
+              геодезических изысканий до сдачи объектов «под&nbsp;ключ» —
+              для транспортной и промышленной инфраструктуры Казахстана.
             </p>
 
-            {/* Stats */}
-            <div className={styles.heroStats}>
-              <div className={styles.heroStat}>
-                <span className={styles.heroStatNum}>3</span>
-                <span className={styles.heroStatLabel}>Направления</span>
-              </div>
-              <div className={styles.heroStatDivider} />
-              <div className={styles.heroStat}>
-                <span className={styles.heroStatNum}>19+</span>
-                <span className={styles.heroStatLabel}>Видов работ</span>
-              </div>
-              <div className={styles.heroStatDivider} />
-              <div className={styles.heroStat}>
-                <span className={styles.heroStatNum}>15+</span>
-                <span className={styles.heroStatLabel}>Лет опыта</span>
-              </div>
+            {/* CTAs */}
+            <div className={styles.heroCtas}>
+              <a
+                href="/api/portfolio.pdf?download=1"
+                className="btn btn-primary"
+                aria-label="Скачать профиль компании в PDF"
+              >
+                Скачать профиль компании
+              </a>
+              <Link href="/contacts" className="btn btn-outline">
+                Обсудить проект
+              </Link>
             </div>
           </div>
           <div className={styles.heroGlow} aria-hidden="true" />
@@ -122,7 +111,9 @@ export default async function ServicesPage() {
           <div className="container">
             <div className={styles.directionHeader}>
               <span className={styles.directionNumBg} aria-hidden="true">01</span>
-              <h2 className="heading-2">Проектная деятельность</h2>
+              <h2 className="heading-2">
+                <span className="text-gradient-gold">Проектная</span> деятельность
+              </h2>
               <p className={styles.directionDesc}>
                 Специализация на выполнении полного комплекса проектных работ в области
                 железнодорожной и инженерной инфраструктуры. Разработка технически
@@ -152,7 +143,9 @@ export default async function ServicesPage() {
           <div className="container">
             <div className={styles.directionHeader}>
               <span className={styles.directionNumBg} aria-hidden="true">02</span>
-              <h2 className="heading-2">Строительная деятельность</h2>
+              <h2 className="heading-2">
+                <span className="text-gradient-gold">Строительная</span> деятельность
+              </h2>
               <p className={styles.directionDesc}>
                 Осуществление полного цикла строительных работ в сфере транспортной и
                 инженерной инфраструктуры. Реализуем проекты любой сложности —
@@ -182,7 +175,9 @@ export default async function ServicesPage() {
           <div className="container">
             <div className={styles.directionHeader}>
               <span className={styles.directionNumBg} aria-hidden="true">03</span>
-              <h2 className="heading-2">Виды выполняемых работ</h2>
+              <h2 className="heading-2">
+                Виды выполняемых <span className="text-gradient-gold">работ</span>
+              </h2>
               <p className={styles.directionDesc}>
                 Полный спектр строительно-монтажных, специальных и проектно-сметных работ
                 в соответствии с лицензионными требованиями Республики Казахстан.

@@ -2,12 +2,14 @@
   padding-top: var(--header-height);
 }
 
-/* ── Hero ─────────────────────────────── */
+/* ── Hero — cycling text framed by two engineering strips ── */
 .hero {
   position: relative;
-  min-height: 440px;
-  padding: var(--space-3xl) 0 var(--space-2xl);
+  min-height: clamp(720px, 92vh, 960px);
+  padding: var(--space-2xl) 0;
   overflow: hidden;
+  display: flex;
+  align-items: center;
 }
 
 .hero::before {
@@ -18,47 +20,15 @@
     radial-gradient(ellipse 60% 80% at 80% 50%, rgba(212,168,67,0.04) 0%, transparent 70%),
     radial-gradient(ellipse 40% 60% at 10% 80%, rgba(0,196,167,0.03) 0%, transparent 70%);
   pointer-events: none;
+  z-index: 1;
 }
 
+/* Cycler text lives above the magnetic particle canvas */
 .heroContent {
   position: relative;
-  z-index: 5;
+  z-index: 2;
 }
 
-.heroContent::before {
-  content: '';
-  position: absolute;
-  inset: -40px -10% -40px -10%;
-  max-width: 920px;
-  background:
-    radial-gradient(ellipse 70% 80% at 30% 50%, rgba(4,6,12,0.92) 0%, rgba(4,6,12,0.7) 45%, transparent 80%);
-  pointer-events: none;
-  z-index: -1;
-}
-
-.heroTitle {
-  margin: var(--space-md) 0 var(--space-lg);
-  max-width: 800px;
-}
-
-.heroDesc {
-  font-size: clamp(1.05rem, 2vw, 1.35rem);
-  font-weight: 400;
-  color: var(--text-secondary);
-  max-width: 620px;
-  line-height: 1.75;
-}
-
-.heroGlow {
-  position: absolute;
-  top: -80px;
-  right: -100px;
-  width: 600px;
-  height: 600px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(212,168,67,0.08) 0%, transparent 70%);
-  pointer-events: none;
-}
 
 /* ── Shared section ───────────────────── */
 .section {
@@ -100,7 +70,7 @@
   justify-content: space-between;
   gap: var(--space-md);
   min-height: 130px;
-  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .miniStat::before {
@@ -117,7 +87,6 @@
 }
 
 .miniStat:hover {
-  transform: translateY(-4px);
   border-color: rgba(212,168,67,0.25);
   box-shadow: 0 16px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(212,168,67,0.12);
 }
@@ -140,22 +109,64 @@
   color: var(--text-muted);
 }
 
-/* ── Values ───────────────────────────── */
-.valuesGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-md);
+/* ── Values — horizontal infinite marquee ── */
+.valuesCarousel {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  /* Soft fade-out at left/right edges */
+  -webkit-mask-image: linear-gradient(to right,
+    transparent 0,
+    black 80px,
+    black calc(100% - 80px),
+    transparent 100%);
+  mask-image: linear-gradient(to right,
+    transparent 0,
+    black 80px,
+    black calc(100% - 80px),
+    transparent 100%);
 }
 
+.valuesTrack {
+  display: flex;
+  width: max-content;
+  animation: valuesMarquee 60s linear infinite;
+  will-change: transform;
+}
+
+.valuesCarousel:hover .valuesTrack {
+  animation-play-state: paused;
+}
+
+/* Each card is a fixed-width flex item with right-margin instead of CSS gap
+   — that way -50% translate lands the second copy exactly where the first
+   started, giving a seamless loop. */
 .valueCard {
+  flex: 0 0 clamp(260px, 24vw, 340px);
+  margin-right: var(--space-md);
   padding: var(--space-xl) var(--space-lg);
-  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+  /* No `transform` transition — global Tilt updates --tilt-* vars per mousemove,
+     and a transition would lag the rotation. Border and shadow can fade smoothly. */
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
 
+/* Don't override `transform` on hover — leave it to the global Tilt
+   component (perspective + rotateX/Y + scale3d via CSS variables). */
 .valueCard:hover {
-  transform: translateY(-6px);
   border-color: rgba(212,168,67,0.25);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(212,168,67,0.15);
+}
+
+@keyframes valuesMarquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .valuesTrack { animation: none; }
 }
 
 .valueIndex {
@@ -185,11 +196,10 @@
 .teamCard {
   padding: var(--space-xl) var(--space-lg);
   text-align: center;
-  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .teamCard:hover {
-  transform: translateY(-6px);
   border-color: rgba(212,168,67,0.25);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(212,168,67,0.15);
 }
@@ -234,11 +244,10 @@
   flex-direction: column;
   align-items: center;
   gap: var(--space-sm);
-  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .leadCard:hover {
-  transform: translateY(-6px);
   border-color: rgba(212,168,67,0.28);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(212,168,67,0.18);
 }
@@ -361,12 +370,47 @@
   justify-content: space-between;
   align-items: center;
   gap: var(--space-md);
-  transition: transform 0.3s, border-color 0.3s;
+  transition: border-color 0.3s;
 }
 
 .equipmentCard:hover {
-  transform: translateY(-3px);
   border-color: rgba(212,168,67,0.2);
+}
+
+/* ── Equipment categories ── */
+.equipmentCategory {
+  margin-top: var(--space-2xl);
+}
+
+.equipmentCategoryTitle {
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-xs);
+  border-bottom: 1px solid rgba(212, 168, 67, 0.22);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Lucide icons inherit currentColor; they pick up the gold from the title */
+.equipmentCategoryTitle svg {
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+/* The first category title sits right under the prose intro — no extra top gap */
+.equipmentCategory:first-of-type {
+  margin-top: var(--space-xl);
+}
+
+/* Within a category, the grid uses its own modest top-margin from the title */
+.equipmentCategory .equipmentGrid {
+  margin-top: 0;
 }
 
 .equipmentName {
@@ -415,7 +459,6 @@
 
 /* ── Responsive ───────────────────────── */
 @media (max-width: 1024px) {
-  .valuesGrid     { grid-template-columns: repeat(2, 1fr); }
   .teamGrid       { grid-template-columns: repeat(2, 1fr); }
   .equipmentGrid  { grid-template-columns: repeat(2, 1fr); }
   .leadershipGrid { grid-template-columns: repeat(3, 1fr); }
@@ -426,10 +469,11 @@
   .licensesGrid  { grid-template-columns: 1fr; }
   .partnersGrid  { grid-template-columns: 1fr; }
   .leadershipGrid { grid-template-columns: repeat(2, 1fr); }
+
+  .hero { min-height: clamp(620px, 85vh, 820px); }
 }
 
 @media (max-width: 540px) {
-  .valuesGrid     { grid-template-columns: 1fr; }
   .teamGrid       { grid-template-columns: repeat(2, 1fr); }
   .equipmentGrid  { grid-template-columns: 1fr; }
   .leadershipGrid { grid-template-columns: 1fr; }
