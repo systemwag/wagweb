@@ -25,10 +25,14 @@ const OUT_DIR = join(__dirname, '..', 'public', 'portfolio');
 const COLOR_DARK  = '#1A1A1A';
 const COLOR_LIGHT = '#F8EFE0';
 
+// TEMP: until the arlan-gr.kz domain is pointed at the Vercel deployment, the
+// QR codes resolve to the live Vercel host. The brochure still PRINTS the
+// arlan-gr.kz labels — only the encoded link differs. Switch back to
+// arlan-gr.kz here (and re-bake) once the domain is migrated.
 const targets = [
-  { url: 'https://arlan-gr.kz/projects',    file: 'qr-projects.png'    },
-  { url: 'https://arlan-gr.kz/maintenance', file: 'qr-maintenance.png' },
-  { url: 'https://arlan-gr.kz/design',      file: 'qr-design.png'      },
+  { url: 'https://wagweb.vercel.app/projects',    file: 'qr-projects.png'    },
+  { url: 'https://wagweb.vercel.app/maintenance', file: 'qr-maintenance.png' },
+  { url: 'https://wagweb.vercel.app/design',      file: 'qr-design.png'      },
 ];
 
 async function main() {
