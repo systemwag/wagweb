@@ -33,8 +33,7 @@ export default function AnimatedCounter({
 
   useEffect(() => {
     if (!isVisible) return;
-    
-    let start = 0;
+
     const incrementTime = 30; // ms per frame
     const totalSteps = duration / incrementTime;
     let currentStep = 0;

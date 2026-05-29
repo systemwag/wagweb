@@ -1745,7 +1745,7 @@ export default async function PortfolioPrintPage() {
               <div className="wag-legal-badge">HQ</div>
               <div className="wag-legal-name">West Arlan Group</div>
               <div className="wag-legal-role">Holding company · coordination</div>
-              <div className="wag-legal-meta">LLP · BIN 090940003245 · Aktobe</div>
+              <div className="wag-legal-meta">LLP · BIN 100340009758 · Aktobe</div>
             </div>
             <div className="wag-legal-card">
               <div className="wag-legal-badge">CIW</div>
@@ -2568,7 +2568,7 @@ export default async function PortfolioPrintPage() {
           <div className="wag-contacts-legal">
             <div className="wag-contacts-legal-item">
               <div className="wag-contacts-legal-label">Legal entity</div>
-              <div className="wag-contacts-legal-value">West Arlan Group LLP · BIN 090940003245</div>
+              <div className="wag-contacts-legal-value">West Arlan Group LLP · BIN 100340009758</div>
             </div>
             <div className="wag-contacts-legal-item">
               <div className="wag-contacts-legal-label">Licenses</div>

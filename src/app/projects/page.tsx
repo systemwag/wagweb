@@ -16,14 +16,15 @@ const STATUS_LABEL: Record<string, string> = {
   'planned':     'Планируется',
 };
 
-/* Accent colour per category — used as CSS custom property on each card */
+/* Accent colour per category — references design tokens from globals.css,
+   set as the `--card-accent` custom property on each card. */
 const CATEGORY_COLOR: Record<string, string> = {
-  'Железнодорожная инфраструктура': '#D4A843',
-  'Инженерные изыскания':           '#00C4A7',
-  'Промышленные объекты':           '#4F84FF',
-  'Коммуникации':                   '#00C4A7',
-  'Геодезия':                       '#F0C85A',
-  'Проектирование':                  '#D4A843',
+  'Железнодорожная инфраструктура': 'var(--gold)',
+  'Инженерные изыскания':           'var(--teal)',
+  'Промышленные объекты':           'var(--blue)',
+  'Коммуникации':                   'var(--teal)',
+  'Геодезия':                       'var(--gold-light)',
+  'Проектирование':                  'var(--gold)',
 };
 
 export default async function ProjectsPage({
@@ -139,7 +140,7 @@ export default async function ProjectsPage({
                     project.status === 'in-progress' ? styles.statusInProgress :
                     styles.statusPlanned;
 
-                  const accentColor = CATEGORY_COLOR[project.category] ?? '#D4A843';
+                  const accentColor = CATEGORY_COLOR[project.category] ?? 'var(--gold)';
 
                   return (
                     <Link

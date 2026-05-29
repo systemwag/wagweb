@@ -33,9 +33,9 @@ export default function Hero() {
         </div>
 
         <h1 className={`heading-1 ${styles.title}`}>
-          Проектируем.<br />
-          Строим.<br />
-          Обслуживаем.
+          <span className={styles.titleWord}>Проектируем.</span><br />
+          <span className={styles.titleWord}>Строим.</span><br />
+          <span className={styles.titleWord}>Обслуживаем.</span>
         </h1>
 
         <div className={styles.subtitle}>
@@ -50,15 +50,18 @@ export default function Hero() {
             </span>
           </p>
 
+          {/* Цифры синхронизированы с реестром сайта/брошюры:
+           * 136 = 49 СМР + 87 ПД (см. lib/pdf/data/getPortfolioData.ts),
+           * 16 лет = с 2010 года. */}
           <div className={styles.subtitleStats}>
             <span className={styles.subtitleStat}>
-              <span className={styles.subtitleStatNum}>+300</span>
-              <span className={styles.subtitleStatLabel}>проектов</span>
+              <span className={styles.subtitleStatNum}>136</span>
+              <span className={styles.subtitleStatLabel}>объектов</span>
             </span>
             <span className={styles.subtitleStatSep} aria-hidden="true" />
             <span className={styles.subtitleStat}>
-              <span className={styles.subtitleStatNum}>+50</span>
-              <span className={styles.subtitleStatLabel}>под ключ</span>
+              <span className={styles.subtitleStatNum}>16</span>
+              <span className={styles.subtitleStatLabel}>лет на рынке</span>
             </span>
           </div>
         </div>

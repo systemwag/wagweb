@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { createServerClient } from '@/lib/supabase-server';
+import { requireAdmin, errorMessage } from '@/lib/admin-auth';
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
   try {
     const { id } = await params;
     const body = await req.json();
@@ -15,11 +18,13 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     revalidatePath('/');
     return NextResponse.json({ ok: true, project: data });
   } catch (e) {
-    return NextResponse.json({ ok: false, error: String(e) }, { status: 500 });
+    return NextResponse.json({ ok: false, error: errorMessage(e) }, { status: 500 });
   }
 }
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
   try {
     const { id } = await params;
     const supabase = createServerClient();
@@ -29,6 +34,6 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
     revalidatePath('/');
     return NextResponse.json({ ok: true });
   } catch (e) {
-    return NextResponse.json({ ok: false, error: String(e) }, { status: 500 });
+    return NextResponse.json({ ok: false, error: errorMessage(e) }, { status: 500 });
   }
 }

@@ -1,11 +1,23 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase-server';
+import { requireAdmin, errorMessage } from '@/lib/admin-auth';
 
 const BUCKET = 'project-images';
 const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
+// Map of allowed MIME types → canonical extension. Deriving the extension
+// from the (trusted, server-validated) MIME instead of the client filename
+// avoids extension spoofing.
+const MIME_EXT: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+  'image/avif': 'avif',
+};
+const ALLOWED_TYPES = Object.keys(MIME_EXT);
 
 export async function POST(req: Request) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
   try {
     const formData = await req.formData();
     const file = formData.get('file') as File | null;
@@ -31,10 +43,11 @@ export async function POST(req: Request) {
 
     const supabase = createServerClient();
 
-    // Generate unique path
-    const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+    // Generate unique path. Extension comes from the validated MIME type, and
+    // the folder only accepts a numeric project id (no path traversal).
+    const ext = MIME_EXT[file.type] ?? 'jpg';
     const timestamp = Date.now();
-    const folder = projectId ? `project-${projectId}` : 'unsorted';
+    const folder = projectId && /^\d+$/.test(projectId) ? `project-${projectId}` : 'unsorted';
     const filePath = `${folder}/${timestamp}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
 
     // Upload to Supabase Storage
@@ -62,11 +75,13 @@ export async function POST(req: Request) {
       path: filePath,
     });
   } catch (e) {
-    return NextResponse.json({ ok: false, error: String(e) }, { status: 500 });
+    return NextResponse.json({ ok: false, error: errorMessage(e) }, { status: 500 });
   }
 }
 
 export async function DELETE(req: Request) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
   try {
     const { path } = await req.json();
 
@@ -86,6 +101,6 @@ export async function DELETE(req: Request) {
 
     return NextResponse.json({ ok: true });
   } catch (e) {
-    return NextResponse.json({ ok: false, error: String(e) }, { status: 500 });
+    return NextResponse.json({ ok: false, error: errorMessage(e) }, { status: 500 });
   }
 }

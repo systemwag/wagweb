@@ -1,7 +1,8 @@
 /**
  * Data-fetching layer.
  * All functions are safe to call from Server Components (RSC).
- * Falls back to static seed data when Supabase is not configured.
+ * Falls back to static seed data when Supabase is not configured or a query
+ * fails (see `withSeedFallback`).
  */
 
 import { unstable_cache } from 'next/cache';
@@ -18,140 +19,6 @@ import { SQL_MAINTENANCE } from './sql-maintenance';
 // filter them out from the dev seed so the СМР page stays consistent.
 const MAINTENANCE_LEGACY_IDS = new Set([3, 4, 5, 6, 9, 10, 11, 13, 14, 17, 19, 20, 24, 25, 27, 28, 29, 30, 33, 34, 36]);
 const SEED_PROJECTS: Project[] = SQL_PROJECTS.filter(p => !MAINTENANCE_LEGACY_IDS.has(p.id));
-
-// Legacy stub (kept disabled, was 10 placeholder projects)
-const _LEGACY_SEED_PROJECTS: Project[] = [
-  {
-    id: 1,
-    slug: 'rekonstrukciya-almaty-shymkent',
-    title: 'Реконструкция ж/д пути Алматы — Шымкент',
-    description: 'Капитальный ремонт и модернизация 420 км главного хода. Укладка бесстыкового пути, замена переездов, устройство защитных лесополос.',
-    category: 'Железнодорожная инфраструктура',
-    location: 'Южно-Казахстанская область',
-    year: 2023, length: '420 км',
-    tags: ['Путевые работы', 'Балластировка', 'СЦБ'],
-    image_url: '/Gemini_Generated_Image_ddlu49ddlu49ddlu.webp', images: null, status: 'completed', featured: true,
-    x_map: 599, y_map: 504, coords_label: '42.31° N, 69.59° E',
-    created_at: '2023-01-01T00:00:00Z',
-  },
-  {
-    id: 2,
-    slug: 'izyskaniya-novaya-magistral',
-    title: 'Инженерные изыскания для новой магистрали',
-    description: 'Комплексные инженерные изыскания для строительства скоростной магистрали протяжённостью 280 км в Центральном Казахстане.',
-    category: 'Инженерные изыскания',
-    location: 'Карагандинская область',
-    year: 2023, length: '280 км',
-    tags: ['Геодезия', 'Геология', 'Гидрология'],
-    image_url: '/Gemini_Generated_Image_m0dhtzm0dhtzm0dh.webp', images: null, status: 'in-progress', featured: true,
-    x_map: 561, y_map: 335, coords_label: '49.80° N, 73.10° E',
-    created_at: '2023-03-01T00:00:00Z',
-  },
-  {
-    id: 3,
-    slug: 'depo-servisnyy-centr-astana',
-    title: 'Строительство депо и сервисного центра',
-    description: 'Проектирование и строительство современного депо для ТО и ремонта локомотивов с полным инженерным обеспечением.',
-    category: 'Промышленные объекты',
-    location: 'Астана',
-    year: 2022, length: '48 000 м²',
-    tags: ['Строительство', 'Инженерия', 'Под ключ'],
-    image_url: '/Gemini_Generated_Image_nlvoxnlvoxnlvoxn.webp', images: null, status: 'completed', featured: true,
-    x_map: 606, y_map: 260, coords_label: '51.18° N, 71.45° E',
-    created_at: '2022-05-01T00:00:00Z',
-  },
-  {
-    id: 4,
-    slug: 'vodosnabzhenie-turkestan',
-    title: 'Водоснабжение Туркестанской области',
-    description: 'Прокладка магистральных водоводов и строительство насосных станций для обеспечения водой 12 населённых пунктов.',
-    category: 'Коммуникации',
-    location: 'Туркестанская область',
-    year: 2022, length: '85 км',
-    tags: ['Водоснабжение', 'Насосные станции'],
-    image_url: null, images: null, status: 'completed', featured: false,
-    x_map: 514, y_map: 585, coords_label: '43.30° N, 68.27° E',
-    created_at: '2022-08-01T00:00:00Z',
-  },
-  {
-    id: 5,
-    slug: 'razezdy-saryagash',
-    title: 'Строительство разъездов ст. Сарыагаш',
-    description: 'Увеличение пропускной способности участка за счёт строительства дополнительных путей и модернизации станционных устройств.',
-    category: 'Железнодорожная инфраструктура',
-    location: 'Сарыагаш',
-    year: 2021, length: '3 разъезда',
-    tags: ['Путевые работы', 'Электрификация'],
-    image_url: null, images: null, status: 'completed', featured: false,
-    x_map: 556, y_map: 556, coords_label: '41.46° N, 69.17° E',
-    created_at: '2021-04-01T00:00:00Z',
-  },
-  {
-    id: 6,
-    slug: 'monitoring-deformaciy-aktobe',
-    title: 'Мониторинг деформаций ж/д полотна',
-    description: 'Внедрение системы непрерывного мониторинга состояния пути с применением современных геодезических технологий.',
-    category: 'Геодезия',
-    location: 'Актюбинская область',
-    year: 2021, length: '160 км',
-    tags: ['Геодезия', 'BIM', 'Мониторинг'],
-    image_url: '/Gemini_Generated_Image_ruq4dwruq4dwruq4.webp', images: null, status: 'completed', featured: true,
-    x_map: 231, y_map: 316, coords_label: '50.28° N, 57.21° E',
-    created_at: '2021-09-01T00:00:00Z',
-  },
-  {
-    id: 7,
-    slug: 'amk-zhd-puti-aktobe',
-    title: 'Ж/д подъездные пути АМК (1-я, 2-я, 3-я очередь)',
-    description: 'Генеральный подрядчик строительства и капитального ремонта железнодорожных подъездных путей для Актюбинской медной компании.',
-    category: 'Железнодорожная инфраструктура',
-    location: 'Актобе',
-    year: 2020, length: 'Под ключ',
-    tags: ['Генподряд', 'Подъездные пути', 'Капремонт'],
-    image_url: null, images: null, status: 'completed', featured: true,
-    x_map: 259, y_map: 307, coords_label: '50.17° N, 57.13° E',
-    created_at: '2020-02-01T00:00:00Z',
-  },
-  {
-    id: 8,
-    slug: 'zerde-keramika-puti',
-    title: 'Ж/д пути ТОО «Зерде-Керамика Актобе»',
-    description: 'Строительство железнодорожных подъездных путей к производственному объекту в полном соответствии с нормами ж/д строительства РК.',
-    category: 'Железнодорожная инфраструктура',
-    location: 'Актобе',
-    year: 2019, length: 'Подъездной путь',
-    tags: ['Подъездные пути', 'Промышленность'],
-    image_url: null, images: null, status: 'completed', featured: false,
-    x_map: 239, y_map: 292, coords_label: '50.14° N, 57.10° E',
-    created_at: '2019-06-01T00:00:00Z',
-  },
-  {
-    id: 9,
-    slug: 'port-aktau-infrastruktura',
-    title: 'Инфраструктура порта Актау',
-    description: 'Строительство инженерных сетей и железнодорожных путей на территории морского порта для обеспечения перевалки грузов.',
-    category: 'Железнодорожная инфраструктура',
-    location: 'Актау',
-    year: 2022, length: '12 км',
-    tags: ['Портовая инфраструктура', 'Путевые работы'],
-    image_url: null, images: null, status: 'completed', featured: false,
-    x_map: 82, y_map: 512, coords_label: '43.65° N, 51.15° E',
-    created_at: '2022-01-01T00:00:00Z',
-  },
-  {
-    id: 10,
-    slug: 'astana-nurly-zhol-izyskaniya',
-    title: 'Изыскания трассы Астана — Нурлы Жол',
-    description: 'Топографическая съёмка и инженерно-геологические изыскания для проектирования нового железнодорожного участка.',
-    category: 'Инженерные изыскания',
-    location: 'Астана',
-    year: 2023, length: '95 км',
-    tags: ['Геодезия', 'Геология'],
-    image_url: null, images: null, status: 'in-progress', featured: false,
-    x_map: 575, y_map: 287, coords_label: '51.22° N, 71.60° E',
-    created_at: '2023-06-01T00:00:00Z',
-  },
-];
 
 const SEED_SERVICES: Service[] = [
   {
@@ -240,7 +107,8 @@ const SEED_SERVICES: Service[] = [
   },
 ];
 
-// ── Helper to check if Supabase is configured ──────────────────
+// ── Helpers ────────────────────────────────────────────────────
+
 function isSupabaseConfigured(): boolean {
   return (
     !!process.env.NEXT_PUBLIC_SUPABASE_URL &&
@@ -248,25 +116,41 @@ function isSupabaseConfigured(): boolean {
   );
 }
 
+type Supabase = ReturnType<typeof createServerClient>;
+
+/**
+ * Runs a Supabase query, falling back to `seed` when Supabase is not
+ * configured or the query throws. Fallbacks are logged outside production so
+ * a real DB failure is distinguishable from "Supabase not configured" (in
+ * production it falls back silently, as before).
+ */
+async function withSeedFallback<T>(
+  label: string,
+  seed: T,
+  query: (supabase: Supabase) => Promise<T>,
+): Promise<T> {
+  if (!isSupabaseConfigured()) return seed;
+  try {
+    return await query(createServerClient());
+  } catch (e) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn(`[data] ${label} fell back to seed:`, e);
+    }
+    return seed;
+  }
+}
+
 // ── Projects ───────────────────────────────────────────────────
 
 const _getAllProjects = unstable_cache(
-  async (): Promise<Project[]> => {
-    if (!isSupabaseConfigured()) return SEED_PROJECTS;
-
-    try {
-      const supabase = createServerClient();
-      const { data, error } = await supabase
-        .from('projects')
-        .select('*')
-        .order('year', { ascending: false });
-
-      if (error) throw error;
-      return (data as Project[]) ?? [];
-    } catch {
-      return SEED_PROJECTS;
-    }
-  },
+  () => withSeedFallback('projects-all', SEED_PROJECTS, async (supabase) => {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .order('year', { ascending: false });
+    if (error) throw error;
+    return (data as Project[]) ?? [];
+  }),
   ['projects-all'],
   { revalidate: 60 }
 );
@@ -277,38 +161,31 @@ export async function getProjects(category?: string): Promise<Project[]> {
 }
 
 export async function getProjectBySlug(slug: string): Promise<Project | null> {
-  if (!isSupabaseConfigured()) {
-    return SEED_PROJECTS.find((p) => p.slug === slug) ?? null;
-  }
-
-  try {
-    const supabase = createServerClient();
-    const { data, error } = await supabase
-      .from('projects')
-      .select('*')
-      .eq('slug', slug)
-      .single();
-
-    if (error) throw error;
-    return data as Project;
-  } catch {
-    return SEED_PROJECTS.find((p) => p.slug === slug) ?? null;
-  }
+  return withSeedFallback(
+    `project:${slug}`,
+    SEED_PROJECTS.find((p) => p.slug === slug) ?? null,
+    async (supabase) => {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('slug', slug)
+        .single();
+      if (error) throw error;
+      return data as Project;
+    },
+  );
 }
 
 export async function getProjectSlugs(): Promise<string[]> {
-  if (!isSupabaseConfigured()) {
-    return SEED_PROJECTS.map((p) => p.slug);
-  }
-
-  try {
-    const supabase = createServerClient();
-    const { data, error } = await supabase.from('projects').select('slug');
-    if (error) throw error;
-    return (data ?? []).map((r: { slug: string }) => r.slug);
-  } catch {
-    return SEED_PROJECTS.map((p) => p.slug);
-  }
+  return withSeedFallback(
+    'project-slugs',
+    SEED_PROJECTS.map((p) => p.slug),
+    async (supabase) => {
+      const { data, error } = await supabase.from('projects').select('slug');
+      if (error) throw error;
+      return (data ?? []).map((r: { slug: string }) => r.slug);
+    },
+  );
 }
 
 // ── Maintenance Projects ───────────────────────────────────────
@@ -316,22 +193,14 @@ export async function getProjectSlugs(): Promise<string[]> {
 const SEED_MAINTENANCE: MaintenanceProject[] = SQL_MAINTENANCE;
 
 const _getAllMaintenanceProjects = unstable_cache(
-  async (): Promise<MaintenanceProject[]> => {
-    if (!isSupabaseConfigured()) return SEED_MAINTENANCE;
-
-    try {
-      const supabase = createServerClient();
-      const { data, error } = await supabase
-        .from('maintenance_projects')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return (data as MaintenanceProject[]) ?? [];
-    } catch {
-      return SEED_MAINTENANCE;
-    }
-  },
+  () => withSeedFallback('maintenance-all', SEED_MAINTENANCE, async (supabase) => {
+    const { data, error } = await supabase
+      .from('maintenance_projects')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return (data as MaintenanceProject[]) ?? [];
+  }),
   ['maintenance-all'],
   { revalidate: 60 }
 );
@@ -346,38 +215,31 @@ export async function getMaintenanceProjects(
 export async function getMaintenanceProjectBySlug(
   slug: string
 ): Promise<MaintenanceProject | null> {
-  if (!isSupabaseConfigured()) {
-    return SEED_MAINTENANCE.find((p) => p.slug === slug) ?? null;
-  }
-
-  try {
-    const supabase = createServerClient();
-    const { data, error } = await supabase
-      .from('maintenance_projects')
-      .select('*')
-      .eq('slug', slug)
-      .single();
-
-    if (error) throw error;
-    return data as MaintenanceProject;
-  } catch {
-    return SEED_MAINTENANCE.find((p) => p.slug === slug) ?? null;
-  }
+  return withSeedFallback(
+    `maintenance:${slug}`,
+    SEED_MAINTENANCE.find((p) => p.slug === slug) ?? null,
+    async (supabase) => {
+      const { data, error } = await supabase
+        .from('maintenance_projects')
+        .select('*')
+        .eq('slug', slug)
+        .single();
+      if (error) throw error;
+      return data as MaintenanceProject;
+    },
+  );
 }
 
 export async function getMaintenanceSlugs(): Promise<string[]> {
-  if (!isSupabaseConfigured()) {
-    return SEED_MAINTENANCE.map((p) => p.slug);
-  }
-
-  try {
-    const supabase = createServerClient();
-    const { data, error } = await supabase.from('maintenance_projects').select('slug');
-    if (error) throw error;
-    return (data ?? []).map((r: { slug: string }) => r.slug);
-  } catch {
-    return SEED_MAINTENANCE.map((p) => p.slug);
-  }
+  return withSeedFallback(
+    'maintenance-slugs',
+    SEED_MAINTENANCE.map((p) => p.slug),
+    async (supabase) => {
+      const { data, error } = await supabase.from('maintenance_projects').select('slug');
+      if (error) throw error;
+      return (data ?? []).map((r: { slug: string }) => r.slug);
+    },
+  );
 }
 
 // ── Services ───────────────────────────────────────────────────
@@ -385,31 +247,21 @@ export async function getMaintenanceSlugs(): Promise<string[]> {
 export async function getServices(
   direction?: Service['direction']
 ): Promise<Service[]> {
-  if (!isSupabaseConfigured()) {
-    return direction
-      ? SEED_SERVICES.filter((s) => s.direction === direction)
-      : SEED_SERVICES;
-  }
+  const seed = direction
+    ? SEED_SERVICES.filter((s) => s.direction === direction)
+    : SEED_SERVICES;
 
-  try {
-    const supabase = createServerClient();
+  return withSeedFallback('services', seed, async (supabase) => {
     let query = supabase
       .from('services')
       .select('*')
       .order('order_index', { ascending: true });
-
-    if (direction) {
-      query = query.eq('direction', direction);
-    }
+    if (direction) query = query.eq('direction', direction);
 
     const { data, error } = await query;
     if (error) throw error;
     return (data as Service[]) ?? [];
-  } catch {
-    return direction
-      ? SEED_SERVICES.filter((s) => s.direction === direction)
-      : SEED_SERVICES;
-  }
+  });
 }
 
 // ── Featured projects (for homepage) ──────────────────────────
@@ -468,22 +320,14 @@ const SEED_DESIGN_PROJECTS: DesignProject[] = [
 ];
 
 const _getAllDesignProjects = unstable_cache(
-  async (): Promise<DesignProject[]> => {
-    if (!isSupabaseConfigured()) return SEED_DESIGN_PROJECTS;
-
-    try {
-      const supabase = createServerClient();
-      const { data, error } = await supabase
-        .from('design_projects')
-        .select('*')
-        .order('id', { ascending: true });
-
-      if (error) throw error;
-      return (data as DesignProject[]) ?? [];
-    } catch {
-      return SEED_DESIGN_PROJECTS;
-    }
-  },
+  () => withSeedFallback('design-projects-all', SEED_DESIGN_PROJECTS, async (supabase) => {
+    const { data, error } = await supabase
+      .from('design_projects')
+      .select('*')
+      .order('id', { ascending: true });
+    if (error) throw error;
+    return (data as DesignProject[]) ?? [];
+  }),
   ['design-projects-all'],
   { revalidate: 60 }
 );
@@ -494,41 +338,33 @@ export async function getDesignProjects(category?: string): Promise<DesignProjec
 }
 
 export async function getDesignProjectById(id: number): Promise<DesignProject | null> {
-  if (!isSupabaseConfigured()) {
-    return SEED_DESIGN_PROJECTS.find((p) => p.id === id) ?? null;
-  }
-
-  try {
-    const supabase = createServerClient();
-    const { data, error } = await supabase
-      .from('design_projects')
-      .select('*')
-      .eq('id', id)
-      .single();
-
-    if (error) throw error;
-    return data as DesignProject;
-  } catch {
-    return SEED_DESIGN_PROJECTS.find((p) => p.id === id) ?? null;
-  }
+  return withSeedFallback(
+    `design:id:${id}`,
+    SEED_DESIGN_PROJECTS.find((p) => p.id === id) ?? null,
+    async (supabase) => {
+      const { data, error } = await supabase
+        .from('design_projects')
+        .select('*')
+        .eq('id', id)
+        .single();
+      if (error) throw error;
+      return data as DesignProject;
+    },
+  );
 }
 
 export async function getDesignProjectBySlug(slug: string): Promise<DesignProject | null> {
-  if (!isSupabaseConfigured()) {
-    return SEED_DESIGN_PROJECTS.find((p) => p.slug === slug) ?? null;
-  }
-
-  try {
-    const supabase = createServerClient();
-    const { data, error } = await supabase
-      .from('design_projects')
-      .select('*')
-      .eq('slug', slug)
-      .single();
-
-    if (error) throw error;
-    return data as DesignProject;
-  } catch {
-    return SEED_DESIGN_PROJECTS.find((p) => p.slug === slug) ?? null;
-  }
+  return withSeedFallback(
+    `design:slug:${slug}`,
+    SEED_DESIGN_PROJECTS.find((p) => p.slug === slug) ?? null,
+    async (supabase) => {
+      const { data, error } = await supabase
+        .from('design_projects')
+        .select('*')
+        .eq('slug', slug)
+        .single();
+      if (error) throw error;
+      return data as DesignProject;
+    },
+  );
 }

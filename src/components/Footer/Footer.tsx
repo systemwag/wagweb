@@ -1,51 +1,43 @@
+import Link from 'next/link';
 import styles from './Footer.module.css';
+import { WAG_LOGO_PATH } from '@/lib/wag-logo';
 
 const navColumns = [
   {
     title: 'Компания',
     links: [
       { label: 'О нас',               href: '/about'      },
-      { label: 'Миссия и ценности',   href: '/about'      },
       { label: 'Лицензии',            href: '/licenses'   },
       { label: 'Проекты',             href: '/projects'   },
       { label: 'Отзывы клиентов',     href: '/testimonials' },
-      { label: 'Портфолио (PDF)',     href: '/portfolio/print' },
+      { label: 'Портфолио (PDF)',     href: '/portfolio.pdf' },
       { label: 'Контакты',            href: '/contacts'   },
     ],
   },
   {
     title: 'Направления',
     links: [
-      { label: 'Проектная деятельность',    href: '/services' },
-      { label: 'Строительная деятельность', href: '/services' },
-      { label: 'Инженерные изыскания',      href: '/services' },
-      { label: 'Инжиниринг и надзор',       href: '/services' },
+      { label: 'Проектирование', href: '/design'      },
+      { label: 'Строительство',  href: '/projects'    },
+      { label: 'Обслуживание',   href: '/maintenance' },
+      { label: 'Все услуги',     href: '/services'    },
     ],
   },
   {
     title: 'Услуги',
     links: [
-      { label: 'Геодезические изыскания',   href: '/services' },
-      { label: 'Геологические изыскания',   href: '/services' },
-      { label: 'Строительство ж/д путей',   href: '/services' },
-      { label: 'Инженерные коммуникации',   href: '/services' },
-      { label: 'Промышленное строительство',href: '/services' },
-    ],
-  },
-  {
-    title: 'Контакты',
-    links: [
-      { label: '8(7132) 538-288',             href: 'tel:+77132538288' },
-      { label: 'west_arlan-group@mail.ru',  href: 'mailto:west_arlan-group@mail.ru' },
-      { label: 'arlan-gr.kz',              href: 'https://arlan-gr.kz' },
-      { label: 'г. Актобе, ул. Казангапа 57В, оф. 34', href: '/contacts' },
+      { label: 'Геодезические изыскания',    href: '/services' },
+      { label: 'Геологические изыскания',    href: '/services' },
+      { label: 'Строительство ж/д путей',    href: '/projects' },
+      { label: 'Инженерные коммуникации',    href: '/services' },
+      { label: 'Промышленное строительство', href: '/projects' },
     ],
   },
 ];
 
 export default function Footer() {
   return (
-    <footer className={styles.footer} id="contacts" style={{ position: 'relative', zIndex: 9999, isolation: 'isolate', background: 'var(--bg-primary)' }}>
+    <footer className={styles.footer} id="contacts">
       {/* Top bar */}
       <div className={styles.topBar}>
         <div className="container">
@@ -88,10 +80,10 @@ export default function Footer() {
 
             {/* Brand */}
             <div className={styles.brand}>
-              <a href="#" className={styles.logo}>
+              <Link href="/" className={styles.logo}>
                 <div className={styles.logoMark}>
                   <svg width="44" height="40" viewBox="0 0 719.49 635.66" fill="none">
-                    <path fill="url(#fg)" d="M613.8,437.27c-62.3-103.58-132.83-240.95-201.5-355.51L367.22,0h-16.51c-5.26,19.77-26.22,45.86-33.35,61.03-12.21,25.99-1.91,26.43,18.72,64.07l206.32,360.76,30.4,59.77-106.51.95c-9.82-18.63-13.04-29.8-27.52-49.02l-155.86-274.97c-10.29-18.78-10.26-28.99-25.78-40.4-19.27,12.94-14.27,13.44-25.87,34.79-8.93,16.45-15.27,26.27-23.65,42.54l-143.13,248.42c-77.1,142.82-94.44,127.54-.02,127,86.18-.49,172.52-.02,258.72-.02-2-24.09-9.24-28.93-19.64-46.55-33.15-56.19-11.28-41.79-156.49-41.79,3.5-13.11,16.34-33.82,24.36-47.34l91.22-145.89c4.18,18,25.71,50.9,36.21,68.58,8.16,13.76,11.9,23.61,19.08,36.06,7.25,12.59,11.91,19.4,19.91,35.23l78.91,141.69h302.74c-2.68-32.14-85.4-163.93-105.69-197.65Z"/>
+                    <path fill="url(#fg)" d={WAG_LOGO_PATH}/>
                     <defs>
                       <linearGradient id="fg" x1="0" y1="0" x2="1" y2="1">
                         <stop offset="0%" stopColor="#D4A843"/>
@@ -104,7 +96,7 @@ export default function Footer() {
                   <div className={styles.logoMain}>West Arlan Group</div>
                   <div className={styles.logoSub}>Engineering & Construction</div>
                 </div>
-              </a>
+              </Link>
               <p className={styles.brandDesc}>
                 Проектирование и строительство инженерной и железнодорожной
                 инфраструктуры в Казахстане. Качество. Надёжность. Опыт.
@@ -127,11 +119,20 @@ export default function Footer() {
               <div key={col.title} className={styles.navCol}>
                 <h4 className={styles.colTitle}>{col.title}</h4>
                 <ul className={styles.colList}>
-                  {col.links.map((link) => (
-                    <li key={link.label}>
-                      <a href={link.href} className={styles.colLink}>{link.label}</a>
-                    </li>
-                  ))}
+                  {col.links.map((link) => {
+                    // Внутренние маршруты → <Link> (client-nav + prefetch);
+                    // файлы (.pdf), tel:/mailto:/внешние → обычный <a>.
+                    const internal = link.href.startsWith('/') && !link.href.includes('.');
+                    return (
+                      <li key={link.label}>
+                        {internal ? (
+                          <Link href={link.href} className={styles.colLink}>{link.label}</Link>
+                        ) : (
+                          <a href={link.href} className={styles.colLink}>{link.label}</a>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             ))}
@@ -145,11 +146,11 @@ export default function Footer() {
         <div className="container">
           <div className={styles.bottomInner}>
             <span>© 2010–{new Date().getFullYear()} West Arlan Group. Все права защищены.</span>
-            <span>БИН: 090940003245 | Лицензия МИО РК №123456</span>
+            <span>БИН: 100340009758</span>
             <div className={styles.bottomLinks}>
-              <a href="#">Политика конфиденциальности</a>
-              <a href="#">Условия использования</a>
-              <a href="/admin/login">Администрирование</a>
+              <Link href="/privacy">Политика конфиденциальности</Link>
+              <Link href="/terms">Условия использования</Link>
+              <Link href="/admin/login">Администрирование</Link>
             </div>
           </div>
         </div>

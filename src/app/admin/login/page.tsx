@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import styles from './login.module.css';
 
 export default function AdminLoginPage() {
@@ -79,12 +80,12 @@ export default function AdminLoginPage() {
           </button>
         </form>
 
-        <a href="/" className={styles.backLink}>
+        <Link href="/" className={styles.backLink}>
           <svg viewBox="0 0 16 16" fill="none" width="14" height="14">
             <path d="M13 8H3M7 12L3 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
           На сайт
-        </a>
+        </Link>
       </div>
     </div>
   );

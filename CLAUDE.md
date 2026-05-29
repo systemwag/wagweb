@@ -10,7 +10,7 @@ Premium engineering/railway infrastructure company website (Kazakhstan).
 - **Styling:** Vanilla CSS Modules (NO Tailwind) — one `.module.css` per component
 - **Backend:** Supabase (`src/lib/supabase.ts`, `src/lib/supabase-server.ts`)
 - **Data:** `src/lib/data.ts` (seed data with Supabase fallback), `src/lib/types.ts`
-- **Fonts:** Outfit (headings) + Inter (body) via Google Fonts CDN
+- **Fonts:** loaded via `next/font/google` in `layout.tsx` — Space Grotesk (`--font-heading`, latin only), Onest (`--font-body`, latin + cyrillic), Outfit (`--font-display`). Space Grotesk/Outfit have no Cyrillic subset; RU/KZ glyphs fall back to Onest via the CSS font chain.
 
 ## Design System
 
@@ -28,9 +28,9 @@ All tokens live in `src/app/globals.css` `:root`.
 
 ```
 src/
-  middleware.ts     # Protects /admin/* via wag_admin_session cookie
+  proxy.ts          # Protects /admin/* via wag_admin_session cookie (Next 16: renamed from middleware.ts)
   app/              # Next.js App Router
-    layout.tsx      # Root layout (SmoothScroll + GlobalVerticalBg + Header + GlobalAnim)
+    layout.tsx      # Root layout (SmoothScroll + HeaderWrapper + {children} + GlobalAnim + Tilt)
     page.tsx        # Homepage (Hero → Stats → About → Geography → Services → Partners → Footer)
     globals.css     # Design tokens + shared button styles
     about/          # /about
@@ -38,12 +38,12 @@ src/
     projects/       # /projects + /projects/[id]
     design/         # /design + /design/[id] (project-design portfolio)
     licenses/       # /licenses (certificates + license docs)
-    portfolio/print # LEGACY: /portfolio/print + /portfolio/print/en — Puppeteer-rendered PDF source.
-                    # Kept untouched as reference. New print engine is src/lib/pdf/ (see below).
+    portfolio/print # ACTIVE Puppeteer brochure source (RU + /en). scripts/build-pdf.mjs
+                    # renders these → public/portfolio.pdf (the Hero download button). See "Print engines".
     contacts/       # /contacts
     testimonials/   # /testimonials
     effects/        # /effects — visual experiments / scratch page
-    admin/          # /admin/* — protected by middleware.ts
+    admin/          # /admin/* — protected by proxy.ts
       login, projects, projects/new, projects/[id]
       design, design/new, design/[id], map
       portfolio       # /admin/portfolio — live PDF preview + download (uses /api/portfolio.pdf)
@@ -85,43 +85,47 @@ This means the site runs without Supabase (seed data is the source of truth in d
 
 Server fetchers (`getProjects`, `getDesignProjects`) are wrapped in `unstable_cache(..., { revalidate: 60 })`. Mutations from admin API routes must call `revalidatePath()` to invalidate (see `update-map-coords` for the pattern).
 
-## Print Engine
+## Print engines
 
-`src/lib/pdf/` is a **block-based PDF generator** that reads the same data
-as the website (`getProjects()` etc.) and outputs an A4 portrait brochure.
+⚠️ There are **TWO live PDF systems**, each wired to a different public button.
+This is a known inconsistency — they produce different brochures. Pick one as
+canonical before doing brochure work.
 
-- **Output route:** `GET /api/portfolio.pdf` — fresh PDF, ~2 sec, ~2 MB,
-  cached 5 min at the edge. Add `?download=1` for attachment headers.
-- **Admin UI:** `/admin/portfolio` shows live preview in iframe + download
-  button + data freshness panel.
-- **Stack:** `@react-pdf/renderer` (NOT Puppeteer). Inter alias → Noto
-  Sans TTF (cyrillic + Kazakh). KZ map pre-baked to PNG via
-  `scripts/bake-kz-map.mjs`.
-- **Adding/reordering pages:** edit `src/lib/pdf/Portfolio.tsx` — it's a
-  manifest of `<Block ... />` calls.
-- **Editing copy:** `src/lib/pdf/content/ru.ts` — single file with all
-  Russian text. Marketing numbers (49, 87, 16, 136, 94%) live in
-  `data/getPortfolioData.ts`.
-- **Editing visuals:** design tokens in `tokens.ts`, primitives in `ui/*`,
-  page-type components in `blocks/*`.
+**1. Puppeteer (the premium brochure, source of truth for content).**
+- Source: `src/app/portfolio/print/page.tsx` (RU) + `print/en/page.tsx` (EN),
+  full CSS/gradients. `scripts/build-pdf.mjs` renders them to
+  **`public/portfolio.pdf`** (~8 MB, rasterized).
+- Consumed by: the **Hero "download" button** (`Hero.tsx` → `/portfolio.pdf`)
+  and the admin "Premium (Chromium)" tab.
+- Build is manual: `node scripts/build-pdf.mjs` (not an npm script). After
+  editing the print pages you MUST rerun it or `public/portfolio.pdf` goes stale.
+- ⚠️ RU and EN print pages are ~85% duplicated (~3800 lines total) — extraction
+  to a shared layout + locale content files is a pending refactor.
 
-**Gotchas:**
-- react-pdf supports JPG/PNG only — NOT WebP/AVIF. Local images must be
-  passed via `assetBuffer('/relative/path')` (in `ui/asset.ts`), not as
-  string paths.
-- Inter font ships only as OTF; fontkit can't subset it. Roboto lacks
-  Kazakh Cyrillic (Қ, ұ, і). Use Noto Sans — already wired up.
-- `<Text>` doesn't process literal `\n` in template strings. Use JSX
-  `{'\n'}` or split-and-rebuild (`BigBadge` does this).
-- After editing a static image in `/public`, the asset cache invalidates
-  on next request via mtime check (see `ui/asset.ts`).
+**2. react-pdf (`src/lib/pdf/`, the on-demand "quick" brochure).**
+- `GET /api/portfolio.pdf` — fresh PDF, ~2 sec, ~2 MB, cached 5 min at the edge.
+  `?download=1` for attachment headers. `@react-pdf/renderer` (NOT Puppeteer).
+- Consumed by: the **`/services` page download link** and the admin
+  "Quick (react-pdf)" tab.
+- Pages: manifest in `src/lib/pdf/Portfolio.tsx`. Copy in `content/ru.ts`.
+  Marketing numbers in `data/getPortfolioData.ts`. Tokens in `tokens.ts`,
+  primitives in `ui/*`, page blocks in `blocks/*`.
 
-**Legacy:** `src/app/portfolio/print/` (Puppeteer-rendered) is kept for
-reference but unused. The new engine fully replaces it.
+**Shared, load-bearing:** `scripts/bake-kz-map.mjs` (KZ map → PNG) and
+`scripts/bake-qr-codes.mjs` (QR → PNG) produce assets under `public/portfolio/`
+read by both systems. Don't delete.
+
+**react-pdf gotchas:**
+- JPG/PNG only — NOT WebP/AVIF. Local images via `assetBuffer('/path')`
+  (`ui/asset.ts`), not string paths.
+- Inter ships OTF-only (fontkit can't subset); Roboto lacks Kazakh (Қ, ұ, і).
+  Noto Sans is wired up instead.
+- `<Text>` ignores literal `\n` — use JSX `{'\n'}` or split-and-rebuild.
+- Static `/public` image edits invalidate the asset cache via mtime (`ui/asset.ts`).
 
 ## Admin Panel
 
-- Protected by [src/middleware.ts](src/middleware.ts): requires `wag_admin_session=wag-admin-authenticated` cookie. Login sets it via `POST /api/admin/auth` with the `ADMIN_PASSWORD` env var. **Fallback password if env is unset: `wag2025admin` (hardcoded).** Always set `ADMIN_PASSWORD` in production env.
+- Protected by [src/proxy.ts](src/proxy.ts): requires `wag_admin_session=wag-admin-authenticated` cookie. Login sets it via `POST /api/admin/auth` with the `ADMIN_PASSWORD` env var. **Fallback password if env is unset: `wag2025admin` (hardcoded).** Always set `ADMIN_PASSWORD` in production env.
 - Image upload goes through `/api/admin/upload` to Supabase Storage bucket `project-images` (max 10 MB; JPEG/PNG/WebP/AVIF).
 - `/admin/map` uses [MapCalibrator](src/components/Admin/MapCalibrator.tsx) — drag markers on the SVG, bulk-save via `/api/admin/update-map-coords`. Coordinate system: `x_map: 0–1024`, `y_map: 0–800` (must match [KazakhstanMap.tsx](src/components/Map/KazakhstanMap.tsx)).
 
@@ -134,7 +138,8 @@ reference but unused. The new engine fully replaces it.
 - **Animations:** CSS `@keyframes` preferred. SVG animations for engineering visuals
 - **Buttons:** Animated conic-gradient border (teal-to-gold beam), transparent fill, white text — defined in globals.css
 - **Section backgrounds:** Background images live in `public/images/` and are referenced as `/images/filename.webp` in CSS. All section bg images use a dark gradient overlay on top.
-- **External images:** Configured in `next.config.ts` remotePatterns (clearbit, wikimedia, wikipedia)
+- **External images:** Only Supabase Storage (`*.supabase.co`) is allowed in `next.config.ts` remotePatterns. (clearbit/wikimedia/wikipedia were removed 2026-05-29 — unused.)
+- **Security headers / canonical URL:** baseline headers (`nosniff`, `SAMEORIGIN`, `Referrer-Policy`, `Permissions-Policy`, HSTS) set via `headers()` in `next.config.ts` — no CSP yet (inline JSON-LD + next/font + three.js make a strict policy non-trivial). Public origin comes from `src/lib/site.ts` (`SITE_URL`, env `NEXT_PUBLIC_SITE_URL` with `https://west-arlan.kz` fallback) — used by `layout.tsx` metadata, `sitemap.ts`, `robots.ts`.
 
 ## Public Folder Structure
 

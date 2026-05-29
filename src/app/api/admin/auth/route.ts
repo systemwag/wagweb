@@ -1,13 +1,20 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import { COOKIE_NAME, SESSION_TOKEN, errorMessage } from '@/lib/admin-auth';
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'wag2025admin';
-const COOKIE_NAME = 'wag_admin_session';
-const SESSION_TOKEN = 'wag-admin-authenticated';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const MAX_AGE = 60 * 60 * 24; // 24 hours
 
 export async function POST(req: Request) {
   try {
+    if (!ADMIN_PASSWORD) {
+      // Fail closed: never allow login with an unset/default password.
+      return NextResponse.json(
+        { ok: false, error: 'Сервер не настроен: ADMIN_PASSWORD не задан' },
+        { status: 500 },
+      );
+    }
+
     const { password } = await req.json();
 
     if (password !== ADMIN_PASSWORD) {
@@ -25,7 +32,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ ok: true });
   } catch (e) {
-    return NextResponse.json({ ok: false, error: String(e) }, { status: 500 });
+    return NextResponse.json({ ok: false, error: errorMessage(e) }, { status: 500 });
   }
 }
 

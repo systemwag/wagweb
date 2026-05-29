@@ -18,8 +18,16 @@
 
 import React, { useRef, useEffect } from 'react';
 
+// Палитра точек из дизайн-системы проекта (gold доминирует, teal + blue — акценты)
+const PARTICLE_PALETTE = [
+  'rgba(212, 168, 67, 0.45)',  // gold   #D4A843
+  'rgba(212, 168, 67, 0.45)',  // gold   (вес ×2 — бренд-цвет преобладает)
+  'rgba(0, 196, 167, 0.42)',   // teal   #00C4A7
+  'rgba(79, 132, 255, 0.42)',  // blue   #4F84FF
+];
+
 export default function InteractiveCanvasBg({
-  particleCount = 60,
+  particleCount = 120,
 }: {
   particleCount?: number;
 } = {}) {
@@ -51,8 +59,9 @@ export default function InteractiveCanvasBg({
       baseSize: number;
       originalX: number;
       originalY: number;
+      color: string;
 
-      constructor(x: number, y: number) {
+      constructor(x: number, y: number, color: string) {
         this.x = x;
         this.y = y;
         this.originalX = x;
@@ -61,6 +70,7 @@ export default function InteractiveCanvasBg({
         this.vy = (Math.random() - 0.5) * 0.3;
         this.baseSize = Math.random() * 2 + 1;
         this.size = this.baseSize;
+        this.color = color;
       }
 
       update(mouseX: number, mouseY: number, mouseActive: boolean) {
@@ -93,7 +103,7 @@ export default function InteractiveCanvasBg({
       draw(c: CanvasRenderingContext2D) {
         c.beginPath();
         c.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        c.fillStyle = 'rgba(212, 168, 67, 0.45)';   // gold particle
+        c.fillStyle = this.color;
         c.fill();
       }
     }
@@ -119,7 +129,8 @@ export default function InteractiveCanvasBg({
         const cIndex = i % cols;
         const x = (width / cols) * (cIndex + 0.5) + (Math.random() - 0.5) * 60;
         const y = (height / rows) * (rIndex + 0.5) + (Math.random() - 0.5) * 60;
-        particles.push(new Particle(x, y));
+        const color = PARTICLE_PALETTE[Math.floor(Math.random() * PARTICLE_PALETTE.length)];
+        particles.push(new Particle(x, y, color));
       }
     };
 

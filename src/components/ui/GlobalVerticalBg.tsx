@@ -33,6 +33,9 @@ export default function GlobalVerticalBg() {
   const [, setPathLen] = useState(16000);
 
   useEffect(() => {
+    // Intentional mount/hydration flag + viewport read; the synchronous
+    // setState here runs once on mount, not in a render-cascade loop.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     setW(window.innerWidth);
 

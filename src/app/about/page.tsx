@@ -52,6 +52,7 @@ const team = [
 
 const leadership = [
   { name: 'Аронов Аян Садиржанович',         role: 'Генеральный директор',                    photo: '/team/aronov.jpg' },
+  { name: 'Ақдәулет Айдос Мейірханұлы',      role: 'Директор по развитию',                    photo: '' },
   { name: 'Валеев Алексей Сергеевич',        role: 'Директор проектной группы',               photo: '/team/valeev.jpg' },
   { name: 'Прусс Альберт Русланович',        role: 'Директор по производству',                photo: '/team/pruss.jpg' },
   { name: 'Штурмилов Валентин Петрович',     role: 'Главный инженер проекта (ГИП)',           photo: '/team/shturmilov.jpg' },
@@ -172,7 +173,13 @@ export default function AboutPage() {
               {leadership.map((p) => (
                 <div key={p.name} className={`glass-card ${styles.leadCard}`}>
                   <div className={styles.leadPhotoWrap}>
-                    <img src={p.photo} alt={p.name} className={styles.leadPhoto} />
+                    {p.photo ? (
+                      <img src={p.photo} alt={p.name} className={styles.leadPhoto} />
+                    ) : (
+                      <span className={styles.leadInitials} aria-hidden="true">
+                        {p.name.split(' ').slice(0, 2).map((w) => w[0]).join('')}
+                      </span>
+                    )}
                   </div>
                   <div className={styles.leadRole}>{p.role}</div>
                   <div className={styles.leadName}>{p.name}</div>

@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import type { DesignProject, DesignCategory } from '@/lib/types';
 import styles from './admin.module.css';
+import { SortableTh, useSortable } from './sortable';
 
 const CATEGORY_LABEL: Record<DesignCategory, string> = {
   'full-cycle':    'Полный цикл',
@@ -14,47 +15,15 @@ const CATEGORY_LABEL: Record<DesignCategory, string> = {
 };
 
 type SortKey = 'id' | 'client' | 'category' | 'year' | 'status';
-type SortDir = 'asc' | 'desc';
 
-function SortIcon({ active, dir }: { active: boolean; dir: SortDir }) {
-  return (
-    <span className={styles.sortIcon}>
-      <span className={styles.up}   style={{ opacity: active && dir === 'asc'  ? 1 : 0.3 }} />
-      <span className={styles.down} style={{ opacity: active && dir === 'desc' ? 1 : 0.3 }} />
-    </span>
-  );
-}
+const sortValue = (p: DesignProject, key: SortKey): string | number =>
+  key === 'year' ? (p.year ?? 0) : (p[key] as string | number);
 
 export default function DesignProjectsTable({ projects: initial }: { projects: DesignProject[] }) {
   const router = useRouter();
   const [projects, setProjects]     = useState(initial);
   const [deletingId, setDeletingId] = useState<number | null>(null);
-  const [sortKey, setSortKey]       = useState<SortKey>('id');
-  const [sortDir, setSortDir]       = useState<SortDir>('asc');
-
-  const handleSort = (key: SortKey) => {
-    if (sortKey === key) {
-      setSortDir(d => d === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortKey(key);
-      setSortDir('asc');
-    }
-  };
-
-  const sorted = useMemo(() => {
-    return [...projects].sort((a, b) => {
-      let aVal: string | number = '';
-      let bVal: string | number = '';
-      if (sortKey === 'id')       { aVal = a.id;       bVal = b.id; }
-      if (sortKey === 'client')   { aVal = a.client;   bVal = b.client; }
-      if (sortKey === 'category') { aVal = a.category; bVal = b.category; }
-      if (sortKey === 'year')     { aVal = a.year ?? 0; bVal = b.year ?? 0; }
-      if (sortKey === 'status')   { aVal = a.status;   bVal = b.status; }
-      if (aVal < bVal) return sortDir === 'asc' ? -1 : 1;
-      if (aVal > bVal) return sortDir === 'asc' ?  1 : -1;
-      return 0;
-    });
-  }, [projects, sortKey, sortDir]);
+  const { sortKey, sortDir, handleSort, sorted } = useSortable<DesignProject, SortKey>(projects, sortValue, 'id');
 
   const handleDelete = async (id: number, client: string) => {
     if (!confirm(`Удалить запись «${client}»?`)) return;
@@ -78,15 +47,7 @@ export default function DesignProjectsTable({ projects: initial }: { projects: D
   }
 
   const th = (key: SortKey, label: string) => (
-    <th
-      className={`${styles.thSortable} ${sortKey === key ? styles.thSortActive : ''}`}
-      onClick={() => handleSort(key)}
-    >
-      <span className={styles.thInner}>
-        {label}
-        <SortIcon active={sortKey === key} dir={sortDir} />
-      </span>
-    </th>
+    <SortableTh sortKey={key} activeKey={sortKey} dir={sortDir} onSort={handleSort} label={label} />
   );
 
   return (

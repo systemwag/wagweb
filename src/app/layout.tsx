@@ -6,6 +6,8 @@ import GlobalAnim from '@/components/ui/GlobalAnim';
 import HeaderWrapper from '@/components/Header/HeaderWrapper';
 import SmoothScroll from '@/components/ui/SmoothScroll';
 import Tilt from '@/components/ui/Tilt';
+import CursorLogo from '@/components/ui/CursorLogo';
+import { SITE_URL } from '@/lib/site';
 
 /* Space Grotesk and Outfit have no Cyrillic subset; Russian/Kazakh glyphs
    automatically fall back to Onest in the CSS font-family chain. */
@@ -31,7 +33,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://west-arlan.kz'),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: 'West Arlan Group',
     template: '%s | West Arlan Group',
@@ -50,7 +52,7 @@ export const metadata: Metadata = {
   openGraph: {
     type:   'website',
     locale: 'ru_RU',
-    url:    'https://west-arlan.kz',
+    url:    SITE_URL,
     siteName: 'West Arlan Group',
     title:    'West Arlan Group',
     description: 'Проектирование и строительство инженерной и железнодорожной инфраструктуры в Казахстане.',
@@ -77,8 +79,8 @@ const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'West Arlan Group',
-  url: 'https://west-arlan.kz',
-  logo: 'https://west-arlan.kz/logo.png',
+  url: SITE_URL,
+  logo: `${SITE_URL}/icon.svg`, // raster logo.png not yet available; SVG icon is the canonical mark
   description:
     'Проектирование и строительство инженерной и железнодорожной инфраструктуры в Казахстане.',
   address: {
@@ -115,6 +117,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         {children}
         <GlobalAnim />
         <Tilt />
+        <CursorLogo />
       </body>
     </html>
   );

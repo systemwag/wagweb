@@ -25,6 +25,17 @@ const TABS = [
 type SortKey = 'number' | 'client' | 'category';
 type SortDir = 'asc' | 'desc';
 
+function SortIndicator({ col, sortKey, sortDir }: { col: SortKey; sortKey: SortKey; sortDir: SortDir }) {
+  return (
+    <span className={styles.sortIndicator}>
+      <svg viewBox="0 0 8 12" fill="none" width="7" height="10">
+        <path d="M4 1L1 4.5h6L4 1z" fill={sortKey === col && sortDir === 'asc' ? 'currentColor' : 'rgba(255,255,255,0.2)'}/>
+        <path d="M4 11L1 7.5h6L4 11z" fill={sortKey === col && sortDir === 'desc' ? 'currentColor' : 'rgba(255,255,255,0.2)'}/>
+      </svg>
+    </span>
+  );
+}
+
 export default function DesignTable({ projects }: { projects: DesignProject[] }) {
   const [activeTab, setActiveTab] = useState('all');
   const [search, setSearch]       = useState('');
@@ -74,15 +85,6 @@ export default function DesignTable({ projects }: { projects: DesignProject[] })
 
   const resetFilters = () => { setSearch(''); setActiveTab('all'); };
   const isFiltered = !!(search || activeTab !== 'all');
-
-  const SortIndicator = ({ col }: { col: SortKey }) => (
-    <span className={styles.sortIndicator}>
-      <svg viewBox="0 0 8 12" fill="none" width="7" height="10">
-        <path d="M4 1L1 4.5h6L4 1z" fill={sortKey === col && sortDir === 'asc' ? 'currentColor' : 'rgba(255,255,255,0.2)'}/>
-        <path d="M4 11L1 7.5h6L4 11z" fill={sortKey === col && sortDir === 'desc' ? 'currentColor' : 'rgba(255,255,255,0.2)'}/>
-      </svg>
-    </span>
-  );
 
   return (
     <div className={styles.tableBlock}>
@@ -160,19 +162,19 @@ export default function DesignTable({ projects }: { projects: DesignProject[] })
                   className={`${styles.th} ${styles.thNum} ${styles.thSortable} ${sortKey === 'number' ? styles.thActive : ''}`}
                   onClick={() => handleSort('number')}
                 >
-                  № <SortIndicator col="number" />
+                  № <SortIndicator col="number" sortKey={sortKey} sortDir={sortDir} />
                 </th>
                 <th
                   className={`${styles.th} ${styles.thSortable} ${sortKey === 'client' ? styles.thActive : ''}`}
                   onClick={() => handleSort('client')}
                 >
-                  Заказчик <SortIndicator col="client" />
+                  Заказчик <SortIndicator col="client" sortKey={sortKey} sortDir={sortDir} />
                 </th>
                 <th
                   className={`${styles.th} ${styles.thCat} ${styles.thSortable} ${sortKey === 'category' ? styles.thActive : ''}`}
                   onClick={() => handleSort('category')}
                 >
-                  Категория <SortIndicator col="category" />
+                  Категория <SortIndicator col="category" sortKey={sortKey} sortDir={sortDir} />
                 </th>
                 <th className={`${styles.th} ${styles.thWorks}`}>Состав работ</th>
                 <th className={`${styles.th} ${styles.thChevron}`}></th>

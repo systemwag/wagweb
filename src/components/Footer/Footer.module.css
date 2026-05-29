@@ -3,6 +3,7 @@
   position: relative;
   z-index: 9999 !important;
   isolation: isolate;
+  background: var(--bg-primary);
 }
 
 /* ── Top contact bar ──────────────────── */
@@ -44,7 +45,9 @@
 
 .mainInner {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  /* Бренд (2fr) + 3 nav-колонки. Колонка «Контакты» убрана как дубль
+   * верхнего contact-бара. */
+  grid-template-columns: 2fr 1fr 1fr 1fr;
   gap: var(--space-xl);
   align-items: start;
 }

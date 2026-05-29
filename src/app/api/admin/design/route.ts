@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { createServerClient } from '@/lib/supabase-server';
+import { requireAdmin, errorMessage } from '@/lib/admin-auth';
 
 export async function POST(req: Request) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
   try {
     const body = await req.json();
     const supabase = createServerClient();
@@ -11,6 +14,6 @@ export async function POST(req: Request) {
     revalidatePath('/design');
     return NextResponse.json({ ok: true, project: data });
   } catch (e) {
-    return NextResponse.json({ ok: false, error: String(e) }, { status: 500 });
+    return NextResponse.json({ ok: false, error: errorMessage(e) }, { status: 500 });
   }
 }

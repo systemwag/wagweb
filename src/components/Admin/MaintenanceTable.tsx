@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import type { MaintenanceProject } from '@/lib/types';
 import { WORK_TYPE_LABELS } from '@/lib/types';
 import styles from './admin.module.css';
+import { SortIcon, useSortable } from './sortable';
 
 const STATUS_LABEL: Record<string, string> = {
   'completed': 'Завершён',
@@ -17,16 +18,9 @@ const STATUS_CLASS: Record<string, string> = {
 };
 
 type SortKey = 'id' | 'title' | 'work_type' | 'period' | 'status';
-type SortDir = 'asc' | 'desc';
 
-function SortIcon({ active, dir }: { active: boolean; dir: SortDir }) {
-  return (
-    <span className={styles.sortIcon}>
-      <span className={styles.up}   style={{ opacity: active && dir === 'asc'  ? 1 : 0.3 }} />
-      <span className={styles.down} style={{ opacity: active && dir === 'desc' ? 1 : 0.3 }} />
-    </span>
-  );
-}
+const sortValue = (p: MaintenanceProject, key: SortKey): string | number =>
+  p[key] as string | number;
 
 interface Props { projects: MaintenanceProject[] }
 
@@ -35,28 +29,7 @@ export default function MaintenanceTable({ projects: initial }: Props) {
   const [projects, setProjects]     = useState(initial);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [toggling, setToggling]     = useState<number | null>(null);
-  const [sortKey, setSortKey]       = useState<SortKey>('id');
-  const [sortDir, setSortDir]       = useState<SortDir>('asc');
-
-  const handleSort = (key: SortKey) => {
-    if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
-    else { setSortKey(key); setSortDir('asc'); }
-  };
-
-  const sorted = useMemo(() => {
-    return [...projects].sort((a, b) => {
-      let aVal: string | number = '';
-      let bVal: string | number = '';
-      if (sortKey === 'id')        { aVal = a.id;        bVal = b.id; }
-      if (sortKey === 'title')     { aVal = a.title;     bVal = b.title; }
-      if (sortKey === 'work_type') { aVal = a.work_type; bVal = b.work_type; }
-      if (sortKey === 'period')    { aVal = a.period;    bVal = b.period; }
-      if (sortKey === 'status')    { aVal = a.status;    bVal = b.status; }
-      if (aVal < bVal) return sortDir === 'asc' ? -1 : 1;
-      if (aVal > bVal) return sortDir === 'asc' ?  1 : -1;
-      return 0;
-    });
-  }, [projects, sortKey, sortDir]);
+  const { sortKey, sortDir, handleSort, sorted } = useSortable<MaintenanceProject, SortKey>(projects, sortValue, 'id');
 
   /* Toggle featured inline */
   const toggleFeatured = async (p: MaintenanceProject) => {

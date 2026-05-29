@@ -1,4 +1,4 @@
-import { getProjects } from '@/lib/data';
+import { getProjects, getMaintenanceProjects, getDesignProjects } from '@/lib/data';
 import styles from './print.module.css';
 import PrintButtons from './PrintButtons';
 
@@ -159,8 +159,6 @@ const INDUSTRY_CHIPS = [
   },
 ];
 
-const KEY_REGIONS = ['Актюбинская', 'ЗКО', 'Атырауская', 'Мангистауская', 'Карагандинская', 'Алматы', 'Астана', 'Оренбург (РФ)'];
-
 const PARTNER_CATEGORIES = [
   {
     icon: (
@@ -201,22 +199,36 @@ const PARTNER_CATEGORIES = [
   },
 ];
 
+const svcIconProps = { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+
 const SVCS_DESIGN = [
-  { num: '01', title: 'Инженерно-геодезические изыскания', desc: 'Топосъёмка, разбивка осей, геодезические сети, мониторинг деформаций — для линейных и площадных объектов.' },
-  { num: '02', title: 'Инженерно-геологические изыскания', desc: 'Бурение, лабораторные испытания грунтов, гидрогеология, оценка сейсмичности на проектируемых площадках.' },
-  { num: '03', title: 'Проектно-сметная документация',     desc: 'Рабочая документация и ТЭО для дорог, трубопроводов и ЛЭП; прохождение экспертизы в РГП «ГосЭкспертиза».' },
-  { num: '04', title: 'Технические условия примыкания',    desc: 'Согласование с филиалами АО «НК «КТЖ» и сетевыми компаниями, ТЭО, план путевого и сетевого развития.' },
-  { num: '05', title: 'Проектирование инженерных сетей',    desc: 'ВЛ 10⁠/⁠110 кВ, газо- и нефтепроводы, водопровод, канализация, теплоснабжение, кабельные линии связи.' },
-  { num: '06', title: 'Землеустроительные проекты',         desc: 'Формирование участков, документация для отвода земель под капитальное строительство и линейные объекты.' },
+  { num: '01', title: 'Комплексные инженерные изыскания', desc: 'Геодезические, геологические, экологические, гидрологические и археологические изыскания для обоснования проектных решений.',
+    icon: (<svg {...svcIconProps}><circle cx="10.5" cy="10.5" r="6" /><line x1="10.5" y1="7" x2="10.5" y2="14" /><line x1="7" y1="10.5" x2="14" y2="10.5" /><line x1="19.5" y1="19.5" x2="15" y2="15" /></svg>) },
+  { num: '02', title: 'Производственные объекты',          desc: 'Технологическое проектирование заводов, комбинатов и промышленных комплексов производственного назначения.',
+    icon: (<svg {...svcIconProps}><path d="M3 21V11l5-3v3l5-3v3l5-3v13z" /><line x1="7" y1="16" x2="7" y2="18" /><line x1="12" y1="16" x2="12" y2="18" /><line x1="17" y1="16" x2="17" y2="18" /></svg>) },
+  { num: '03', title: 'Жилые и гражданские объекты',       desc: 'Проектирование зданий и сооружений жилищно-гражданского назначения с учётом действующих норм и стандартов.',
+    icon: (<svg {...svcIconProps}><rect x="6" y="3" width="12" height="18" rx="0.5" /><line x1="9" y1="7" x2="10" y2="7" /><line x1="14" y1="7" x2="15" y2="7" /><line x1="9" y1="11" x2="10" y2="11" /><line x1="14" y1="11" x2="15" y2="11" /><line x1="10.5" y1="21" x2="13.5" y2="21" /></svg>) },
+  { num: '04', title: 'Транспортная инфраструктура',       desc: 'Проектирование объектов транспорта, связи и коммуникаций, включая железнодорожные и автодорожные объекты.',
+    icon: (<svg {...svcIconProps}><line x1="3" y1="9" x2="21" y2="9" /><line x1="3" y1="15" x2="21" y2="15" /><line x1="7" y1="7" x2="7" y2="17" /><line x1="12" y1="7" x2="12" y2="17" /><line x1="17" y1="7" x2="17" y2="17" /></svg>) },
+  { num: '05', title: 'Инженерные системы и сети',         desc: 'Проектная документация для инженерных систем: электро-, водо-, теплоснабжение и слаботочные сети.',
+    icon: (<svg {...svcIconProps}><path d="M13 2 4 14h7l-1 8 9-12h-7z" /></svg>) },
+  { num: '06', title: 'Реконструкция и усиление конструкций', desc: 'Строительное проектирование реконструкции зданий и сооружений, а также усиление несущих конструкций.',
+    icon: (<svg {...svcIconProps}><path d="M14.7 6.3a4 4 0 0 0-5.2 5.2L3 18l3 3 6.5-6.5a4 4 0 0 0 5.2-5.2l-2.9 2.9-2.5-2.5z" /></svg>) },
 ];
 
 const SVCS_BUILD = [
-  { num: '01', title: 'Автомобильные и железные дороги',  desc: 'Верхнее строение пути — РШР Р65, стрелочные переводы 1⁠/⁠9 и 1⁠/⁠7, балластировка; автодороги I⁠–⁠V технической категории, ВПП аэродромов.' },
-  { num: '02', title: 'Магистральные трубопроводы и резервуары', desc: 'Нефте- и газопроводы высокого/среднего давления, продуктопроводы, стальные резервуары — в т. ч. под опасные среды.' },
-  { num: '03', title: 'Линии электропередач и связи',     desc: 'ВЛ до 35 кВ, до 110 кВ и выше, контактная сеть ж⁠/⁠д путей, общереспубликанские линии связи и телекоммуникаций.' },
-  { num: '04', title: 'Промышленные объекты и сооружения', desc: 'Несущие и ограждающие конструкции, монтаж металлических и ж⁠/⁠б конструкций, дымовые трубы, силосы, мосты и эстакады.' },
-  { num: '05', title: 'Инженерные сети, СЦБ и контактная сеть', desc: 'Водо-, тепло-, газоснабжение, наружное освещение, электрификация ж⁠/⁠д, светофоры и переездная сигнализация.' },
-  { num: '06', title: 'Содержание ж⁠/⁠д путей и демонтаж',  desc: 'Промеры пути 2 раза в месяц, замена шпал и рельсов, обслуживание стрелочных переводов, демонтаж РШР и устройств БМРЦ.' },
+  { num: '01', title: 'Строительство, капремонт и реконструкция', desc: 'Полный цикл строительных работ, капитального ремонта и реконструкции производственных и промышленных объектов.',
+    icon: (<svg {...svcIconProps}><rect x="4" y="8" width="9" height="13" /><path d="M13 21V4l7 3.5V21" /><line x1="7" y1="12" x2="10" y2="12" /><line x1="7" y1="16" x2="10" y2="16" /></svg>) },
+  { num: '02', title: 'Расчёт сметной стоимости',         desc: 'Разработка сметной документации и расчёт стоимости строительно-монтажных работ по действующим нормативам.',
+    icon: (<svg {...svcIconProps}><rect x="5" y="3" width="14" height="18" rx="1" /><line x1="8" y1="7" x2="16" y2="7" /><line x1="8" y1="12" x2="8.5" y2="12" /><line x1="12" y1="12" x2="12.5" y2="12" /><line x1="16" y1="12" x2="16.5" y2="12" /><line x1="8" y1="16" x2="8.5" y2="16" /><line x1="12" y1="16" x2="12.5" y2="16" /><line x1="16" y1="16" x2="16.5" y2="16" /></svg>) },
+  { num: '03', title: 'Разработка ППР, ГПР, ПОС',          desc: 'Проект производства работ, график производства работ и проект организации строительства.',
+    icon: (<svg {...svcIconProps}><path d="M7 3h7l4 4v14H7z" /><polyline points="14 3 14 7 18 7" /><line x1="10" y1="12" x2="15" y2="12" /><line x1="10" y1="16" x2="15" y2="16" /></svg>) },
+  { num: '04', title: 'Инжиниринговое сопровождение',      desc: 'Сопровождение строительства промышленных объектов: координация подрядчиков, контроль сроков и качества.',
+    icon: (<svg {...svcIconProps}><circle cx="12" cy="12" r="3" /><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.1 5.1l2.1 2.1M16.8 16.8l2.1 2.1M18.9 5.1l-2.1 2.1M7.2 16.8l-2.1 2.1" /></svg>) },
+  { num: '05', title: 'Сопровождение технической документации', desc: 'Ведение и сопровождение полного пакета технической документации по строительству объектов.',
+    icon: (<svg {...svcIconProps}><rect x="6" y="4" width="12" height="17" rx="1" /><rect x="9" y="2.5" width="6" height="3" rx="1" /><line x1="9" y1="10" x2="15" y2="10" /><line x1="9" y1="14" x2="15" y2="14" /></svg>) },
+  { num: '06', title: 'Сдача и ввод в эксплуатацию',       desc: 'Организация процедур сдачи и ввода объектов в постоянную эксплуатацию, взаимодействие с надзорными органами.',
+    icon: (<svg {...svcIconProps}><circle cx="12" cy="12" r="9" /><polyline points="8 12 11 15 16 9" /></svg>) },
 ];
 
 const PROCESS_DESIGN = [
@@ -233,6 +245,14 @@ const PROCESS_BUILD = [
   { roman: 'IV', title: 'Сдача и ПНР',       meta: 'Пусконаладка · акт ввода' },
 ];
 
+// Team composition — mirrors the «Люди, которые строят» block on the website.
+const PEOPLE = [
+  { num: '4+',  label: 'Топ-менеджмент',       desc: 'Генеральный директор и руководство' },
+  { num: '15+', label: 'Проектный отдел',      desc: 'Инженеры-проектировщики и ГИП' },
+  { num: '10+', label: 'Изыскательский отдел', desc: 'Геодезисты, геологи, сметчики' },
+  { num: '50+', label: 'Строительные бригады', desc: 'Прорабы, мастера, инженеры СЦБ' },
+];
+
 const TEAM = [
   { num: '01', role: 'Генеральный директор',     name: 'Аронов Аян Садиржанович',    phone: '+7 (777) 669-99-89' },
   { num: '02', role: 'Директор проектной группы', name: 'Валеев Алексей Сергеевич',    phone: '+7 (775) 645-90-51' },
@@ -244,7 +264,7 @@ const TEAM = [
    Reusable bits
    ───────────────────────────────────────────────────────────────── */
 
-const TOTAL = 16;   // pages 3+4 merged into a single scale-and-geography page
+const TOTAL = 15;   // pages 3+4 merged; testimonials condensed to a single page
 const pageNumLabel = (n: number) => `${String(n).padStart(2, '0')} / ${TOTAL}`;
 const ISSUE_STAMP  = 'WAG · PORTFOLIO · 2026';
 
@@ -275,38 +295,40 @@ function PageChrome({ pageNum, dark = false }: { pageNum?: number; dark?: boolea
    ───────────────────────────────────────────────────────────────── */
 
 export default async function PortfolioPrintPage() {
-  const projects = await getProjects();
+  // Live counts pulled from the same data layer the website uses:
+  //   projects            → СМР, строительство (/projects)
+  //   maintenance_projects → обслуживание и ремонт (/maintenance)
+  //   design_projects      → проектные работы / ПД (/design)
+  // Fallbacks keep the layout sane if a fetch returns empty (seed-less env).
+  const [projects, maintenance, design] = await Promise.all([
+    getProjects(),
+    getMaintenanceProjects(),
+    getDesignProjects(),
+  ]);
 
-  // All marketing numbers are tuned copy (per project memory: every stat is
-  // invented). The target PDF locks these — keep them deterministic instead
-  // of pulling from the DB so seed mode doesn't break the layout.
-  const COUNT_SMR_BUILD = 29;                          // new construction объекты
-  const COUNT_MAINTENANCE = 20;                        // maintenance / обслуживание объекты
-  const COUNT_SMR = COUNT_SMR_BUILD + COUNT_MAINTENANCE; // 49 — used as total СМР elsewhere
-  const COUNT_PD = 87;
-  const COUNT_REGISTRY = COUNT_SMR + COUNT_PD;         // 136
+  const COUNT_SMR_BUILD = projects.length || 29;       // new construction объекты
+  const COUNT_MAINTENANCE = maintenance.length || 20;  // maintenance / обслуживание объекты
+  const COUNT_SMR = COUNT_SMR_BUILD + COUNT_MAINTENANCE; // total СМР, used elsewhere
+  const COUNT_PD = design.length || 87;
+  const COUNT_REGISTRY = COUNT_SMR + COUNT_PD;
+  // Geography metrics are not derivable from project rows — kept as copy.
   const COUNT_REGIONS = 16;
   const COUNT_COUNTRIES = 2;
-  const COUNT_TESTIMONIALS = PRINT_TESTIMONIALS.length;
-
-  // Map dots: derived from real DB rows when available.
-  const completed  = projects.filter(p => p.status === 'completed').length || 43;
-  const inProgress = projects.filter(p => p.status === 'in-progress').length || 3;
-  const planned    = projects.filter(p => p.status === 'planned').length || 3;
 
   // QR codes are pre-baked by scripts/bake-qr-codes.mjs to PNGs under
   // /public/portfolio/. Saves render time and keeps the build deterministic.
   // (Source URLs: arlan-gr.kz/projects and arlan-gr.kz/design — re-run the
   // bake script if these change.)
 
-  // Testimonial chunks: 6 on page 12, 8 on page 13. Drop the 3rd АМК quote
-  // (index 2) since we already have 2 from that client — full archive is on
-  // the website. Total displayed: 14 of 15.
-  const filteredTestimonials = PRINT_TESTIMONIALS.filter((_, i) => i !== 2);
-  const testChunks: PrintTestimonial[][] = [
-    filteredTestimonials.slice(0, 6),
-    filteredTestimonials.slice(6),
-  ];
+  // One testimonial per client company — keep the first letter from each,
+  // drop the rest (e.g. the 3 АМК quotes collapse to 1, the 2 Зерде to 1).
+  // The full archive lives on the website.
+  const seenClients = new Set<string>();
+  const filteredTestimonials = PRINT_TESTIMONIALS.filter((t) => {
+    if (seenClients.has(t.client)) return false;
+    seenClients.add(t.client);
+    return true;
+  });
 
   return (
     <main className={styles.book}>
@@ -348,7 +370,7 @@ export default async function PortfolioPrintPage() {
         <div className={styles.coverBottom}>
           <div className={styles.coverBottomCol}>
             <div className={styles.coverBottomLabel}>БИН</div>
-            <div className={styles.coverBottomValue}>090940003245</div>
+            <div className={styles.coverBottomValue}>100340009758</div>
           </div>
           <div className={styles.coverBottomCol}>
             <div className={styles.coverBottomIcon} aria-hidden>
@@ -432,30 +454,39 @@ export default async function PortfolioPrintPage() {
           </div>
 
           <div className={styles.legalBlockLabel}><span /> ЮРИДИЧЕСКИЕ ЛИЦА ГРУППЫ</div>
+          <div className={`${styles.legalCard} ${styles.legalCardDark} ${styles.legalHqCard}`}>
+            <span className={`${styles.legalCardBadge} ${styles.legalCardBadgeGold}`}>HQ</span>
+            <div className={styles.legalCardName}>West Arlan Group</div>
+            <div className={styles.legalCardRole}>Головная компания · координация группы</div>
+            <div className={styles.legalCardMeta}>ТОО · БИН 100340009758 · Актобе</div>
+          </div>
           <div className={styles.legalCards}>
-            <div className={`${styles.legalCard} ${styles.legalCardDark}`}>
-              <span className={`${styles.legalCardBadge} ${styles.legalCardBadgeGold}`}>HQ</span>
-              <div className={styles.legalCardName}>West Arlan Group</div>
-              <div className={styles.legalCardRole}>Головная компания · координация</div>
-              <div className={styles.legalCardMeta}>ТОО · БИН 090940003245 · Актобе</div>
-            </div>
             <div className={styles.legalCard}>
               <span className={`${styles.legalCardBadge} ${styles.legalCardBadgeTeal}`}>СМР</span>
               <div className={styles.legalCardName}>West Capital Construction LLP</div>
               <div className={styles.legalCardRole}>Член группы · строительно-монтажные работы</div>
-              <div className={styles.legalCardMeta}>Договорная история с 2010 г.</div>
             </div>
             <div className={styles.legalCard}>
               <span className={`${styles.legalCardBadge} ${styles.legalCardBadgeBlue}`}>ПД</span>
               <div className={styles.legalCardName}>Global Construction Project</div>
               <div className={styles.legalCardRole}>Член группы · проектная деятельность</div>
-              <div className={styles.legalCardMeta}>ПСД, ТЭО, экспертиза</div>
+            </div>
+            <div className={styles.legalCard}>
+              <span className={`${styles.legalCardBadge} ${styles.legalCardBadgeAmber}`}>СиО</span>
+              <div className={styles.legalCardName}>West Altyn Kyran</div>
+              <div className={styles.legalCardRole}>Член группы · поставка и обслуживание</div>
+            </div>
+            <div className={styles.legalCard}>
+              <span className={`${styles.legalCardBadge} ${styles.legalCardBadgeViolet}`}>ЛОГ</span>
+              <div className={styles.legalCardName}>West Logistics</div>
+              <div className={styles.legalCardRole}>Член группы · логистика</div>
             </div>
           </div>
 
           <div className={styles.legalNote}>
-            West Capital Construction LLP и Global Construction Project входят в состав группы под
-            управлением West Arlan Group и работают по единой политике качества с лицензиями I категории.
+            Все подразделения работают под единым управлением и общей политикой качества: лицензии
+            I категории, системы ISO 9001 / 14001 и сквозной контроль на каждом этапе — от проектирования
+            до сдачи объекта.
           </div>
 
           <WagMark className={styles.aboutWatermark} gradientId="wagAbout" />
@@ -468,30 +499,35 @@ export default async function PortfolioPrintPage() {
         <div className={styles.pageInner}>
           <div className={`${styles.eyebrow} ${styles.eyebrowDark}`}>МАСШТАБ И ГЕОГРАФИЯ РАБОТ</div>
           <h2 className={`${styles.titleH1} ${styles.titleH1Dark}`}>
-            За шестнадцать лет<br />
-            <span className={styles.titleAccentGold}>работы</span>
+            За <span className={styles.titleAccentGold}>шестнадцать</span> лет<br />
+            работы
           </h2>
 
-          <div className={`${styles.leadBox} ${styles.leadBoxDark}`}>
-            Объекты по всему Казахстану — от Атырау до Хоргоса, от Уральска до Семея — и в Оренбургской
-            области Российской Федерации (АО «Уральская Сталь», г. Новотроицк).
+          <div className={`${styles.leadBox} ${styles.leadBoxDark} ${styles.leadBoxScale}`}>
+            Инфраструктура, по которой течёт экономика страны, сети, которые питают города, промышленные
+            объекты, на которых держится производство — в десятках регионов Казахстана и за его пределами.
           </div>
 
-          {/* Top row — the four headline metrics of the group. */}
-          <div className={styles.statBar}>
+          {/* Top row — group metrics, pulled live from the data layer.
+              СМР is shown split into new construction vs. maintenance. */}
+          <div className={`${styles.statBar} ${styles.statBar5}`}>
             <div className={`${styles.statBarItem} ${styles.statBarGold}`}>
-              <div className={styles.statBarNum}>{COUNT_SMR}</div>
-              <div className={styles.statBarLabel}>СМР объектов</div>
+              <div className={styles.statBarNum}>{COUNT_SMR_BUILD}</div>
+              <div className={styles.statBarLabel}>Строительство</div>
             </div>
             <div className={`${styles.statBarItem} ${styles.statBarTeal}`}>
-              <div className={styles.statBarNum}>{COUNT_PD}</div>
-              <div className={styles.statBarLabel}>Проектных работ</div>
+              <div className={styles.statBarNum}>{COUNT_MAINTENANCE}</div>
+              <div className={styles.statBarLabel}>Обслуживание<br />и ремонт</div>
             </div>
             <div className={`${styles.statBarItem} ${styles.statBarBlue}`}>
+              <div className={styles.statBarNum}>{COUNT_PD}</div>
+              <div className={styles.statBarLabel}>Проектные<br />работы</div>
+            </div>
+            <div className={styles.statBarItem}>
               <div className={styles.statBarNum}>{COUNT_REGIONS}</div>
               <div className={styles.statBarLabel}>Регионов</div>
             </div>
-            <div className={`${styles.statBarItem} ${styles.statBarGold}`}>
+            <div className={styles.statBarItem}>
               <div className={styles.statBarNum}>{COUNT_COUNTRIES}</div>
               <div className={styles.statBarLabel}>Страны</div>
             </div>
@@ -516,32 +552,18 @@ export default async function PortfolioPrintPage() {
             </svg>
           </div>
 
-          {/* Status breakdown of the 49 SMR objects — the same pins, broken
-              down by completion state. Lives in a 3-col statBar variant. */}
-          <div className={`${styles.statBar} ${styles.statBar3}`}>
-            <div className={`${styles.statBarItem} ${styles.statBarGold}`}>
-              <div className={styles.statBarNum}>{completed}</div>
-              <div className={styles.statBarLabel}>Завершено</div>
-            </div>
-            <div className={`${styles.statBarItem} ${styles.statBarTeal}`}>
-              <div className={styles.statBarNum}>{inProgress}</div>
-              <div className={styles.statBarLabel}>В работе</div>
-            </div>
-            <div className={`${styles.statBarItem} ${styles.statBarBlue}`}>
-              <div className={styles.statBarNum}>{planned}</div>
-              <div className={styles.statBarLabel}>В планах</div>
-            </div>
-          </div>
-
-          <div className={styles.chipRow}>
-            <div className={`${styles.aboutColTitle} ${styles.aboutColTitleDark}`}>
-              <span className={styles.aboutColRule} />КЛЮЧЕВЫЕ РЕГИОНЫ
-            </div>
-            <div className={styles.chipGroup}>
-              {KEY_REGIONS.map((r) => (
-                <span key={r} className={`${styles.chip} ${styles.chipDark}`}>{r}</span>
-              ))}
-            </div>
+          {/* People behind the work — team composition. */}
+          <h3 className={styles.peopleTitle}>
+            <span className={styles.titleAccentGold}>Люди</span>, которые строят
+          </h3>
+          <div className={styles.peopleGrid}>
+            {PEOPLE.map((p) => (
+              <div key={p.label} className={styles.peopleCard}>
+                <div className={styles.peopleNum}>{p.num}</div>
+                <div className={styles.peopleLabel}>{p.label}</div>
+                <div className={styles.peopleDesc}>{p.desc}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -697,7 +719,7 @@ export default async function PortfolioPrintPage() {
           <div className={styles.svcGrid}>
             {SVCS_DESIGN.map((s) => (
               <div key={s.num} className={styles.svcItem}>
-                <div className={`${styles.svcNum} ${styles.svcNumGold}`}>{s.num}</div>
+                <div className={`${styles.svcIcon} ${styles.svcIconGold}`}>{s.icon}</div>
                 <div className={styles.svcBody}>
                   <div className={styles.svcTitle}>{s.title}</div>
                   <div className={styles.svcDesc}>{s.desc}</div>
@@ -760,7 +782,7 @@ export default async function PortfolioPrintPage() {
           <div className={styles.svcGrid}>
             {SVCS_BUILD.map((s) => (
               <div key={s.num} className={styles.svcItem}>
-                <div className={`${styles.svcNum} ${styles.svcNumTeal}`}>{s.num}</div>
+                <div className={`${styles.svcIcon} ${styles.svcIconTeal}`}>{s.icon}</div>
                 <div className={styles.svcBody}>
                   <div className={styles.svcTitle}>{s.title}</div>
                   <div className={styles.svcDesc}>{s.desc}</div>
@@ -787,7 +809,7 @@ export default async function PortfolioPrintPage() {
           </div>
 
           <div className={styles.dirFooter}>
-            <span className={`${styles.dirFooterNum} ${styles.dirFooterNumTeal}`}>{COUNT_SMR}</span>
+            <span className={`${styles.dirFooterNum} ${styles.dirFooterNumTeal}`}>{COUNT_SMR_BUILD}</span>
             <span className={styles.dirFooterLabel}>СМР ОБЪЕКТОВ В РЕЕСТРЕ</span>
             <span className={styles.dirFooterSep}>·</span>
             <span className={styles.dirFooterText}>WEST CAPITAL CONSTRUCTION LLP</span>
@@ -888,46 +910,25 @@ export default async function PortfolioPrintPage() {
               <span className={styles.titleAccent}>Что говорят</span><br />
               наши заказчики
             </h2>
-            <div className={styles.bigBadge}>
-              <div className={styles.bigBadgeNum}>{COUNT_TESTIMONIALS}</div>
-              <div className={styles.bigBadgeLabel}>БЛАГОДАРСТВЕННЫХ<br />ПИСЕМ</div>
-            </div>
           </div>
 
           <div className={styles.leadBox}>
-            Большинство писем адресованы подрядной компании группы — West Capital Construction LLP — по
-            железнодорожным объектам, сданным в эксплуатацию. Тот же стандарт качества и сроков
-            обеспечиваем на автодорогах, трубопроводах, ЛЭП и промышленных объектах.
+            Прямая речь заказчиков — лучший показатель работы. Благодарственные письма за годы
+            сотрудничества подтверждают то, что мы фиксируем в каждом договоре: качество, соблюдение
+            сроков и ответственность на каждом этапе.
           </div>
 
-          <div className={styles.testGrid}>
-            {testChunks[0].map((t, i) => (
-              <TestimonialCard key={`t0-${i}`} t={t} />
+          <div className={`${styles.testGrid} ${styles.testGridAll}`}>
+            {filteredTestimonials.map((t, i) => (
+              <TestimonialCard key={`t-${i}`} t={t} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* ═══ 13 · TESTIMONIALS 2/2 ════════════════════════════════ */}
+      {/* ═══ 13 · PARTNERS ════════════════════════════════════════ */}
       <section className={`${styles.page} ${styles.pageLight}`}>
         <PageChrome pageNum={13} />
-        <div className={styles.pageInner}>
-          <div className={styles.testContd}>
-            <span className={styles.eyebrow}>ОТЗЫВЫ КЛИЕНТОВ · ПРОДОЛЖЕНИЕ</span>
-            <span className={styles.testContdRight}>СТР. 2 ИЗ 2</span>
-          </div>
-
-          <div className={`${styles.testGrid} ${styles.testGridContd}`}>
-            {testChunks[1].map((t, i) => (
-              <TestimonialCard key={`t1-${i}`} t={t} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ 14 · PARTNERS ════════════════════════════════════════ */}
-      <section className={`${styles.page} ${styles.pageLight}`}>
-        <PageChrome pageNum={14} />
         <div className={styles.pageInner}>
           <div className={styles.eyebrow}>ПАРТНЁРЫ И ЗАКАЗЧИКИ · ФРАГМЕНТ РЕЕСТРА</div>
           <div className={styles.titleRow}>
@@ -977,9 +978,9 @@ export default async function PortfolioPrintPage() {
         </div>
       </section>
 
-      {/* ═══ 15 · CONTACTS ════════════════════════════════════════ */}
+      {/* ═══ 14 · CONTACTS ════════════════════════════════════════ */}
       <section className={`${styles.page} ${styles.pageDark}`}>
-        <PageChrome pageNum={15} dark />
+        <PageChrome pageNum={14} dark />
         <div className={styles.pageInner}>
           <div className={`${styles.eyebrow} ${styles.eyebrowDark}`}>КОНТАКТЫ · ОФИС В АКТОБЕ</div>
           <div className={styles.titleRow}>
@@ -1067,7 +1068,7 @@ export default async function PortfolioPrintPage() {
               <div className={styles.contactsFooterLabel}>
                 <span className={styles.aboutColRule} />ЮРИДИЧЕСКОЕ ЛИЦО
               </div>
-              <div className={styles.contactsFooterValue}>ТОО «West Arlan Group» · БИН 090940003245</div>
+              <div className={styles.contactsFooterValue}>ТОО «West Arlan Group» · БИН 100340009758</div>
             </div>
             <div className={styles.contactsFooterCol}>
               <div className={styles.contactsFooterLabel}>
@@ -1089,13 +1090,13 @@ export default async function PortfolioPrintPage() {
         </div>
       </section>
 
-      {/* ═══ 16 · CLOSING MANIFESTO ═══════════════════════════════ */}
+      {/* ═══ 15 · CLOSING MANIFESTO ═══════════════════════════════ */}
       <section className={`${styles.page} ${styles.pageDark} ${styles.closing}`}>
-        <PageChrome pageNum={16} dark />
+        <PageChrome pageNum={15} dark />
         <div className={styles.closingInner}>
           <div className={styles.closingEyebrow}>МАНИФЕСТ · WAG</div>
           <h2 className={styles.closingQuote}>
-            Каждый объект — обязательство на десятилетия.
+            Каждый объект — <span className={styles.titleAccentGold}>обязательство</span> на десятилетия.
           </h2>
           <p className={styles.closingByline}>
             Мы не строим единоразово. Каждый сданный объект остаётся под нашей

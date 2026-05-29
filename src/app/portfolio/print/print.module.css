@@ -214,9 +214,6 @@
   margin: auto 0 8mm 0;
   max-width: 160mm;
 }
-.closingQuote::first-letter {
-  color: var(--c-gold);
-}
 .closingByline {
   font-family: 'Onest', sans-serif;
   font-size: 11pt;
@@ -510,6 +507,12 @@
   border-left: 0.5mm solid var(--c-gold);
   padding: 4mm 5mm;
 }
+/* Page 03 scale intro — smaller italic lede with tighter leading. */
+.leadBoxScale {
+  font-size: 9pt;
+  line-height: 1.4;
+  font-style: italic;
+}
 
 .miniLabel {
   font-family: 'Space Grotesk', sans-serif;
@@ -668,8 +671,8 @@
   font-weight: 600;
   letter-spacing: 0.24em;
   color: var(--c-gold-2);
-  margin-top: 4mm;
-  margin-bottom: 6mm;
+  margin-top: 0;
+  margin-bottom: 5mm;
 }
 .legalBlockLabel span {
   display: inline-block;
@@ -680,16 +683,34 @@
 
 .legalCards {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 4mm;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3mm;
 }
 .legalCard {
   position: relative;
-  padding: 5mm 4mm 4mm;
+  padding: 5mm 3.5mm 4mm;
   background: var(--c-cream-card);
   border: 0.15mm solid var(--line-cream);
   border-radius: 1.5mm;
-  min-height: 32mm;
+  min-height: 20mm;
+}
+
+/* HQ card — full-width horizontal bar above the subsidiaries */
+.legalHqCard {
+  display: flex;
+  align-items: baseline;
+  gap: 5mm;
+  min-height: auto;
+  padding: 4mm 5mm;
+  margin-bottom: 4mm;
+}
+.legalHqCard .legalCardName { margin-bottom: 0; color: var(--c-gold-soft); }
+.legalHqCard .legalCardRole { margin-bottom: 0; flex: 1; }
+.legalHqCard .legalCardMeta {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+  white-space: nowrap;
 }
 .legalCardDark {
   background: var(--c-dark);
@@ -708,9 +729,11 @@
   letter-spacing: 0.14em;
   border-radius: 1mm;
 }
-.legalCardBadgeGold { background: var(--c-gold); color: var(--c-dark); }
-.legalCardBadgeTeal { background: var(--c-teal); color: var(--c-dark); }
-.legalCardBadgeBlue { background: var(--c-blue); color: #fff; }
+.legalCardBadgeGold   { background: var(--c-gold); color: var(--c-dark); }
+.legalCardBadgeTeal   { background: var(--c-teal); color: var(--c-dark); }
+.legalCardBadgeBlue   { background: var(--c-blue); color: #fff; }
+.legalCardBadgeAmber  { background: var(--c-gold-soft); color: var(--c-dark); }
+.legalCardBadgeViolet { background: #7C6FE0; color: #fff; }
 
 .legalCardName {
   font-family: 'Space Grotesk', sans-serif;
@@ -720,11 +743,13 @@
   margin-bottom: 1.5mm;
   color: inherit;
 }
+.legalCards .legalCardName { font-size: 9pt; }
 .legalCardRole {
   font-size: 8pt;
   color: var(--c-muted);
   margin-bottom: 2mm;
 }
+.legalCards .legalCardRole { font-size: 7.5pt; }
 .legalCardDark .legalCardRole { color: rgba(240,242,248,0.55); }
 .legalCardMeta {
   margin-top: 2.5mm;
@@ -741,7 +766,7 @@
 }
 
 .legalNote {
-  margin-top: 4mm;
+  margin-top: 3mm;
   font-style: italic;
   font-size: 8.5pt;
   line-height: 1.5;
@@ -836,12 +861,10 @@
 
 .mapFrame {
   position: relative;
-  background: rgba(7,11,22,0.6);
-  border: 0.2mm solid rgba(240,242,248,0.06);
-  border-radius: 1mm;
-  flex: 1;
-  margin: 2mm 0 5mm;
-  min-height: 80mm;
+  border: none;
+  flex: 0 0 auto;
+  height: 118mm;
+  margin: 0 0 4mm;
 }
 .mapCornerCoord {
   position: absolute;
@@ -853,6 +876,50 @@
 }
 .mapImg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
 .mapSvg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* «Люди, которые строят» — team composition under the map. */
+.peopleTitle {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 17pt;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: #F0F2F8;
+  margin: 0 0 4mm;
+}
+.peopleGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4mm;
+}
+.peopleCard {
+  padding: 4mm 3.5mm;
+  background: rgba(255,255,255,0.03);
+  border: 0.15mm solid rgba(255,255,255,0.08);
+  border-radius: 1.5mm;
+}
+.peopleNum {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 22pt;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--c-gold);
+  letter-spacing: -0.02em;
+}
+.peopleLabel {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 6.5pt;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-meta-dark);
+  margin-top: 3mm;
+}
+.peopleDesc {
+  font-size: 7.5pt;
+  line-height: 1.35;
+  color: rgba(240,242,248,0.6);
+  margin-top: 1.5mm;
+}
 
 /* Stat bar — bare text columns separated by thin vertical hairlines.
    Was a row of mini boxes; now reads like an editorial info-row. */
@@ -870,12 +937,17 @@
 .statBar3 {
   grid-template-columns: 1fr 1fr 1fr;
 }
+/* 5-col modifier — СМР split (Строительство / Обслуживание / Проектные / Регионов / Страны) */
+.statBar5 {
+  grid-template-columns: repeat(5, 1fr);
+}
 .statBarItem {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
   gap: 2mm;
-  padding: 0 6mm;
+  padding: 0 3mm;
   border-left: 0.2mm solid var(--line-dark);
 }
 .statBarItem:first-child { border-left: 0; }
@@ -891,8 +963,8 @@
 /* Status colour is reserved for the FIRST stat (the hero one, e.g. "43 завершено")
    so colour means progress, not decoration. */
 .statBarGold .statBarNum { color: var(--c-gold); }
-.statBarTeal .statBarNum { color: #F0F2F8; }
-.statBarBlue .statBarNum { color: #F0F2F8; }
+.statBarTeal .statBarNum { color: var(--c-teal-soft); }
+.statBarBlue .statBarNum { color: var(--c-blue); }
 .statBarLabel {
   font-family: 'Space Grotesk', sans-serif;
   font-size: var(--fs-meta);
@@ -901,6 +973,8 @@
   color: var(--c-meta-dark);
   text-transform: uppercase;
   white-space: nowrap;
+  text-align: center;
+  line-height: 1.35;
 }
 
 /* Stacked label-above-chips layout, mirroring the ОТРАСЛИ section on page 2.
@@ -1269,6 +1343,18 @@
 }
 .svcNumGold { color: var(--c-gold); }
 .svcNumTeal { color: var(--c-teal-soft); }
+/* Icon variant — replaces the numeral in the same 8mm gutter. */
+.svcIcon {
+  flex-shrink: 0;
+  width: 8mm;
+  height: 7mm;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.svcIcon svg { width: 6mm; height: 6mm; }
+.svcIconGold { color: var(--c-gold); }
+.svcIconTeal { color: var(--c-teal-soft); }
 .svcBody { display: flex; flex-direction: column; gap: 1.5mm; }
 .svcTitle {
   font-family: 'Space Grotesk', sans-serif;
@@ -1546,11 +1632,35 @@
   margin: 2mm 0 0;
   padding-right: 2mm;     /* leave a hair of breathing room on the right edge */
   flex: 1;
+  /* Rows take their natural (content) height and are spread down the page,
+     so the leftover space sits BETWEEN cards instead of inside them. */
+  grid-auto-rows: min-content;
+  align-content: space-between;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
 }
 .testGridContd { margin-top: 0; }
+
+/* All 12 testimonials on one page — denser 3-column "wall of letters". */
+.testGridAll {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 3.5mm;
+  align-content: start;
+}
+.testGridAll .testCard {
+  min-height: 0;
+  padding: 2.5mm 3mm;
+  gap: 1mm;
+}
+.testGridAll .testCard::before { font-size: 18pt; top: -1.5mm; }
+.testGridAll .testCardHeader { min-height: 2.5mm; }
+.testGridAll .testCardDate { font-size: 6pt; }
+.testGridAll .testCardClient { font-size: 7.5pt; }
+.testGridAll .testCardQuote { font-size: 6pt; line-height: 1.35; }
+.testGridAll .testCardSig { padding-top: 1mm; }
+.testGridAll .testCardSigName { font-size: 6.5pt; }
+.testGridAll .testCardSigRole { font-size: 5.5pt; }
 .testCard {
   position: relative;
   padding: 3mm 3.5mm;

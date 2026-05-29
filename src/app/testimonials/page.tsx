@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import Footer from '@/components/Footer/Footer';
 import styles from './testimonials.module.css';
 
@@ -255,8 +256,8 @@ export default function TestimonialsPage() {
                 в течение 24 часов.
               </p>
               <div className={styles.ctaActions}>
-                <a href="/contacts" className="btn btn-primary">Обсудить проект</a>
-                <a href="/projects" className="btn btn-outline">Реализованные проекты</a>
+                <Link href="/contacts" className="btn btn-primary">Обсудить проект</Link>
+                <Link href="/projects" className="btn btn-outline">Реализованные проекты</Link>
               </div>
             </div>
           </div>
