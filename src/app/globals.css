@@ -615,6 +615,10 @@ p { text-wrap: pretty; }
   :root { --header-height: 70px; }
 }
 
+@media (max-width: 540px) {
+  .section { padding: var(--space-xl) 0; }
+}
+
 /* ============================================
    REDUCED MOTION (a11y)
    ============================================ */
