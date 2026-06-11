@@ -40,6 +40,37 @@ const NAV = [
     ),
   },
   {
+    href: '/admin/contacts',
+    label: 'Заявки',
+    icon: (
+      <svg viewBox="0 0 16 16" fill="none" className={styles.navIcon}>
+        <rect x="1.5" y="3" width="13" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.4"/>
+        <path d="M2 4.5l6 4.5 6-4.5" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+      </svg>
+    ),
+  },
+  {
+    href: '/admin/testimonials',
+    label: 'Отзывы',
+    icon: (
+      <svg viewBox="0 0 16 16" fill="none" className={styles.navIcon}>
+        <path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v6a1.5 1.5 0 01-1.5 1.5H8l-3.5 3v-3h-1A1.5 1.5 0 012 9.5v-6z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+        <path d="M5 5.5h6M5 8h4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+      </svg>
+    ),
+  },
+  {
+    href: '/admin/partners',
+    label: 'Партнёры',
+    icon: (
+      <svg viewBox="0 0 16 16" fill="none" className={styles.navIcon}>
+        <circle cx="5" cy="5" r="2.5" stroke="currentColor" strokeWidth="1.4"/>
+        <circle cx="11" cy="11" r="2.5" stroke="currentColor" strokeWidth="1.4"/>
+        <path d="M7 7l2 2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+      </svg>
+    ),
+  },
+  {
     href: '/admin/map',
     label: 'Калибровка карты',
     icon: (

@@ -174,7 +174,7 @@ export default function AboutPage() {
                 <div key={p.name} className={`glass-card ${styles.leadCard}`}>
                   <div className={styles.leadPhotoWrap}>
                     {p.photo ? (
-                      <img src={p.photo} alt={p.name} className={styles.leadPhoto} />
+                      <img src={p.photo} alt={p.name} className={styles.leadPhoto} loading="lazy" decoding="async" />
                     ) : (
                       <span className={styles.leadInitials} aria-hidden="true">
                         {p.name.split(' ').slice(0, 2).map((w) => w[0]).join('')}

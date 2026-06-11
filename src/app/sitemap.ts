@@ -1,20 +1,24 @@
 import type { MetadataRoute } from 'next';
-import { getProjectSlugs, getMaintenanceSlugs } from '@/lib/data';
+import { getProjectSlugs, getMaintenanceSlugs, getDesignProjects } from '@/lib/data';
 import { SITE_URL as BASE_URL } from '@/lib/site';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [projectSlugs, maintenanceSlugs] = await Promise.all([
+  const [projectSlugs, maintenanceSlugs, designProjects] = await Promise.all([
     getProjectSlugs(),
     getMaintenanceSlugs(),
+    getDesignProjects(),
   ]);
 
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: BASE_URL,                  lastModified: new Date(), changeFrequency: 'weekly',  priority: 1 },
-    { url: `${BASE_URL}/about`,       lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${BASE_URL}/services`,    lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${BASE_URL}/projects`,    lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.9 },
-    { url: `${BASE_URL}/maintenance`, lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.9 },
-    { url: `${BASE_URL}/contacts`,    lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.7 },
+    { url: BASE_URL,                   lastModified: new Date(), changeFrequency: 'weekly',  priority: 1 },
+    { url: `${BASE_URL}/about`,        lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${BASE_URL}/services`,     lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${BASE_URL}/projects`,     lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.9 },
+    { url: `${BASE_URL}/maintenance`,  lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.9 },
+    { url: `${BASE_URL}/design`,       lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.9 },
+    { url: `${BASE_URL}/licenses`,     lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.6 },
+    { url: `${BASE_URL}/testimonials`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${BASE_URL}/contacts`,     lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.7 },
   ];
 
   const projectRoutes: MetadataRoute.Sitemap = projectSlugs.map((slug) => ({
@@ -31,5 +35,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority:        0.6,
   }));
 
-  return [...staticRoutes, ...projectRoutes, ...maintenanceRoutes];
+  const designRoutes: MetadataRoute.Sitemap = designProjects.map((d) => ({
+    url:             `${BASE_URL}/design/${d.slug}`,
+    lastModified:    new Date(),
+    changeFrequency: 'monthly',
+    priority:        0.6,
+  }));
+
+  return [...staticRoutes, ...projectRoutes, ...maintenanceRoutes, ...designRoutes];
 }

@@ -19,3 +19,142 @@
 @media (max-width: 900px) {
   .wrapper { display: none; }
 }
+
+/* ── Phase 01 «Проектирование» draw-on ──
+   The bridge drawing wipes in left→right (as if plotted), the pen rides the
+   wipe edge, and the dimensions/title block ink in once the drawing is done.
+   All three remount with the drawing layer (React key) so they replay on every
+   appearance — kept inside the ~3.2s visible window. */
+.drawClip {
+  animation: sha-wipe 1.25s cubic-bezier(0.45, 0, 0.2, 1) both;
+}
+@keyframes sha-wipe {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+
+.pen {
+  animation:
+    sha-pen 1.25s cubic-bezier(0.45, 0, 0.2, 1) both,
+    sha-pen-fade 1.25s linear both;
+}
+@keyframes sha-pen {
+  from { transform: translateX(0); }
+  to   { transform: translateX(var(--sha-sweep, 0)); }
+}
+@keyframes sha-pen-fade {
+  0%   { opacity: 0; }
+  10%  { opacity: 0.9; }
+  82%  { opacity: 0.9; }
+  100% { opacity: 0; }
+}
+
+.dims {
+  opacity: 0;
+  animation: sha-ink 0.55s ease 1.25s forwards;
+}
+@keyframes sha-ink {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawClip { animation: none; clip-path: none; }
+  .pen      { animation: none; opacity: 0; }
+  .dims     { animation: none; opacity: 1; }
+}
+
+/* ── Phase 02 «Строительство» assemble-on ──
+   The crane erects itself on every appearance: mast (and the structure beside
+   it) rise from the ground, the cabin sets, the jib truss swings in, and the
+   hook drops last — then a gentle ambient slew/hoist gives it life. Keyed with
+   the crane layer so it replays each cycle, inside the ~3.2s window. */
+.craneRise {
+  animation: sha-crane-rise 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+@keyframes sha-crane-rise {
+  from { clip-path: inset(100% 0 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+
+.craneCab  { opacity: 0; animation: sha-crane-in 0.3s ease 0.5s forwards; }
+.craneJib  { opacity: 0; animation: sha-crane-in 0.45s ease 0.62s forwards; }
+.craneHook { opacity: 0; animation: sha-crane-in 0.35s ease 1.0s forwards; }
+@keyframes sha-crane-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .craneRise { animation: none; clip-path: none; }
+  .craneCab,
+  .craneJib,
+  .craneHook { animation: none; opacity: 1; }
+}
+
+/* ── Phase 03 «Спец техника» drive-in ──
+   The excavator drives in from the left and decelerates into place; the dig
+   context (trench + spoil) and the arm fade in, then the arm runs an ambient
+   articulated dig loop. Keyed with the layer so it replays each cycle. */
+.exDrive {
+  animation: sha-ex-drive 0.7s cubic-bezier(0.16, 0.84, 0.3, 1) both;
+}
+@keyframes sha-ex-drive {
+  from { transform: translateX(var(--ex-in, -40px)); opacity: 0.2; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+.exCtx { opacity: 0; animation: sha-crane-in 0.5s ease 0.2s forwards; }
+.exArm { opacity: 0; animation: sha-crane-in 0.4s ease 0.6s forwards; }
+
+@media (prefers-reduced-motion: reduce) {
+  .exDrive { animation: none; transform: none; opacity: 1; }
+  .exCtx,
+  .exArm  { animation: none; opacity: 1; }
+}
+
+/* ── Phase 04 «Поставки» arrive + unload ──
+   The truck drives in (reusing .exDrive), the speed trails fade once parked,
+   then the dump bed tips up at its rear hinge: the bed load empties while a
+   delivered pile grows on the ground, and the bed lowers back. Keyed with the
+   layer so it replays each appearance, inside the ~3.2s window. */
+.truckSpeed {
+  animation: sha-fade-out 0.5s ease 0.7s forwards;
+}
+@keyframes sha-fade-out {
+  to { opacity: 0; }
+}
+
+.truckBed {
+  animation: sha-truck-tip 2.1s ease 0.85s both;
+}
+@keyframes sha-truck-tip {
+  0%, 20%  { transform: rotate(0deg); }
+  46%, 64% { transform: rotate(-15deg); }
+  100%     { transform: rotate(0deg); }
+}
+
+.truckLoad {
+  opacity: 0.45;
+  animation: sha-truck-empty 2.1s ease 0.85s both;
+}
+@keyframes sha-truck-empty {
+  0%, 30% { opacity: 0.45; }
+  52%     { opacity: 0; }
+  100%    { opacity: 0; }
+}
+
+.truckPile {
+  opacity: 0;
+  animation: sha-truck-pile 2.1s ease 0.85s both;
+}
+@keyframes sha-truck-pile {
+  0%, 42%   { opacity: 0; }
+  72%, 100% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .truckSpeed { animation: none; opacity: 0; }
+  .truckBed   { animation: none; transform: none; }
+  .truckLoad  { animation: none; opacity: 0.45; }
+  .truckPile  { animation: none; opacity: 1; }
+}

@@ -34,6 +34,8 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+  // './' resolves per-route against metadataBase → each page canonicalizes itself.
+  alternates: { canonical: './' },
   title: {
     default: 'West Arlan Group',
     template: '%s | West Arlan Group',

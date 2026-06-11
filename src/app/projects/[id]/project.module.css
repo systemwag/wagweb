@@ -160,6 +160,7 @@
 }
 
 .imageMain {
+  position: relative; /* anchor for next/image fill */
   width: 100%;
   aspect-ratio: 16 / 9;
   border-radius: var(--radius-lg);
@@ -183,6 +184,7 @@
 }
 
 .imageThumbWrap {
+  position: relative; /* anchor for next/image fill */
   aspect-ratio: 4 / 3;
   border-radius: var(--radius-md);
   overflow: hidden;

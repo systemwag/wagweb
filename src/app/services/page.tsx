@@ -91,9 +91,10 @@ export default async function ServicesPage() {
             {/* CTAs */}
             <div className={styles.heroCtas}>
               <a
-                href="/api/portfolio.pdf?download=1"
+                href="/portfolio.pdf"
+                download="WAG-portfolio.pdf"
                 className="btn btn-primary"
-                aria-label="Скачать профиль компании в PDF"
+                aria-label="Скачать профиль компании в PDF (8 МБ)"
               >
                 Скачать профиль компании
               </a>

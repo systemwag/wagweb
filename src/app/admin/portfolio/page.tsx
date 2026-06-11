@@ -1,26 +1,27 @@
 /**
- * /admin/portfolio — two-engine PDF preview.
+ * /admin/portfolio — preview of the brochure PDF.
  *
- * Tab 1 — Premium (Chromium): reads /portfolio.pdf, baked on demand by
- *   /api/admin/rebuild-portfolio → scripts/build-pdf.mjs → CSS-rich PDF.
- *   This is what the public Hero button points to.
- *
- * Tab 2 — Quick (react-pdf): reads /api/portfolio.pdf, generated live
- *   from the same data layer in ~2 sec. Use for fast sanity checks after
- *   editing project data.
+ * Single engine: Chromium/Puppeteer. Source pages live at /portfolio/print
+ * (RU) and /portfolio/print/en; scripts/build-pdf.mjs bakes them into
+ * public/portfolio.pdf — the file the public Hero/services buttons download.
+ * (The react-pdf "quick" engine was removed 2026-06-11.)
  */
 import { existsSync, statSync } from 'node:fs';
 import path from 'node:path';
-import { getProjects } from '@/lib/data';
-import { getPortfolioData } from '@/lib/pdf/data/getPortfolioData';
-import { ru } from '@/lib/pdf/content/ru';
+import { getProjects, getDesignProjects, getMaintenanceProjects } from '@/lib/data';
 import { PortfolioClient } from './PortfolioClient';
 
 export const dynamic = 'force-dynamic';
 
+// Маркетинговые цифры брошюры (см. PrintBrochure: 29 СМР + 20 обслуживание + 87 ПД).
+const DISPLAY = { smr: 49, pd: 87, registry: 136 };
+
 export default async function AdminPortfolioPage() {
-  const data     = await getPortfolioData();
-  const projects = await getProjects();
+  const [projects, design, maintenance] = await Promise.all([
+    getProjects(),
+    getDesignProjects(),
+    getMaintenanceProjects(),
+  ]);
 
   const pdfPath = path.join(process.cwd(), 'public', 'portfolio.pdf');
   const premium = existsSync(pdfPath)
@@ -33,15 +34,15 @@ export default async function AdminPortfolioPage() {
 
   const stats = {
     realSmrInDb:     projects.length,
-    realCompleted:   data.completed,
-    realInProgress:  data.inProgress,
-    realPlanned:     data.planned,
-    realMapMarkers:  data.mapProjects.length,
-    displaySmr:      data.countSmr,
-    displayPd:       data.countPd,
-    displayRegistry: data.countRegistry,
-    testimonials:    ru.testimonials.items.length,
-    partners:        ru.partners.items.length,
+    realDesignInDb:  design.length,
+    realMaintInDb:   maintenance.length,
+    realCompleted:   projects.filter((p) => p.status === 'completed').length,
+    realInProgress:  projects.filter((p) => p.status === 'in-progress').length,
+    realPlanned:     projects.filter((p) => p.status === 'planned').length,
+    realMapMarkers:  projects.filter((p) => p.x_map != null && p.y_map != null).length,
+    displaySmr:      DISPLAY.smr,
+    displayPd:       DISPLAY.pd,
+    displayRegistry: DISPLAY.registry,
   };
 
   return <PortfolioClient stats={stats} premium={premium} />;

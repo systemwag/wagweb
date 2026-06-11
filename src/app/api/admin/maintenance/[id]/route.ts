@@ -1,20 +1,23 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
-import { createServerClient } from '@/lib/supabase-server';
-import { requireAdmin, errorMessage } from '@/lib/admin-auth';
+import { createServiceClient } from '@/lib/supabase-server';
+import { requireAdmin, errorMessage, dbErrorMessage } from '@/lib/admin-auth';
+import { MaintenanceProjectUpdateSchema, parseOr400 } from '@/lib/admin-schemas';
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const denied = await requireAdmin();
   if (denied) return denied;
   try {
     const { id } = await params;
-    const body = await req.json();
-    const supabase = createServerClient();
+    const parsed = parseOr400(MaintenanceProjectUpdateSchema, await req.json());
+    if ('error' in parsed) return NextResponse.json({ ok: false, error: parsed.error }, { status: 400 });
+
+    const supabase = createServiceClient();
     const { data, error } = await supabase
-      .from('maintenance_projects').update(body).eq('id', Number(id)).select().single();
-    if (error) return NextResponse.json({ ok: false, error: error.message }, { status: 400 });
+      .from('maintenance_projects').update(parsed.data).eq('id', Number(id)).select().single();
+    if (error) return NextResponse.json({ ok: false, error: dbErrorMessage(error) }, { status: 400 });
     revalidatePath('/maintenance');
-    revalidatePath(`/maintenance/${body.slug ?? id}`);
+    revalidatePath(`/maintenance/${parsed.data.slug ?? id}`);
     return NextResponse.json({ ok: true, project: data });
   } catch (e) {
     return NextResponse.json({ ok: false, error: errorMessage(e) }, { status: 500 });
@@ -26,9 +29,9 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   if (denied) return denied;
   try {
     const { id } = await params;
-    const supabase = createServerClient();
+    const supabase = createServiceClient();
     const { error } = await supabase.from('maintenance_projects').delete().eq('id', Number(id));
-    if (error) return NextResponse.json({ ok: false, error: error.message }, { status: 400 });
+    if (error) return NextResponse.json({ ok: false, error: dbErrorMessage(error) }, { status: 400 });
     revalidatePath('/maintenance');
     return NextResponse.json({ ok: true });
   } catch (e) {

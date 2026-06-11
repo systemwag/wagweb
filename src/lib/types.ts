@@ -97,6 +97,29 @@ export interface MaintenanceProject {
   created_at:  string;
 }
 
+export interface Testimonial {
+  id: number;
+  client: string;
+  signatory: string;
+  role: string;
+  date_label: string | null;
+  category: string;
+  project: string;
+  quote: string;
+  order_index: number;
+  published: boolean;
+  created_at: string;
+}
+
+export interface Partner {
+  id: number;
+  name: string;
+  logo_url: string;
+  order_index: number;
+  published: boolean;
+  created_at: string;
+}
+
 export interface DesignProject {
   id: number;
   number: number;

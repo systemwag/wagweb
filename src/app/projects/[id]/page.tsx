@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound }         from 'next/navigation';
 import Link                  from 'next/link';
+import Image                 from 'next/image';
 import Footer                from '@/components/Footer/Footer';
 import { getProjectBySlug, getProjectSlugs } from '@/lib/data';
 import styles                from './project.module.css';
@@ -92,9 +93,12 @@ export default async function ProjectPage({ params }: Props) {
                 {project.images && project.images.length > 0 ? (
                   <div className={styles.imageGallery}>
                     <div className={styles.imageMain}>
-                      <img
+                      <Image
                         src={project.image_url ?? project.images[0]}
                         alt={project.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 66vw"
+                        priority
                         className={styles.imageMainImg}
                       />
                     </div>
@@ -102,9 +106,11 @@ export default async function ProjectPage({ params }: Props) {
                       <div className={styles.imageThumbs}>
                         {project.images.map((img, idx) => (
                           <div key={img} className={styles.imageThumbWrap}>
-                            <img
+                            <Image
                               src={img}
                               alt={`${project.title} — фото ${idx + 1}`}
+                              fill
+                              sizes="(max-width: 768px) 50vw, 220px"
                               className={styles.imageThumbImg}
                             />
                           </div>
@@ -115,9 +121,12 @@ export default async function ProjectPage({ params }: Props) {
                 ) : project.image_url ? (
                   <div className={styles.imageGallery}>
                     <div className={styles.imageMain}>
-                      <img
+                      <Image
                         src={project.image_url}
                         alt={project.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 66vw"
+                        priority
                         className={styles.imageMainImg}
                       />
                     </div>

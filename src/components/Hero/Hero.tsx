@@ -51,7 +51,7 @@ export default function Hero() {
           </p>
 
           {/* Цифры синхронизированы с реестром сайта/брошюры:
-           * 136 = 49 СМР + 87 ПД (см. lib/pdf/data/getPortfolioData.ts),
+           * 136 = 49 СМР + 87 ПД (константы брошюры — src/app/portfolio/print/PrintBrochure.tsx),
            * 16 лет = с 2010 года. */}
           <div className={styles.subtitleStats}>
             <span className={styles.subtitleStat}>

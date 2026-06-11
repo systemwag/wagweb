@@ -1,0 +1,23 @@
+/* Shared layout for root error.tsx / not-found.tsx */
+.wrap {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 20px;
+  padding: 120px 24px 80px;
+}
+
+.desc {
+  color: var(--text-secondary);
+  max-width: 480px;
+}
+
+.actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}

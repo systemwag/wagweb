@@ -483,3 +483,74 @@
   border: 1px solid rgba(0,196,167,0.25);
   color: #00c4a7;
 }
+
+/* ── Contacts (leads) table ───────────── */
+.contactsMessage {
+  max-width: 420px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.contactsAction {
+  display: inline-block;
+  margin: 2px 6px 2px 0;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  color: var(--text-secondary, #8892A4);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.contactsAction:hover:not(:disabled) {
+  color: #F0F2F8;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.contactsAction:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.contactsActionDanger:hover:not(:disabled) {
+  color: #ff7a7a;
+  border-color: rgba(255, 122, 122, 0.4);
+}
+
+/* ── Testimonials / Partners admin ───────── */
+.adminToolbar { margin-bottom: 16px; }
+
+.formBlock { margin-bottom: 28px; }
+
+.subtleText { opacity: 0.5; }
+
+.logoThumb {
+  width: 56px;
+  height: 36px;
+  object-fit: contain;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 4px;
+  padding: 3px;
+  display: block;
+}
+
+.logoPreview {
+  max-width: 200px;
+  max-height: 90px;
+  object-fit: contain;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.urlCell {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.74rem;
+  color: rgba(221, 228, 240, 0.5);
+}

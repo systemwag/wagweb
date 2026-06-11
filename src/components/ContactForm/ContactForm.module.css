@@ -157,3 +157,12 @@
 @media (max-width: 540px) {
   .row { grid-template-columns: 1fr; }
 }
+
+/* Honeypot — visually removed, still in the accessibility-hidden DOM for bots */
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

@@ -64,3 +64,6 @@ public/_originals/
 
 # Claude Code local state (slash command defs, settings, scheduled-task lock)
 /.claude/
+
+# Source PNG originals moved out of public (100+ MB, not for deploy)
+../_site-originals/

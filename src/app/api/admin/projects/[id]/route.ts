@@ -1,20 +1,23 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
-import { createServerClient } from '@/lib/supabase-server';
-import { requireAdmin, errorMessage } from '@/lib/admin-auth';
+import { createServiceClient } from '@/lib/supabase-server';
+import { requireAdmin, errorMessage, dbErrorMessage } from '@/lib/admin-auth';
+import { ProjectUpdateSchema, parseOr400 } from '@/lib/admin-schemas';
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const denied = await requireAdmin();
   if (denied) return denied;
   try {
     const { id } = await params;
-    const body = await req.json();
-    const supabase = createServerClient();
+    const parsed = parseOr400(ProjectUpdateSchema, await req.json());
+    if ('error' in parsed) return NextResponse.json({ ok: false, error: parsed.error }, { status: 400 });
+
+    const supabase = createServiceClient();
     const { data, error } = await supabase
-      .from('projects').update(body).eq('id', Number(id)).select().single();
-    if (error) return NextResponse.json({ ok: false, error: error.message }, { status: 400 });
+      .from('projects').update(parsed.data).eq('id', Number(id)).select().single();
+    if (error) return NextResponse.json({ ok: false, error: dbErrorMessage(error) }, { status: 400 });
     revalidatePath('/projects');
-    revalidatePath(`/projects/${body.slug ?? id}`);
+    revalidatePath(`/projects/${parsed.data.slug ?? id}`);
     revalidatePath('/');
     return NextResponse.json({ ok: true, project: data });
   } catch (e) {
@@ -27,9 +30,9 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   if (denied) return denied;
   try {
     const { id } = await params;
-    const supabase = createServerClient();
+    const supabase = createServiceClient();
     const { error } = await supabase.from('projects').delete().eq('id', Number(id));
-    if (error) return NextResponse.json({ ok: false, error: error.message }, { status: 400 });
+    if (error) return NextResponse.json({ ok: false, error: dbErrorMessage(error) }, { status: 400 });
     revalidatePath('/projects');
     revalidatePath('/');
     return NextResponse.json({ ok: true });

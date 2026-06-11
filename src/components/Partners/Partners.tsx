@@ -1,38 +1,17 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import type { Partner } from '@/lib/types';
 import styles from './Partners.module.css';
-
-const partners = [
-  { file: '9.png',          name: 'Қазақстан Темір Жолы' },
-  { file: '1.png',          name: 'Русская Медная Компания' },
-  { file: '5554453.png',    name: 'Урал Синтез' },
-  { file: '645b7c47-e4a5-4c84-b1ef-17bd24e7e09d.jpg', name: 'Группа Синтез' },
-  { file: '4.png',          name: 'Shubarkol Premium' },
-  { file: '7.png',          name: 'Altynex' },
-  { file: 'metprom-logo-rus-Photoroom.png',             name: 'Метпром' },
-  { file: '1637e7d5-4f7c-42f8-a84d-5aeef15cf0a6.jpg',  name: 'Тенізшевройл' },
-  { file: '20bd4962-9777-4243-9b6d-e953b080c142.jpg',  name: 'Khorgos Gateway' },
-  { file: 'QB_-01_1__.png', name: 'Qazaq Bitum' },
-  { file: '5.png',          name: 'NSS' },
-  { file: '3.png',          name: 'Синe Мидас Строй' },
-  { file: '6.png',          name: 'Актобе Стекло' },
-  { file: 'Снимок экрана 2025-06-21 162017-Photoroom.png', name: 'СПК «Актобе»' },
-  { file: '7a29c2e4-bc43-4817-8212-f7e985ee9929.jpg',  name: 'СПС Энерго' },
-  { file: '2.png',          name: 'Зерде Керамика' },
-];
-
-const src = (file: string) =>
-  `/partners/${file.split('/').map(encodeURIComponent).join('/')}`;
-
-const track = [...partners, ...partners];
 
 const CARD_W   = 120;
 const GAP      = 20;
 const CARD_STEP = CARD_W + GAP;
-const SET_WIDTH = partners.length * CARD_STEP; // 16 × 140 = 2240px
 
-export default function Partners() {
+export default function Partners({ partners }: { partners: Partner[] }) {
+  const SET_WIDTH = partners.length * CARD_STEP; // e.g. 16 × 140 = 2240px
+  const track = [...partners, ...partners];
+
   const wrapRef   = useRef<HTMLDivElement>(null);
   const trackRef  = useRef<HTMLDivElement>(null);
   const xRef      = useRef(-SET_WIDTH); // start showing second set, scroll right toward 0
@@ -95,7 +74,7 @@ export default function Partners() {
 
     rafRef.current = requestAnimationFrame(step);
     return () => cancelAnimationFrame(rafRef.current);
-  }, []);
+  }, [SET_WIDTH]);
 
   return (
     <section className={styles.section}>
@@ -123,11 +102,11 @@ export default function Partners() {
       >
         <div ref={trackRef} className={styles.track}>
           {track.map((p, i) => (
-            <div key={`${p.file}-${i}`} className={styles.logoCard}>
+            <div key={`${p.id}-${i}`} className={styles.logoCard}>
               <div className={styles.logoBox}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={src(p.file)}
+                  src={p.logo_url}
                   alt={p.name}
                   className={styles.logoImg}
                   loading="lazy"

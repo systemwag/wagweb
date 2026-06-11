@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
 import styles from './ContactForm.module.css';
 
 interface FormState {
@@ -20,8 +19,9 @@ export default function ContactForm() {
     const data = {
       name:    (form.elements.namedItem('name')    as HTMLInputElement).value.trim(),
       email:   (form.elements.namedItem('email')   as HTMLInputElement).value.trim(),
-      phone:   (form.elements.namedItem('phone')   as HTMLInputElement).value.trim() || null,
+      phone:   (form.elements.namedItem('phone')   as HTMLInputElement).value.trim(),
       message: (form.elements.namedItem('message') as HTMLTextAreaElement).value.trim(),
+      website: (form.elements.namedItem('website') as HTMLInputElement).value,
     };
 
     // Basic validation
@@ -31,19 +31,19 @@ export default function ContactForm() {
     }
 
     try {
-      const { error } = await supabase.from('contacts').insert([data]);
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const json = await res.json().catch(() => null);
 
-      if (error) {
-        // If table doesn't exist yet, just show success (dev mode)
-        if (error.code === '42P01') {
-          setState({
-            status: 'success',
-            message: 'Спасибо! Ваша заявка принята. Мы свяжемся с вами в ближайшее время.',
-          });
-          form.reset();
-          return;
-        }
-        throw error;
+      if (!res.ok || !json?.ok) {
+        setState({
+          status: 'error',
+          message: json?.error || 'Произошла ошибка при отправке. Пожалуйста, позвоните нам напрямую.',
+        });
+        return;
       }
 
       setState({
@@ -119,6 +119,12 @@ export default function ContactForm() {
           required
           disabled={state.status === 'loading' || state.status === 'success'}
         />
+      </div>
+
+      {/* Honeypot: invisible to humans, bots tend to fill it. */}
+      <div className={styles.honeypot} aria-hidden="true">
+        <label htmlFor="website">Не заполняйте это поле</label>
+        <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
       </div>
 
       {state.message && (

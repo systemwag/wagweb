@@ -4,6 +4,7 @@ import KazakhstanMap from '@/components/Map/KazakhstanMap';
 import { getProjects, getProjectCategories, getMapProjects } from '@/lib/data';
 import styles from './projects.module.css';
 import Link   from 'next/link';
+import Image  from 'next/image';
 
 export const metadata: Metadata = {
   title: 'Строительные работы | West Arlan Group',
@@ -156,9 +157,11 @@ export default async function ProjectsPage({
                       {/* Image / visual area */}
                       <div className={styles.cardImage}>
                         {(project.image_url || (project.images && project.images.length > 0)) ? (
-                          <img
+                          <Image
                             src={project.image_url ?? project.images![0]}
                             alt={project.title}
+                            fill
+                            sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 420px"
                             className={styles.cardImageReal}
                           />
                         ) : (

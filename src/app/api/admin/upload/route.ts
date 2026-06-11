@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase-server';
+import { createServiceClient } from '@/lib/supabase-server';
 import { requireAdmin, errorMessage } from '@/lib/admin-auth';
 
 const BUCKET = 'project-images';
@@ -14,6 +14,24 @@ const MIME_EXT: Record<string, string> = {
   'image/avif': 'avif',
 };
 const ALLOWED_TYPES = Object.keys(MIME_EXT);
+
+// The client-supplied MIME type is spoofable — verify the actual file
+// signature (magic bytes) matches the declared type before accepting.
+function matchesMagicBytes(buf: Buffer, mime: string): boolean {
+  if (buf.length < 12) return false;
+  switch (mime) {
+    case 'image/jpeg':
+      return buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff;
+    case 'image/png':
+      return buf.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]));
+    case 'image/webp':
+      return buf.subarray(0, 4).toString('ascii') === 'RIFF' && buf.subarray(8, 12).toString('ascii') === 'WEBP';
+    case 'image/avif':
+      return buf.subarray(4, 8).toString('ascii') === 'ftyp';
+    default:
+      return false;
+  }
+}
 
 export async function POST(req: Request) {
   const denied = await requireAdmin();
@@ -41,7 +59,16 @@ export async function POST(req: Request) {
       );
     }
 
-    const supabase = createServerClient();
+    const buffer = Buffer.from(await file.arrayBuffer());
+
+    if (!matchesMagicBytes(buffer, file.type)) {
+      return NextResponse.json(
+        { ok: false, error: 'Содержимое файла не соответствует заявленному формату' },
+        { status: 400 },
+      );
+    }
+
+    const supabase = createServiceClient();
 
     // Generate unique path. Extension comes from the validated MIME type, and
     // the folder only accepts a numeric project id (no path traversal).
@@ -49,9 +76,6 @@ export async function POST(req: Request) {
     const timestamp = Date.now();
     const folder = projectId && /^\d+$/.test(projectId) ? `project-${projectId}` : 'unsorted';
     const filePath = `${folder}/${timestamp}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-
-    // Upload to Supabase Storage
-    const buffer = Buffer.from(await file.arrayBuffer());
     const { error: uploadError } = await supabase.storage
       .from(BUCKET)
       .upload(filePath, buffer, {
@@ -89,7 +113,7 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ ok: false, error: 'Путь не указан' }, { status: 400 });
     }
 
-    const supabase = createServerClient();
+    const supabase = createServiceClient();
     const { error } = await supabase.storage.from(BUCKET).remove([path]);
 
     if (error) {
