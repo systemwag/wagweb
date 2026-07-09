@@ -1,0 +1,490 @@
+/* ═══════════════════════════════════════════════════════════════════
+   WAG · DESIGN-WORKS BROCHURE — sheet-specific styles (8 pages · A4).
+   Shell/typography primitives are reused from ../print.module.css; this
+   module only adds what the design brochure needs: the intro competencies
+   + case index, and the per-project sheet layout (header rail + a
+   full-width framed drawing). Render via `npm run build:pdf:design`.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Cover subtitle (under the wordmark rule) ───────────────────────── */
+.coverSubtitle {
+  position: absolute;
+  top: 188mm;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11pt;
+  font-weight: 600;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: rgba(240,242,248,0.82);
+}
+/* «Дополнение к основному портфолио…» — quiet line under the subtitle. */
+.coverSupplement {
+  position: absolute;
+  top: 197mm;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 7.5pt;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(201,148,31,0.75);
+}
+
+/* ═══ 02 · INTRO ═════════════════════════════════════════════════════ */
+.introStats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  margin: 1mm 0 7mm;
+  padding: 4mm 0;
+  border-top: 0.2mm solid var(--line-cream);
+  border-bottom: 0.2mm solid var(--line-cream);
+}
+.introStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5mm;
+  padding: 0 3mm;
+  border-left: 0.2mm solid var(--line-cream);
+}
+.introStat:first-child { border-left: 0; }
+.introStatNum {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 900;
+  font-size: 30pt;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--c-gold);
+}
+.introStatLabel {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 6.8pt;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  text-align: center;
+  line-height: 1.3;
+}
+
+.sectionLabel {
+  display: flex;
+  align-items: center;
+  gap: 3mm;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: var(--fs-meta);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: var(--c-gold-2);
+  text-transform: uppercase;
+  margin: 0 0 4mm;
+}
+.sectionLabel span {
+  display: inline-block;
+  width: 8mm;
+  height: 0.3mm;
+  background: var(--c-gold);
+}
+
+.compGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4mm;
+  margin-bottom: 9mm;
+}
+.compCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 3.5mm;
+  padding: 4.5mm 4.5mm;
+  background: var(--c-cream-card);
+  border: 0.15mm solid var(--line-cream);
+  border-radius: 1.5mm;
+}
+.compIcon {
+  flex-shrink: 0;
+  width: 8mm;
+  height: 8mm;
+  color: var(--c-gold);
+}
+.compIcon svg { width: 100%; height: 100%; display: block; }
+.compBody { display: flex; flex-direction: column; gap: 1.5mm; }
+.compTitle {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 10.5pt;
+  font-weight: 700;
+  color: var(--c-ink);
+  line-height: 1.15;
+}
+.compDesc {
+  font-size: 8.2pt;
+  line-height: 1.4;
+  color: var(--c-muted);
+}
+
+/* Featured-case index — 4 rows mirroring the sheets that follow */
+.caseList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 0.2mm solid var(--line-cream);
+}
+.caseRow {
+  display: flex;
+  align-items: baseline;
+  gap: 4mm;
+  padding: 3.4mm 1mm;
+  border-bottom: 0.15mm solid var(--line-cream);
+}
+.caseIndex {
+  flex-shrink: 0;
+  width: 9mm;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 13pt;
+  color: var(--c-gold);
+  line-height: 1;
+}
+.caseTitle {
+  flex: 1;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 9.5pt;
+  font-weight: 700;
+  color: var(--c-ink);
+  line-height: 1.25;
+}
+.caseClient {
+  flex-shrink: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 7.5pt;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--c-muted);
+  text-align: right;
+  max-width: 58mm;
+}
+
+/* ═══ 03–06 · PROJECT SHEETS ═════════════════════════════════════════ */
+.sheetTitle {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 21pt;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  color: var(--c-ink);
+  margin: 4mm 0 3mm;
+  max-width: 168mm;
+}
+.sheetMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2.5mm;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 8pt;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--c-muted);
+  padding-bottom: 4mm;
+  border-bottom: 0.2mm solid var(--line-cream);
+}
+.sheetMetaClient { color: var(--c-gold-2); font-weight: 700; }
+.sheetMetaSep { color: var(--c-meta-soft); }
+.sheetStatus {
+  margin-left: auto;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 2mm;
+  padding: 1.4mm 3.5mm;
+  border: 0.25mm solid var(--c-teal);
+  border-radius: 1mm;
+  background: rgba(0,168,142,0.08);
+  font-size: 7pt;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--c-teal);
+  text-transform: uppercase;
+}
+.sheetStatus::before {
+  content: '';
+  width: 1.8mm;
+  height: 1.8mm;
+  border-radius: 50%;
+  background: var(--c-teal-soft);
+}
+
+.sheetLead {
+  font-size: 9.5pt;
+  line-height: 1.5;
+  color: var(--c-ink-2);
+  margin: 5mm 0 0;
+  max-width: 158mm;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphenate-limit-chars: auto 4 3;
+  -webkit-hyphenate-limit-chars: auto 4 3;
+}
+
+/* 3 key figures in a full-width row */
+.metricRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7mm;
+  margin: 6mm 0 6mm;
+}
+.metric {
+  padding: 0.5mm 0 0.5mm 4mm;
+  border-left: 0.5mm solid var(--c-gold);
+}
+.metricValueRow { display: flex; align-items: baseline; gap: 1.5mm; }
+.metricValue {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 900;
+  font-size: 22pt;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  color: var(--c-gold);
+}
+.metricUnit {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 9pt;
+  font-weight: 600;
+  color: var(--c-gold-2);
+}
+.metricLabel {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 7pt;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  margin-top: 1.5mm;
+  line-height: 1.3;
+}
+
+/* Framed drawing — full width, sized to its own aspect (no forced stretch,
+   so the white frame hugs the landscape sheet instead of ballooning). */
+.figure { display: flex; flex-direction: column; }
+.figFrame {
+  flex: 0 0 auto;
+  max-height: 128mm;
+  margin-bottom: 0;
+}
+.figFrame img { max-height: 118mm; }
+.figCap {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4mm;
+  margin-top: 2.5mm;
+  padding-top: 2.5mm;
+  border-top: 0.2mm solid var(--line-cream);
+}
+.figCapText {
+  font-size: 7.6pt;
+  font-style: italic;
+  color: var(--c-muted);
+  line-height: 1.3;
+}
+.figKind {
+  flex-shrink: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 6.8pt;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-gold-2);
+  white-space: nowrap;
+}
+
+/* Scope of works — 2×2 bullet grid under the drawing */
+.scopeWrap { margin-top: 6mm; }
+.scopeLabel {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 7pt;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--c-gold-2);
+  margin-bottom: 3mm;
+}
+.scopeGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5mm 8mm;
+}
+.scopeItem {
+  display: flex;
+  gap: 2.5mm;
+  font-size: 8.2pt;
+  line-height: 1.35;
+  color: var(--c-ink-2);
+}
+.scopeItem::before {
+  content: '';
+  flex-shrink: 0;
+  width: 1.6mm;
+  height: 1.6mm;
+  margin-top: 1.4mm;
+  background: var(--c-teal);
+  transform: rotate(45deg);
+}
+.sheetStage {
+  margin-top: auto;
+  padding-top: 4mm;
+  border-top: 0.2mm solid var(--line-cream);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 7.5pt;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--c-muted);
+  line-height: 1.4;
+}
+
+/* Annex page — stack of framed drawings continuing a project sheet.
+   Tall figures (~A2/A3 landscape) share the leftover height via flex;
+   band figures (ultra-wide strips) take their natural short height. */
+.annexFigs {
+  display: flex;
+  flex-direction: column;
+  gap: 5mm;
+  flex: 1;
+  min-height: 0;
+  margin-top: 2mm;
+}
+.annexFig {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 0;
+}
+.annexFigFrame {
+  flex: 1;
+  min-height: 0;
+}
+.annexFigFrame img { max-height: 100%; }
+/* Ultra-wide strip: don't flex — natural height from the 178mm width. */
+.annexFigBand { flex: 0 0 auto; }
+.annexFigBand .annexFigFrame { flex: 0 0 auto; }
+.annexFigBand .annexFigFrame img { max-height: 42mm; }
+
+/* Second drawing band on a project sheet (e.g. план освещения) — the hero
+   above it gets compacted so both fit alongside metrics + scope. The
+   .sheetCompact modifier (set on pageInner) trims the rhythm of the whole
+   sheet so two framed drawings + scope + stage stay inside A4. */
+.figBandExtra { margin-top: 3mm; }
+.figBandExtra img { max-height: 34mm; }
+.figCompact img { max-height: 64mm; }
+.sheetCompact .sheetLead { margin-top: 4mm; font-size: 9pt; }
+.sheetCompact .metricRow { margin: 4.5mm 0; }
+.sheetCompact .metricValue { font-size: 20pt; }
+.sheetCompact .scopeWrap { margin-top: 4mm; }
+.sheetCompact .sheetStage { padding-top: 3mm; }
+.sheetCompact .figCap { margin-top: 2mm; padding-top: 2mm; }
+
+/* ── Dark-sheet overrides (odd-index project sheets) ─────────────────── */
+.sheetDark .sheetTitle { color: #F0F2F8; }
+.sheetDark .sheetMeta {
+  color: rgba(240,242,248,0.6);
+  border-bottom-color: var(--line-dark);
+}
+.sheetDark .sheetMetaClient { color: var(--c-gold-soft); }
+.sheetDark .sheetMetaSep { color: rgba(240,242,248,0.3); }
+.sheetDark .sheetLead { color: rgba(240,242,248,0.82); }
+.sheetDark .metricValue { color: var(--c-gold-soft); }
+.sheetDark .metricUnit { color: rgba(240,200,90,0.85); }
+.sheetDark .metricLabel { color: var(--c-meta-dark); }
+.sheetDark .metric { border-left-color: var(--c-gold-soft); }
+.sheetDark .scopeLabel { color: var(--c-gold-soft); }
+.sheetDark .scopeItem { color: rgba(240,242,248,0.78); }
+.sheetDark .scopeItem::before { background: var(--c-teal-soft); }
+.sheetDark .sheetStage {
+  color: rgba(240,242,248,0.55);
+  border-top-color: var(--line-dark);
+}
+.sheetDark .figCap { border-top-color: var(--line-dark); }
+.sheetDark .figCapText { color: rgba(240,242,248,0.6); }
+.sheetDark .figKind { color: var(--c-gold-soft); }
+.sheetDark .sheetStatus {
+  color: var(--c-teal-soft);
+  border-color: var(--c-teal-soft);
+  background: rgba(0,196,167,0.12);
+}
+
+/* ═══ MERGED «ОТЗЫВЫ + ПАРТНЁРЫ» PAGE ════════════════════════════════ */
+/* One row of 3 compact testimonial cards — don't flex-fill the column the
+   way the standalone testimonials page does. */
+.mergedTestRow {
+  flex: 0 0 auto;
+  margin-bottom: 3mm;
+}
+/* Keep the 94% footer clear of the bottom-left page stamp. */
+.mergedFooterPad { margin-bottom: 6mm; }
+
+/* Compact partner grid for the merged page: shallower logo wells so 3 logo
+   rows + 3 testimonial cards + header all fit one A4. The first child of
+   each partner card is its logo well (structural selector — the classes
+   live in print.module.css and can't be referenced across modules). */
+.mergedPartnersGrid { flex: 0 0 auto; }
+.mergedPartnersGrid > div { padding-top: 2.5mm; padding-bottom: 2mm; }
+.mergedPartnersGrid > div > div:first-child { height: 12mm; }
+.mergedPartnersGrid img { max-height: 12mm; }
+
+/* ═══ REGISTRY — QR 2-up + lead-in remark ════════════════════════════ */
+.moreQrGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5mm;
+  max-width: 150mm;
+  margin: 2mm auto 6mm;
+}
+
+/* Remark band that transitions the registry page into the 4 example sheets. */
+.remarkBand {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 4mm;
+  padding: 4.5mm 5.5mm;
+  background: rgba(201,148,31,0.09);
+  border-left: 0.6mm solid var(--c-gold);
+  border-radius: 1mm;
+}
+.remarkArrow {
+  flex-shrink: 0;
+  font-family: 'Outfit', sans-serif;
+  font-size: 20pt;
+  line-height: 1;
+  color: var(--c-gold);
+}
+.remarkText {
+  flex: 1;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11pt;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  color: var(--c-ink);
+  line-height: 1.3;
+}
+.remarkTag {
+  flex-shrink: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 7pt;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-gold-2);
+  padding: 1.6mm 3mm;
+  border: 0.25mm solid var(--line-gold);
+  border-radius: 1mm;
+  white-space: nowrap;
+}

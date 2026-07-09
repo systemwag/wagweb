@@ -186,11 +186,13 @@ const RU_CONTENT: PrintContent = {
   licNumberPrefix: '№ ',
   licenses: [
     {
+      eyebrow: 'ЛИЦЕНЗИЯ · СТРОИТЕЛЬСТВО',
       number: '25008103',
       date: '14.03.2025',
       titleAccent: 'Строительно-монтажные',
       titleMain: 'работы',
-      badge: 'I КАТЕГОРИЯ',
+      badgeNum: 'I',
+      badgeLabel: <>Категория<br />СМР</>,
       scan: '/licenses/license-smr.jpg',
       meta: [
         { label: 'СТАТУС ВЫДАЧИ', value: 'Управление ГАСК Актюбинской области' },
@@ -200,11 +202,13 @@ const RU_CONTENT: PrintContent = {
       ],
     },
     {
+      eyebrow: 'ЛИЦЕНЗИЯ · ПРОЕКТИРОВАНИЕ',
       number: '25031072',
       date: '05.09.2025',
       titleAccent: 'Проектная',
       titleMain: 'деятельность',
-      badge: 'I КАТЕГОРИЯ',
+      badgeNum: 'I',
+      badgeLabel: <>Категория<br />ПД</>,
       scan: '/portfolio/page7_img3.jpeg',
       meta: [
         { label: 'СТАТУС ВЫДАЧИ', value: 'Управление ГАСК Актюбинской области' },
@@ -214,11 +218,13 @@ const RU_CONTENT: PrintContent = {
       ],
     },
     {
+      eyebrow: 'ЛИЦЕНЗИЯ · ЭКОЛОГИЯ',
       number: '02962Р',
       date: '22.09.2025',
       titleAccent: 'Охрана',
       titleMain: 'окружающей среды',
-      badge: 'КЛАСС 1',
+      badgeNum: '1',
+      badgeLabel: <>Класс<br />ОС</>,
       scan: '/portfolio/page7_img1.jpeg',
       meta: [
         { label: 'ОРГАН ВЫДАЧИ', value: 'Министерство экологии и природных ресурсов РК' },
@@ -227,21 +233,61 @@ const RU_CONTENT: PrintContent = {
         { label: 'ОБЪЁМ', value: 'Раздел ОВОС в составе ПСД' },
       ],
     },
-    {
-      number: 'KZ58VWC00251751',
-      date: '25.06.2025',
-      titleAccent: 'Аккредитация ·',
-      titleMain: 'экспертные работы',
-      badge: 'I и II УРОВНИ',
-      scan: '/portfolio/page8_img2.jpeg',
-      meta: [
-        { label: 'ДЕРЖАТЕЛЬ', value: 'ТОО «Global Construction Project»' },
-        { label: 'ОРГАН ВЫДАЧИ', value: 'Комитет по делам строительства и ЖКХ · г. Астана' },
-        { label: 'СРОК ДЕЙСТВИЯ', value: 'до 25.06.2027' },
-        { label: 'ОБЪЁМ', value: 'Техническое обследование зданий и сооружений' },
-      ],
-    },
   ],
+
+  accreditations: {
+    eyebrow: 'СВИДЕТЕЛЬСТВА ОБ АККРЕДИТАЦИИ · 2026',
+    title: (
+      <>
+        <span className={styles.titleAccent}>Аккредитации</span><br />
+        и допуски группы
+      </>
+    ),
+    badgeLabel: <>СВИДЕТЕЛЬСТВА<br />ДО 2028</>,
+    lead: (
+      <>
+        В 2026 году группа подтвердила и{' '}
+        <span className={styles.aboutColLede}>расширила аккредитации</span>{' '}
+        уполномоченного органа — техническое обследование, технический надзор и управление
+        проектами на технически и технологически сложных объектах I и II уровней ответственности.
+        Все свидетельства действуют до 26.06.2028.
+      </>
+    ),
+    cards: [
+      {
+        number: '№ KZ83VWC00283699',
+        scope: 'Экспертные работы по техническому обследованию надёжности и устойчивости зданий и сооружений',
+        level: 'I и II уровни ответственности',
+        holder: 'West Arlan Group',
+        validUntil: 'до 26.06.2028',
+        scan: '/licenses/accr-tech-survey.jpg',
+      },
+      {
+        number: '№ KZ56VWC00283700',
+        scope: 'Инжиниринговые услуги по техническому надзору на технически и технологически сложных объектах',
+        level: 'I уровень ответственности',
+        holder: 'West Arlan Group',
+        validUntil: 'до 26.06.2028',
+        scan: '/licenses/accr-supervision-wag.jpg',
+      },
+      {
+        number: '№ KZ29VWC00283701',
+        scope: 'Управление проектами в области архитектуры, градостроительства и строительства',
+        level: 'ГАСК Актюбинской области',
+        holder: 'West Arlan Group',
+        validUntil: 'до 26.06.2028',
+        scan: '/licenses/accr-project-mgmt.jpg',
+      },
+      {
+        number: '№ KZ02VWC00283702',
+        scope: 'Инжиниринговые услуги по техническому надзору на технически и технологически сложных объектах',
+        level: 'I уровень ответственности',
+        holder: 'Global Construction Project',
+        validUntil: 'до 26.06.2028',
+        scan: '/licenses/accr-supervision-gcp.jpg',
+      },
+    ],
+  },
 
   dirDesign: {
     eyebrow: 'НАПРАВЛЕНИЕ 01 · ПРОЕКТНАЯ ДЕЯТЕЛЬНОСТЬ',
@@ -403,7 +449,7 @@ const RU_CONTENT: PrintContent = {
       { file: '2.png',          name: 'Зерде Керамика' },
     ],
     repeatLabel: 'ПОВТОРНЫХ КОНТРАКТОВ',
-    registryLabel: 'ПОЛНЫЙ РЕЕСТР ЗАКАЗЧИКОВ · arlan-gr.kz',
+    registryLabel: 'ПОЛНЫЙ РЕЕСТР ЗАКАЗЧИКОВ · www.westarlangroup.kz',
   },
 
   contacts: {

@@ -29,13 +29,28 @@ export type PersonStat = { num: string; label: string; desc: string };
 export type TeamMember = { num: string; role: string; name: string; phone: string };
 
 export type LicenseContent = {
+  /* Section kicker at the very top, e.g. «ЛИЦЕНЗИЯ · СТРОИТЕЛЬСТВО» —
+     mirrors the eyebrow on page 04 («СЕРТИФИКАТЫ · ISO»). */
+  eyebrow: string;
   number: string;
   date: string;
   titleAccent: string;
   titleMain: string;
-  badge: string;
+  /* Rendered as a bigBadge (num + label) in the title row, mirroring
+     page 08 — e.g. «I» + «Категория», «1» + «Класс». */
+  badgeNum: string;
+  badgeLabel: ReactNode;
   scan: string;
   meta: { label: string; value: string }[];
+};
+
+export type AccreditationCard = {
+  number: string;    // «№ KZ83VWC00283699»
+  scope: string;     // краткая суть допуска
+  level: string;     // «I и II уровни» / «I уровень»
+  holder: string;    // «West Arlan Group» / «Global Construction Project»
+  validUntil: string; // «до 26.06.2028»
+  scan: string;      // путь к сканированному свидетельству
 };
 
 export type DirectionContent = {
@@ -109,10 +124,20 @@ export interface PrintContent {
     cards: { name: string; detail: string }[];
   };
 
-  /* 05–08 · LICENSES — prefix includes its trailing space ('№ ' / 'No. ')
+  /* 05–07 · LICENSES — prefix includes its trailing space ('№ ' / 'No. ')
      so the SSR text-node split stays identical to the originals. */
   licNumberPrefix: string;
-  licenses: [LicenseContent, LicenseContent, LicenseContent, LicenseContent];
+  licenses: [LicenseContent, LicenseContent, LicenseContent];
+
+  /* 08 · ACCREDITATIONS — 2×2 grid of the four 2026 accreditation
+     certificates (technical survey, supervision ×2, project management). */
+  accreditations: {
+    eyebrow: string;
+    title: ReactNode;
+    badgeLabel: ReactNode;
+    lead: ReactNode;
+    cards: [AccreditationCard, AccreditationCard, AccreditationCard, AccreditationCard];
+  };
 
   /* 09 · DIRECTION 01 — DESIGN, 10 · DIRECTION 02 — BUILD */
   dirDesign: DirectionContent;

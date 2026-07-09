@@ -8,8 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "build:pdf": "node scripts/build-pdf.mjs",
-    "build:pdf:en": "cross-env OUT_PDF=public/portfolio/portfolio-en.pdf PRINT_URL=http://localhost:3000/portfolio/print/en node scripts/build-pdf.mjs"
+    "build:pdf": "cross-env PDF_TITLE=\"Портфолио West Arlan Group · 2026\" node scripts/build-pdf.mjs",
+    "build:pdf:en": "cross-env OUT_PDF=public/portfolio/portfolio-en.pdf PRINT_URL=http://localhost:3000/portfolio/print/en PDF_TITLE=\"West Arlan Group — Portfolio 2026\" node scripts/build-pdf.mjs",
+    "build:pdf:design": "cross-env OUT_PDF=public/portfolio/portfolio-design.pdf PRINT_URL=http://localhost:3000/portfolio/print/design PDF_TITLE=\"Проектирование инженерных сетей — West Arlan Group · 2026\" node scripts/build-pdf.mjs"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

@@ -25,14 +25,15 @@ const OUT_DIR = join(__dirname, '..', 'public', 'portfolio');
 const COLOR_DARK  = '#1A1A1A';
 const COLOR_LIGHT = '#F8EFE0';
 
-// TEMP: until the arlan-gr.kz domain is pointed at the Vercel deployment, the
-// QR codes resolve to the live Vercel host. The brochure still PRINTS the
-// arlan-gr.kz labels — only the encoded link differs. Switch back to
-// arlan-gr.kz here (and re-bake) once the domain is migrated.
+// Company domain — the brochures print www.westarlangroup.kz labels and the
+// QR codes encode the same host. Re-bake if the domain changes.
 const targets = [
-  { url: 'https://wagweb.vercel.app/projects',    file: 'qr-projects.png'    },
-  { url: 'https://wagweb.vercel.app/maintenance', file: 'qr-maintenance.png' },
-  { url: 'https://wagweb.vercel.app/design',      file: 'qr-design.png'      },
+  { url: 'https://www.westarlangroup.kz/projects',      file: 'qr-projects.png'    },
+  { url: 'https://www.westarlangroup.kz/maintenance',   file: 'qr-maintenance.png' },
+  { url: 'https://www.westarlangroup.kz/design',        file: 'qr-design.png'      },
+  // Main company brochure — linked from the standalone DESIGN brochure so the
+  // reader can jump to the full portfolio (src/app/portfolio/print/design).
+  { url: 'https://www.westarlangroup.kz/portfolio.pdf', file: 'qr-portfolio-main.png' },
 ];
 
 async function main() {

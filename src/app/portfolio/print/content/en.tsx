@@ -186,11 +186,13 @@ const EN_CONTENT: PrintContent = {
   licNumberPrefix: 'No. ',
   licenses: [
     {
+      eyebrow: 'LICENSE · CONSTRUCTION',
       number: '25008103',
       date: '14.03.2025',
       titleAccent: 'Construction & installation',
       titleMain: 'works',
-      badge: 'CATEGORY I',
+      badgeNum: 'I',
+      badgeLabel: <>Category<br />CIW</>,
       scan: '/licenses/license-smr.jpg',
       meta: [
         { label: 'ISSUING AUTHORITY', value: 'GASK Department, Aktobe Region' },
@@ -200,11 +202,13 @@ const EN_CONTENT: PrintContent = {
       ],
     },
     {
+      eyebrow: 'LICENSE · ENGINEERING',
       number: '25031072',
       date: '05.09.2025',
       titleAccent: 'Engineering',
       titleMain: 'activities',
-      badge: 'CATEGORY I',
+      badgeNum: 'I',
+      badgeLabel: <>Category<br />Design</>,
       scan: '/portfolio/page7_img3.jpeg',
       meta: [
         { label: 'ISSUING AUTHORITY', value: 'GASK Department, Aktobe Region' },
@@ -214,11 +218,13 @@ const EN_CONTENT: PrintContent = {
       ],
     },
     {
+      eyebrow: 'LICENSE · ENVIRONMENTAL',
       number: '02962R',
       date: '22.09.2025',
       titleAccent: 'Environmental',
       titleMain: 'protection',
-      badge: 'CLASS 1',
+      badgeNum: '1',
+      badgeLabel: <>Class<br />ENV</>,
       scan: '/portfolio/page7_img1.jpeg',
       meta: [
         { label: 'ISSUING BODY', value: 'Ministry of Ecology & Natural Resources of the RK' },
@@ -227,21 +233,61 @@ const EN_CONTENT: PrintContent = {
         { label: 'SCOPE', value: 'EIA section within engineering documentation' },
       ],
     },
-    {
-      number: 'KZ58VWC00251751',
-      date: '25.06.2025',
-      titleAccent: 'Accreditation ·',
-      titleMain: 'expert works',
-      badge: 'LEVELS I & II',
-      scan: '/portfolio/page8_img2.jpeg',
-      meta: [
-        { label: 'HOLDER', value: 'Global Construction Project LLP' },
-        { label: 'ISSUING BODY', value: 'Committee for Construction & Housing Affairs · Astana' },
-        { label: 'VALID UNTIL', value: 'until 25.06.2027' },
-        { label: 'SCOPE', value: 'Technical inspection of buildings & structures' },
-      ],
-    },
   ],
+
+  accreditations: {
+    eyebrow: 'ACCREDITATION CERTIFICATES · 2026',
+    title: (
+      <>
+        <span className={styles.titleAccent}>Accreditations</span><br />
+        of the group
+      </>
+    ),
+    badgeLabel: <>CERTIFICATES<br />UNTIL 2028</>,
+    lead: (
+      <>
+        In 2026 the group renewed and{' '}
+        <span className={styles.aboutColLede}>expanded its accreditations</span>{' '}
+        with the authorised body — technical inspection, construction supervision and project
+        management on technically and technologically complex facilities of responsibility
+        levels I and II. All certificates are valid until 26.06.2028.
+      </>
+    ),
+    cards: [
+      {
+        number: 'No. KZ83VWC00283699',
+        scope: 'Expert works on technical inspection of the reliability and stability of buildings & structures',
+        level: 'Responsibility levels I & II',
+        holder: 'West Arlan Group',
+        validUntil: 'until 26.06.2028',
+        scan: '/licenses/accr-tech-survey.jpg',
+      },
+      {
+        number: 'No. KZ56VWC00283700',
+        scope: 'Engineering services for construction supervision on technically & technologically complex facilities',
+        level: 'Responsibility level I',
+        holder: 'West Arlan Group',
+        validUntil: 'until 26.06.2028',
+        scan: '/licenses/accr-supervision-wag.jpg',
+      },
+      {
+        number: 'No. KZ29VWC00283701',
+        scope: 'Project management in architecture, urban planning and construction',
+        level: 'GASK Department, Aktobe Region',
+        holder: 'West Arlan Group',
+        validUntil: 'until 26.06.2028',
+        scan: '/licenses/accr-project-mgmt.jpg',
+      },
+      {
+        number: 'No. KZ02VWC00283702',
+        scope: 'Engineering services for construction supervision on technically & technologically complex facilities',
+        level: 'Responsibility level I',
+        holder: 'Global Construction Project',
+        validUntil: 'until 26.06.2028',
+        scan: '/licenses/accr-supervision-gcp.jpg',
+      },
+    ],
+  },
 
   dirDesign: {
     eyebrow: 'DIVISION 01 · ENGINEERING ACTIVITIES',
@@ -403,7 +449,7 @@ const EN_CONTENT: PrintContent = {
       { file: '2.png',          name: 'Zerde Keramika' },
     ],
     repeatLabel: 'REPEAT CONTRACTS',
-    registryLabel: 'FULL CLIENT REGISTRY · arlan-gr.kz',
+    registryLabel: 'FULL CLIENT REGISTRY · www.westarlangroup.kz',
   },
 
   contacts: {

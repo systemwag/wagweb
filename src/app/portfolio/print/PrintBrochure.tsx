@@ -239,9 +239,8 @@ export default async function PrintBrochure({ content: c, buttons }: { content: 
 
   // QR codes are pre-baked by scripts/bake-qr-codes.mjs to PNGs under
   // /public/portfolio/. Saves render time and keeps the build deterministic.
-  // NOTE: the printed labels below say arlan-gr.kz, but the QR PNGs currently
-  // encode wagweb.vercel.app (temporary, until the domain is migrated — see
-  // bake-qr-codes.mjs). Re-bake there if the destination changes.
+  // Both the printed labels below and the QR PNGs use www.westarlangroup.kz —
+  // re-bake in bake-qr-codes.mjs if the destination changes.
 
   // One testimonial per client company — keep the first letter from each,
   // drop the rest (e.g. the 3 АМК quotes collapse to 1, the 2 Зерде to 1).
@@ -313,7 +312,7 @@ export default async function PrintBrochure({ content: c, buttons }: { content: 
                 <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
               </svg>
             </div>
-            <div className={styles.coverBottomValue}>arlan-gr.kz</div>
+            <div className={styles.coverBottomValue}>www.westarlangroup.kz</div>
           </div>
         </div>
       </section>
@@ -492,8 +491,8 @@ export default async function PrintBrochure({ content: c, buttons }: { content: 
       {/* ═══ 07 · LICENSE ОС ══════════════════════════════════════ */}
       <LicensePage pageNum={7} numberPrefix={c.licNumberPrefix} {...c.licenses[2]} />
 
-      {/* ═══ 08 · ACCREDITATION ═══════════════════════════════════ */}
-      <LicensePage pageNum={8} numberPrefix={c.licNumberPrefix} {...c.licenses[3]} />
+      {/* ═══ 08 · ACCREDITATIONS (2×2 grid, 2026 certificates) ════ */}
+      <AccreditationsPage pageNum={8} content={c.accreditations} />
 
       {/* ═══ 09 · DIRECTION 01 — DESIGN ═══════════════════════════ */}
       <section className={`${styles.page} ${styles.pageDark}`}>
@@ -545,7 +544,7 @@ export default async function PrintBrochure({ content: c, buttons }: { content: 
             <span className={styles.dirFooterSep}>·</span>
             <span className={styles.dirFooterText}>GLOBAL CONSTRUCTION PROJECT</span>
             <span className={styles.dirFooterSep}>·</span>
-            <span className={styles.dirFooterText}>arlan-gr.kz / design</span>
+            <span className={styles.dirFooterText}>www.westarlangroup.kz / design</span>
           </div>
         </div>
       </section>
@@ -600,7 +599,7 @@ export default async function PrintBrochure({ content: c, buttons }: { content: 
             <span className={styles.dirFooterSep}>·</span>
             <span className={styles.dirFooterText}>WEST CAPITAL CONSTRUCTION LLP</span>
             <span className={styles.dirFooterSep}>·</span>
-            <span className={styles.dirFooterText}>arlan-gr.kz / projects</span>
+            <span className={styles.dirFooterText}>www.westarlangroup.kz / projects</span>
           </div>
         </div>
       </section>
@@ -631,7 +630,7 @@ export default async function PrintBrochure({ content: c, buttons }: { content: 
                 <span className={styles.qrCountLabel}>{c.qr.cards[0].countLabel}</span>
               </div>
               <img src="/portfolio/qr-projects.png" alt="" className={styles.qrCodeWrap} aria-hidden />
-              <div className={styles.qrUrl}>arlan-gr.kz/projects</div>
+              <div className={styles.qrUrl}>www.westarlangroup.kz/projects</div>
               <div className={styles.qrHint}>{c.qr.cards[0].hint}</div>
             </div>
             <div className={`${styles.qrCard} ${styles.qrCardBlue}`}>
@@ -644,7 +643,7 @@ export default async function PrintBrochure({ content: c, buttons }: { content: 
                 <span className={styles.qrCountLabel}>{c.qr.cards[1].countLabel}</span>
               </div>
               <img src="/portfolio/qr-maintenance.png" alt="" className={styles.qrCodeWrap} aria-hidden />
-              <div className={styles.qrUrl}>arlan-gr.kz/maintenance</div>
+              <div className={styles.qrUrl}>www.westarlangroup.kz/maintenance</div>
               <div className={styles.qrHint}>{c.qr.cards[1].hint}</div>
             </div>
             <div className={`${styles.qrCard} ${styles.qrCardGold}`}>
@@ -657,7 +656,7 @@ export default async function PrintBrochure({ content: c, buttons }: { content: 
                 <span className={styles.qrCountLabel}>{c.qr.cards[2].countLabel}</span>
               </div>
               <img src="/portfolio/qr-design.png" alt="" className={styles.qrCodeWrap} aria-hidden />
-              <div className={styles.qrUrl}>arlan-gr.kz/design</div>
+              <div className={styles.qrUrl}>www.westarlangroup.kz/design</div>
               <div className={styles.qrHint}>{c.qr.cards[2].hint}</div>
             </div>
           </div>
@@ -801,7 +800,7 @@ export default async function PrintBrochure({ content: c, buttons }: { content: 
               <div className={styles.contactsFooterLabel}>
                 <span className={styles.aboutColRule} />{c.contacts.siteLabel}
               </div>
-              <div className={styles.contactsSite}>arlan-gr.kz</div>
+              <div className={styles.contactsSite}>www.westarlangroup.kz</div>
             </div>
             <WagMark className={styles.contactsMark} gradientId="wagContacts" />
           </div>
@@ -831,16 +830,19 @@ export default async function PrintBrochure({ content: c, buttons }: { content: 
 
 function LicensePage({
   pageNum,
+  eyebrow,
   numberPrefix,
   number,
   date,
   titleMain,
   titleAccent,
-  badge,
+  badgeNum,
+  badgeLabel,
   scan,
   meta,
 }: {
   pageNum: number;
+  eyebrow: string;
   /* '№ ' (RU) / 'No. ' (EN) — includes the trailing space so the SSR
      text-node split matches the original `№ {number} · {date}` JSX. */
   numberPrefix: string;
@@ -848,7 +850,8 @@ function LicensePage({
   date: string;
   titleMain: string;
   titleAccent: string;
-  badge: string;
+  badgeNum: string;
+  badgeLabel: ReactNode;
   scan: string;
   meta: { label: string; value: string }[];
 }) {
@@ -856,14 +859,22 @@ function LicensePage({
     <section className={`${styles.page} ${styles.pageLight}`}>
       <PageChrome pageNum={pageNum} />
       <div className={styles.pageInner}>
-        <div className={styles.licHeader}>
-          <div className={styles.licNumber}>{numberPrefix}{number}{' · '}{date}</div>
-          <span className={styles.licBadgeDark}>{badge}</span>
+        {/* Section kicker (like page 04), then the number/date line; the
+            category badge moves down into the title row as a bigBadge,
+            mirroring page 08, so it no longer collides with the top-right
+            page number. */}
+        <div className={styles.eyebrow}>{eyebrow}</div>
+        <div className={styles.licNumber}>{numberPrefix}{number}{' · '}{date}</div>
+        <div className={styles.titleRow}>
+          <h2 className={styles.licTitle}>
+            <span className={styles.titleAccent}>{titleAccent}</span><br />
+            {titleMain}
+          </h2>
+          <div className={styles.bigBadge}>
+            <div className={styles.bigBadgeNum}>{badgeNum}</div>
+            <div className={styles.bigBadgeLabel}>{badgeLabel}</div>
+          </div>
         </div>
-        <h2 className={styles.licTitle}>
-          <span className={styles.titleAccent}>{titleAccent}</span><br />
-          {titleMain}
-        </h2>
 
         <div className={styles.licScanFrame}>
           <img src={scan} alt={`${titleMain} ${titleAccent}`} className={styles.licScanImg} />
@@ -874,6 +885,51 @@ function LicensePage({
             <div key={m.label} className={styles.licMetaItem}>
               <div className={styles.aboutColTitle}><span className={styles.aboutColRule} />{m.label}</div>
               <div className={styles.licMetaValue}>{m.value}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function AccreditationsPage({
+  pageNum,
+  content: a,
+}: {
+  pageNum: number;
+  content: PrintContent['accreditations'];
+}) {
+  return (
+    <section className={`${styles.page} ${styles.pageLight}`}>
+      <PageChrome pageNum={pageNum} />
+      <div className={styles.pageInner}>
+        <div className={styles.eyebrow}>{a.eyebrow}</div>
+        <div className={styles.titleRow}>
+          <h2 className={styles.titleH1}>{a.title}</h2>
+          <div className={styles.bigBadge}>
+            <div className={styles.bigBadgeNum}>04</div>
+            <div className={styles.bigBadgeLabel}>{a.badgeLabel}</div>
+          </div>
+        </div>
+
+        <div className={styles.leadBox}>{a.lead}</div>
+
+        <div className={styles.accrGrid}>
+          {a.cards.map((card) => (
+            <div key={card.number} className={styles.accrCard}>
+              <img src={card.scan} alt={card.number} className={styles.accrImg} />
+              <div className={styles.accrMeta}>
+                <div className={styles.accrNumber}>{card.number}</div>
+                <div className={styles.accrScope}>{card.scope}</div>
+                <div className={styles.accrTags}>
+                  <span className={styles.accrTag}>{card.level}</span>
+                  <span className={`${styles.accrTag} ${styles.accrTagHolder}`}>{card.holder}</span>
+                </div>
+                <div className={styles.accrValid}>
+                  <span className={styles.aboutColRule} />{card.validUntil}
+                </div>
+              </div>
             </div>
           ))}
         </div>
