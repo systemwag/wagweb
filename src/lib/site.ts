@@ -4,5 +4,5 @@
  * No trailing slash.
  */
 export const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'https://west-arlan.kz'
+  process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'https://westarlangroup.kz'
 ).replace(/\/$/, '');

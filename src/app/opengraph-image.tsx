@@ -68,7 +68,7 @@ export default async function Image() {
             paddingTop: 28,
           }}
         >
-          <div style={{ fontSize: 22, color: '#D4A843', letterSpacing: 2 }}>west-arlan.kz</div>
+          <div style={{ fontSize: 22, color: '#D4A843', letterSpacing: 2 }}>westarlangroup.kz</div>
           <div style={{ fontSize: 20, color: '#8892A4' }}>136 объектов · 16 лет · ISO 9001</div>
         </div>
       </div>

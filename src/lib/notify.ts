@@ -16,7 +16,7 @@ export async function notifyNewLead(lead: {
   if (!token || !chatId) return;
 
   const text = [
-    'Новая заявка с сайта west-arlan.kz',
+    'Новая заявка с сайта westarlangroup.kz',
     '',
     `👤 ${lead.name}`,
     `✉️ ${lead.email}`,
