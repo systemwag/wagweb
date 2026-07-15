@@ -1481,6 +1481,10 @@
   text-transform: uppercase;
   margin: 4mm 0 6mm;
 }
+/* processLabel is tuned for dark pages; on cream pages use the ink meta color */
+.processLabelLight {
+  color: var(--c-meta);
+}
 /* span inside processLabel is now used for the gold rule prefix
    (aboutColRule style), unified with the rest of the brochure. */
 
@@ -1588,7 +1592,8 @@
    ═══════════════════════════════════════════════════════════════════ */
 .qrGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  /* minmax(0,…) — long unbreakable URLs must not blow the tracks past the page */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 4mm;
   margin: 2mm 0 5mm;
 }
@@ -2091,3 +2096,88 @@
   height: 24mm;
   opacity: 0.85;
 }
+
+/* ── QR-page lead-in band → points to the project cases that follow ─────── */
+.qrRemarkBand {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 4.5mm;
+  padding: 5.5mm 6mm;
+  background: var(--c-dark);
+  border-left: 1mm solid var(--c-gold);
+  border-radius: 1mm;
+}
+.qrRemarkArrow {
+  flex-shrink: 0;
+  font-family: 'Outfit', sans-serif;
+  font-size: 24pt;
+  line-height: 1;
+  color: var(--c-gold-soft);
+}
+.qrRemarkText {
+  flex: 1;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12.5pt;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  color: #F0F2F8;
+  line-height: 1.3;
+}
+.qrRemarkTag {
+  flex-shrink: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 7.5pt;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-gold-soft);
+  padding: 1.8mm 3.2mm;
+  border: 0.3mm solid rgba(230,190,87,0.75);
+  border-radius: 1mm;
+  white-space: nowrap;
+}
+
+/* ── ПЗТМ · СМР-showcase (construction photos + сети band) ──────────────── */
+.pztmHeroWrap { margin: 3.5mm 0 1mm; }
+.pztmHeroImg {
+  display: block; width: 100%; height: 52mm; object-fit: cover;
+  border-radius: 1.5mm; border: 0.15mm solid var(--line-cream);
+}
+/* Photo cells: landscape photos go in landscape (3:2) cells, portraits in
+   portrait (3:4) cells — a landscape photo is never cropped into a vertical
+   frame. object-fit: cover only trims within the same orientation. */
+.pztmPhoto {
+  border-radius: 1.5mm; overflow: hidden;
+  border: 0.15mm solid rgba(255,255,255,0.14); background: #0A1124;
+}
+.pztmPhotoImg { display: block; width: 100%; height: 100%; object-fit: cover; }
+.pztmLandGrid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 3mm; margin-top: 3.5mm;
+}
+.pztmLandGrid .pztmPhoto { aspect-ratio: 3 / 2; }
+.pztmPortLabel {
+  margin-top: 4mm; font-family: 'Space Grotesk', sans-serif; font-size: 7pt;
+  font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--c-gold-soft);
+}
+.pztmPortRow {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 3mm; margin-top: 2.5mm;
+}
+.pztmPortRow .pztmPhoto { aspect-ratio: 2 / 3; }
+.pztmCap { margin-top: 2mm; font-size: 7.5pt; color: rgba(240,242,248,0.6); }
+.pztmNetBand {
+  margin-top: auto; padding: 5mm 6mm; background: var(--c-dark);
+  border-left: 1mm solid var(--c-gold); border-radius: 1mm;
+}
+.pztmNetTitle {
+  font-family: 'Space Grotesk', sans-serif; font-size: 9pt; font-weight: 700;
+  color: #F0F2F8; margin-bottom: 3.5mm; letter-spacing: 0.01em;
+}
+.pztmNetGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm 5mm; }
+.pztmNetItem { display: flex; flex-direction: column; gap: 1mm; }
+.pztmNetVal {
+  font-family: 'Space Grotesk', sans-serif; font-size: 12.5pt; font-weight: 700;
+  color: var(--c-gold-soft); line-height: 1;
+}
+.pztmNetLbl { font-size: 7pt; color: rgba(240,242,248,0.72); line-height: 1.28; }

@@ -154,6 +154,10 @@ export interface PrintContent {
     /* Leading space is significant — original JSX was `<span /> LABEL`. */
     infoLabel: string;
     infoChips: { title: string; desc: string }[];
+    /* Optional lead-in band at the bottom pointing to the project cases that
+       follow (QR page now sits BEFORE the cases). */
+    remark?: ReactNode;
+    remarkTag?: string;
   };
 
   /* 12 · TESTIMONIALS */

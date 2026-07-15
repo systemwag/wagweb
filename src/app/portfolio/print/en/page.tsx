@@ -8,5 +8,5 @@ import PrintButtons from './PrintButtons';
    PRINT_URL=http://localhost:3000/portfolio/print/en). */
 
 export default function PortfolioPrintPageEn() {
-  return <PrintBrochure content={EN_CONTENT} buttons={<PrintButtons />} />;
+  return <PrintBrochure content={EN_CONTENT} buttons={<PrintButtons />} locale="en" />;
 }

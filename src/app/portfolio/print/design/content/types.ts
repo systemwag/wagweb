@@ -44,6 +44,9 @@ export type DesignProjectSheet = {
     eyebrow: string;    // «03 · ГАЗОСНАБЖЕНИЕ · ЧЕРТЕЖИ ПРОЕКТА»
     title: ReactNode;
     figures: AnnexFigure[];
+    /* Optional hook figures under the drawings (e.g. ТЭП второй ПС). */
+    metricsLabel?: string;
+    metrics?: DesignMetric[];
   };
 };
 

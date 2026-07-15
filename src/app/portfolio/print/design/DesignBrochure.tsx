@@ -11,9 +11,9 @@ import MAIN from '../content/ru';
    entirely on ПРОЕКТИРОВАНИЕ ИНЖЕНЕРНЫХ СЕТЕЙ:
 
      01 cover · 02 направление (инженерные сети, собственная копия) ·
-     03 реестр+QR · 04–10 кейсы 01–05 с листами чертежей (газ и
+     03 реестр+QR · 04–10 кейсы 01–04 с листами чертежей (QazCement, газ и
      канализация получают annex-страницы, Урал — вторую ленту-чертёж) ·
-     11 отзывы · 12 партнёры · 13 манифест.
+     11 отзывы+партнёры (одна страница) · 12 отсылка к корп. профилю.
 
    «О компании» удалена сознательно — она есть в основном портфолио.
    Отзывы / Партнёры / Манифест BORROWED verbatim from the main brochure
@@ -68,7 +68,7 @@ const SVC_NET_ICONS: ReactNode[] = [
   (<svg key="n6" {...svcIconProps}><path d="M4 5h16v12H4z" /><path d="M8 21h8" /><polyline points="9 11 11 13 15 9" /></svg>),
 ];
 
-const TOTAL = 12;
+const TOTAL = 14;
 const pageNumLabel = (n: number) => `${String(n).padStart(2, '0')} / ${TOTAL}`;
 const ISSUE_STAMP = 'WAG · ПРОЕКТНЫЕ РАБОТЫ · 2026';
 
@@ -205,6 +205,22 @@ function AnnexPage({ annex, pageNum, dark }: { annex: NonNullable<DesignProjectS
             </div>
           ))}
         </div>
+        {annex.metrics && (
+          <>
+            {annex.metricsLabel && <div className={d.scopeLabel}>{annex.metricsLabel}</div>}
+            <div className={d.metricRow}>
+              {annex.metrics.map((m) => (
+                <div key={m.label} className={d.metric}>
+                  <div className={d.metricValueRow}>
+                    <span className={d.metricValue}>{m.value}</span>
+                    {m.unit && <span className={d.metricUnit}>{m.unit}</span>}
+                  </div>
+                  <div className={d.metricLabel}>{m.label}</div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </section>
   );
@@ -354,7 +370,7 @@ export default async function DesignBrochure({ content: c, buttons }: { content:
             <span className={styles.dirFooterNum}>{COUNT_PD}</span>
             <span className={styles.dirFooterLabel}>{c.direction.footerLabel}</span>
             <span className={styles.dirFooterSep}>·</span>
-            <span className={styles.dirFooterText}>GLOBAL CONSTRUCTION PROJECT</span>
+            <span className={styles.dirFooterText}>ЛИЦЕНЗИЯ I КАТЕГОРИИ · С 2010</span>
             <span className={styles.dirFooterSep}>·</span>
             <span className={styles.dirFooterText}>www.westarlangroup.kz / design</span>
           </div>
@@ -444,7 +460,7 @@ export default async function DesignBrochure({ content: c, buttons }: { content:
           <div className={styles.eyebrow}>ОТЗЫВЫ И ПАРТНЁРЫ</div>
           <div className={styles.titleRow}>
             <h2 className={styles.titleH1}>{MAIN.partners.title}</h2>
-            <div className={styles.categoryCardColumn}>
+            <div className={`${styles.categoryCardColumn} ${d.mergedCatCol}`}>
               {MAIN.partners.categories.map((label, i) => (
                 <div key={label} className={styles.categoryCard}>
                   <div className={styles.categoryCardIcon}>{PARTNER_CATEGORY_ICONS[i]}</div>
@@ -454,7 +470,11 @@ export default async function DesignBrochure({ content: c, buttons }: { content:
             </div>
           </div>
 
-          <div className={styles.leadBox}>{MAIN.partners.lead}</div>
+          <div className={`${styles.leadBox} ${d.mergedLead}`}>
+            {MAIN.partners.lead}{' '}
+            Благодарственные письма охватывают весь цикл работ группы — от проектной
+            документации до сдачи объекта.
+          </div>
 
           <div className={d.sectionLabel}><span />{MAIN.testimonials.eyebrow}</div>
           <div className={`${styles.testGrid} ${styles.testGridAll} ${d.mergedTestRow}`}>
@@ -501,7 +521,10 @@ export default async function DesignBrochure({ content: c, buttons }: { content:
           <h2 className={styles.closingQuote}>{c.closing.quote}</h2>
           <p className={styles.closingByline}>{c.closing.byline}</p>
           <div className={styles.closingFooter}>
-            <div className={styles.closingFooterValue}>{ISSUE_STAMP}</div>
+            <div className={d.closingContactCol}>
+              <div className={styles.closingFooterValue}>+7 7132 538-288 · www.westarlangroup.kz</div>
+              <div className={styles.closingFooterValue}>{ISSUE_STAMP}</div>
+            </div>
             <WagMark className={styles.closingMark} gradientId="wagClosingD" />
           </div>
         </div>

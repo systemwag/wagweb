@@ -387,6 +387,8 @@ const EN_CONTENT: PrintContent = {
       { title: ' Clients', desc: 'KTZ, industrial zones, private clients' },
       { title: ' Geography', desc: 'Map with coordinates and regions' },
     ],
+    remark: <>Next — selected design and construction projects</>,
+    remarkTag: 'PROJECT SHOWCASE',
   },
 
   testimonials: {
@@ -497,10 +499,10 @@ const EN_CONTENT: PrintContent = {
     ),
     byline: (
       <>
-        We do not build for a single moment. Every completed project remains under our
-        responsibility — a year later, five years later, twenty years later. Behind this stand
-        the repeat signatures of our clients, kilometres of track in operation, and a reputation
-        built over decades.
+        We design as if we were the ones to build, and build as if we were the ones to maintain.
+        Every completed project remains under our responsibility — a year later, five years
+        later, twenty years later. Behind this stand the repeat signatures of our clients and a
+        reputation built over decades.
       </>
     ),
   },

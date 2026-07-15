@@ -2,6 +2,10 @@ import { Fragment, type ReactNode } from 'react';
 import { getProjects, getMaintenanceProjects, getDesignProjects } from '@/lib/data';
 import styles from './print.module.css';
 import type { PrintContent, PrintTestimonial } from './content/types';
+import CaseSheet, { CaseAnnexPage } from './CaseSheet';
+import PztmShowcase from './PztmShowcase';
+import PROJECT_CASES from './content/cases-ru';
+import PROJECT_CASES_EN from './content/cases-en';
 
 /* ─────────────────────────────────────────────────────────────────
    Shared print-brochure layout. All locale-specific copy comes in
@@ -186,7 +190,17 @@ const LEGAL_BADGE_CLASSES = [
    Reusable bits
    ───────────────────────────────────────────────────────────────── */
 
-const TOTAL = 15;   // pages 3+4 merged; testimonials condensed to a single page
+// Pagination is derived, not hand-counted: 10 front pages, then case sheets
+// from page 11 (a case with an annex takes two pages), then 5 tail pages
+// (QR · testimonials · partners · contacts · closing). Adding/merging a case
+// in content/cases-ru.tsx auto-updates every page number and TOTAL — no manual
+// renumber pass needed anymore.
+const QR_PAGE = 11;                          // portfolio QR registry — intro to the cases
+const PZTM_START = 12;                        // bespoke ПЗТМ СМР showcase (2 pages)
+const CASE_START = PZTM_START + 2;            // first drawing-based project case page
+const CASE_SHEET_PAGES = PROJECT_CASES.length + PROJECT_CASES.filter((cs) => cs.annex).length;
+const TAIL_START = CASE_START + CASE_SHEET_PAGES;  // first tail page (testimonials)
+const TOTAL = TAIL_START + 3;               // testimonials + partners + contacts + closing
 const pageNumLabel = (n: number) => `${String(n).padStart(2, '0')} / ${TOTAL}`;
 const ISSUE_STAMP  = 'WAG · PORTFOLIO · 2026';
 
@@ -216,7 +230,19 @@ function PageChrome({ pageNum, dark = false }: { pageNum?: number; dark?: boolea
    Brochure component
    ───────────────────────────────────────────────────────────────── */
 
-export default async function PrintBrochure({ content: c, buttons }: { content: PrintContent; buttons: ReactNode }) {
+export default async function PrintBrochure({
+  content: c,
+  buttons,
+  locale = 'ru',
+}: {
+  content: PrintContent;
+  buttons: ReactNode;
+  /* Case sheets + ПЗТМ showcase carry their own per-locale copy. The EN case
+     list is a structural twin of the RU one (same count, same annexes), so
+     the module-level pagination computed from cases-ru holds for both. */
+  locale?: 'ru' | 'en';
+}) {
+  const CASES = locale === 'en' ? PROJECT_CASES_EN : PROJECT_CASES;
   // Live counts pulled from the same data layer the website uses:
   //   projects            → СМР, строительство (/projects)
   //   maintenance_projects → обслуживание и ремонт (/maintenance)
@@ -604,9 +630,9 @@ export default async function PrintBrochure({ content: c, buttons }: { content: 
         </div>
       </section>
 
-      {/* ═══ 11 · PORTFOLIO QR ════════════════════════════════════ */}
+      {/* ═══ 11 · PORTFOLIO QR — registry + intro to the project cases ═══ */}
       <section className={`${styles.page} ${styles.pageLight}`}>
-        <PageChrome pageNum={11} />
+        <PageChrome pageNum={QR_PAGE} />
         <div className={styles.pageInner}>
           <div className={styles.eyebrow}>{c.qr.eyebrow}</div>
           <div className={styles.titleRow}>
@@ -630,7 +656,7 @@ export default async function PrintBrochure({ content: c, buttons }: { content: 
                 <span className={styles.qrCountLabel}>{c.qr.cards[0].countLabel}</span>
               </div>
               <img src="/portfolio/qr-projects.png" alt="" className={styles.qrCodeWrap} aria-hidden />
-              <div className={styles.qrUrl}>www.westarlangroup.kz/projects</div>
+              <div className={styles.qrUrl}>www.westarlangroup.kz<wbr />/projects</div>
               <div className={styles.qrHint}>{c.qr.cards[0].hint}</div>
             </div>
             <div className={`${styles.qrCard} ${styles.qrCardBlue}`}>
@@ -643,7 +669,7 @@ export default async function PrintBrochure({ content: c, buttons }: { content: 
                 <span className={styles.qrCountLabel}>{c.qr.cards[1].countLabel}</span>
               </div>
               <img src="/portfolio/qr-maintenance.png" alt="" className={styles.qrCodeWrap} aria-hidden />
-              <div className={styles.qrUrl}>www.westarlangroup.kz/maintenance</div>
+              <div className={styles.qrUrl}>www.westarlangroup.kz<wbr />/maintenance</div>
               <div className={styles.qrHint}>{c.qr.cards[1].hint}</div>
             </div>
             <div className={`${styles.qrCard} ${styles.qrCardGold}`}>
@@ -656,12 +682,12 @@ export default async function PrintBrochure({ content: c, buttons }: { content: 
                 <span className={styles.qrCountLabel}>{c.qr.cards[2].countLabel}</span>
               </div>
               <img src="/portfolio/qr-design.png" alt="" className={styles.qrCodeWrap} aria-hidden />
-              <div className={styles.qrUrl}>www.westarlangroup.kz/design</div>
+              <div className={styles.qrUrl}>www.westarlangroup.kz<wbr />/design</div>
               <div className={styles.qrHint}>{c.qr.cards[2].hint}</div>
             </div>
           </div>
 
-          <div className={styles.processLabel}><span />{c.qr.infoLabel}</div>
+          <div className={`${styles.processLabel} ${styles.processLabelLight}`}><span />{c.qr.infoLabel}</div>
           <div className={styles.qrInfoRow}>
             {c.qr.infoChips.map((chip) => (
               <div key={chip.title} className={styles.qrInfoChip}>
@@ -670,12 +696,43 @@ export default async function PrintBrochure({ content: c, buttons }: { content: 
               </div>
             ))}
           </div>
+
+          {c.qr.remark && (
+            <div className={styles.qrRemarkBand}>
+              <span className={styles.qrRemarkArrow} aria-hidden>↓</span>
+              <span className={styles.qrRemarkText}>{c.qr.remark}</span>
+              {c.qr.remarkTag && <span className={styles.qrRemarkTag}>{c.qr.remarkTag}</span>}
+            </div>
+          )}
         </div>
       </section>
 
-      {/* ═══ 12 · TESTIMONIALS ════════════════════════════════════ */}
+      {/* ═══ 12–13 · ПЗТМ LTD · bespoke СМР showcase (works + site photos) ═ */}
+      <PztmShowcase pageStart={PZTM_START} total={TOTAL} stamp={ISSUE_STAMP} locale={locale} />
+
+      {/* ═══ 14+ · PROJECT CASES · running page counter ════════════════════
+          A case with an annex consumes two pages. Aktobe, Ural, the Жинишке
+          cluster, КазГеоруд and КСГК each carry a merged annex page. */}
+      {(() => {
+        let cp = CASE_START;
+        return CASES.map((cs, i) => {
+          const dark = i % 2 === 0;
+          const sheetPage = cp++;
+          const annexPage = cs.annex ? cp++ : null;
+          return (
+            <Fragment key={cs.index}>
+              <CaseSheet p={cs} pageNum={sheetPage} total={TOTAL} stamp={ISSUE_STAMP} dark={dark} />
+              {cs.annex && annexPage != null && (
+                <CaseAnnexPage annex={cs.annex} pageNum={annexPage} total={TOTAL} stamp={ISSUE_STAMP} dark={dark} />
+              )}
+            </Fragment>
+          );
+        });
+      })()}
+
+      {/* ═══ TAIL · TESTIMONIALS ══════════════════════════════════ */}
       <section className={`${styles.page} ${styles.pageLight}`}>
-        <PageChrome pageNum={12} />
+        <PageChrome pageNum={TAIL_START} />
         <div className={styles.pageInner}>
           <div className={styles.eyebrow}>{c.testimonials.eyebrow}</div>
           <div className={styles.titleRow}>
@@ -692,9 +749,9 @@ export default async function PrintBrochure({ content: c, buttons }: { content: 
         </div>
       </section>
 
-      {/* ═══ 13 · PARTNERS ════════════════════════════════════════ */}
+      {/* ═══ TAIL · PARTNERS ══════════════════════════════════════ */}
       <section className={`${styles.page} ${styles.pageLight}`}>
-        <PageChrome pageNum={13} />
+        <PageChrome pageNum={TAIL_START + 1} />
         <div className={styles.pageInner}>
           <div className={styles.eyebrow}>{c.partners.eyebrow}</div>
           <div className={styles.titleRow}>
@@ -736,9 +793,9 @@ export default async function PrintBrochure({ content: c, buttons }: { content: 
         </div>
       </section>
 
-      {/* ═══ 14 · CONTACTS ════════════════════════════════════════ */}
+      {/* ═══ TAIL · CONTACTS ══════════════════════════════════════ */}
       <section className={`${styles.page} ${styles.pageDark}`}>
-        <PageChrome pageNum={14} dark />
+        <PageChrome pageNum={TAIL_START + 2} dark />
         <div className={styles.pageInner}>
           <div className={`${styles.eyebrow} ${styles.eyebrowDark}`}>{c.contacts.eyebrow}</div>
           <div className={styles.titleRow}>
@@ -807,9 +864,9 @@ export default async function PrintBrochure({ content: c, buttons }: { content: 
         </div>
       </section>
 
-      {/* ═══ 15 · CLOSING MANIFESTO ═══════════════════════════════ */}
+      {/* ═══ TAIL · CLOSING MANIFESTO ═════════════════════════════ */}
       <section className={`${styles.page} ${styles.pageDark} ${styles.closing}`}>
-        <PageChrome pageNum={15} dark />
+        <PageChrome pageNum={TAIL_START + 3} dark />
         <div className={styles.closingInner}>
           <div className={styles.closingEyebrow}>{c.closing.eyebrow}</div>
           <h2 className={styles.closingQuote}>{c.closing.quote}</h2>
