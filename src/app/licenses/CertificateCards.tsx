@@ -68,7 +68,7 @@ export default function CertificateCards() {
           </button>
           <img
             src={open}
-            alt=""
+            alt={certificates.find((c) => c.file === open)?.title ?? 'Сертификат'}
             className={styles.lightboxImg}
             onClick={(e) => e.stopPropagation()}
           />

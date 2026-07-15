@@ -37,17 +37,19 @@ export const metadata: Metadata = {
   // './' resolves per-route against metadataBase → each page canonicalizes itself.
   alternates: { canonical: './' },
   title: {
-    default: 'West Arlan Group',
+    default: 'West Arlan Group — проектирование и строительство инфраструктуры в Казахстане',
     template: '%s | West Arlan Group',
   },
   description:
-    'West Arlan Group — проектирование и строительство инженерной и железнодорожной инфраструктуры в Казахстане. Полный цикл: от изысканий до сдачи объекта «под ключ».',
+    'Полный цикл работ: проектирование, СМР и обслуживание инженерных сетей, промышленных и транспортных объектов по всему Казахстану. Лицензии I категории, офис в Актобе.',
   keywords: [
-    'строительство железнодорожных путей',
-    'инженерная инфраструктура',
-    'геодезические изыскания',
-    'проектирование',
-    'Казахстан',
+    'строительная компания Казахстан',
+    'проектирование инженерных сетей',
+    'строительно-монтажные работы',
+    'промышленное строительство',
+    'инженерные изыскания',
+    'техническое обслуживание инфраструктуры',
+    'строительный подрядчик Актобе',
     'West Arlan Group',
     'WAG',
   ],
@@ -56,13 +58,13 @@ export const metadata: Metadata = {
     locale: 'ru_RU',
     url:    SITE_URL,
     siteName: 'West Arlan Group',
-    title:    'West Arlan Group',
-    description: 'Проектирование и строительство инженерной и железнодорожной инфраструктуры в Казахстане.',
+    title:    'West Arlan Group — проектирование и строительство инфраструктуры',
+    description: 'Проектирование, СМР и обслуживание инженерных сетей, промышленных и транспортных объектов по всему Казахстану.',
   },
   twitter: {
     card:        'summary_large_image',
-    title:       'West Arlan Group',
-    description: 'Проектирование и строительство инженерной и железнодорожной инфраструктуры в Казахстане.',
+    title:       'West Arlan Group — проектирование и строительство инфраструктуры',
+    description: 'Проектирование, СМР и обслуживание инженерных сетей, промышленных и транспортных объектов по всему Казахстану.',
   },
   robots: {
     index:  true,
@@ -79,12 +81,16 @@ export const metadata: Metadata = {
 
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'Organization',
+  // ProfessionalService — подтип LocalBusiness и Organization: даёт локальную
+  // выдачу (адрес/телефон/регион) поверх обычной организационной разметки.
+  '@type': 'ProfessionalService',
+  '@id': `${SITE_URL}/#organization`,
   name: 'West Arlan Group',
   url: SITE_URL,
   logo: `${SITE_URL}/icon.svg`, // raster logo.png not yet available; SVG icon is the canonical mark
+  image: `${SITE_URL}/opengraph-image`,
   description:
-    'Проектирование и строительство инженерной и железнодорожной инфраструктуры в Казахстане.',
+    'Проектирование и строительство инженерной и железнодорожной инфраструктуры в Казахстане. Полный цикл: от изысканий до сдачи объекта «под ключ».',
   address: {
     '@type': 'PostalAddress',
     addressLocality: 'Актобе',
@@ -92,14 +98,26 @@ const jsonLd = {
     addressCountry: 'KZ',
     streetAddress: 'ул. Казангапа дом 57В, офис 34',
   },
+  telephone: '+7-7132-538-288',
+  email: 'west_arlan-group@mail.ru',
   contactPoint: {
     '@type': 'ContactPoint',
     telephone: '+7-7132-538-288',
+    email: 'west_arlan-group@mail.ru',
     contactType: 'customer service',
     availableLanguage: ['Russian', 'Kazakh'],
   },
-  areaServed: 'KZ',
-  sameAs: [],
+  areaServed: {
+    '@type': 'Country',
+    name: 'Казахстан',
+  },
+  knowsAbout: [
+    'строительно-монтажные работы',
+    'проектирование инженерных сетей',
+    'инженерные изыскания',
+    'промышленное строительство',
+    'техническое обслуживание инфраструктуры',
+  ],
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

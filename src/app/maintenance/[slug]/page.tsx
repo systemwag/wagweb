@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Footer from '@/components/Footer/Footer';
+import BreadcrumbJsonLd from '@/components/ui/BreadcrumbJsonLd';
 import { getMaintenanceProjectBySlug, getMaintenanceSlugs } from '@/lib/data';
 import { WORK_TYPE_LABELS } from '@/lib/types';
 import styles from '../../projects/[id]/project.module.css';
@@ -13,10 +14,11 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const project = await getMaintenanceProjectBySlug(slug);
-  if (!project) return { title: 'Проект не найден | West Arlan Group' };
+  if (!project) return { title: 'Проект не найден' };
 
   return {
-    title: `${project.title} | West Arlan Group`,
+    // Суффикс «| West Arlan Group» добавит title.template из корневого layout.
+    title: project.title,
     description: project.description,
   };
 }
@@ -34,6 +36,13 @@ export default async function MaintenanceDetailPage({ params }: Props) {
 
   return (
     <>
+      <BreadcrumbJsonLd
+        crumbs={[
+          { name: 'Главная', path: '/' },
+          { name: 'Обслуживание', path: '/maintenance' },
+          { name: project.title },
+        ]}
+      />
       <main className={styles.main}>
 
         {/* Breadcrumb */}

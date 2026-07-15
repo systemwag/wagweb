@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Footer from '@/components/Footer/Footer';
 import ServicesHeroAnim from '@/components/ServicesHeroAnim/ServicesHeroAnim';
 import { getServices } from '@/lib/data';
+import { SITE_URL } from '@/lib/site';
 import styles from './services.module.css';
 import {
   MagnifyingGlassCircleIcon,
@@ -28,9 +29,9 @@ import {
 } from '@heroicons/react/24/outline';
 
 export const metadata: Metadata = {
-  title: 'Услуги и направления | West Arlan Group',
+  title: 'Услуги: проектирование, СМР, инженерные сети',
   description:
-    'Проектная и строительная деятельность West Arlan Group: инженерно-геодезические и геологические изыскания, строительство ж/д путей, инженерные коммуникации, промышленное строительство.',
+    'Строительно-монтажные работы и проектирование в Казахстане: инженерные сети (водоснабжение, газ, канализация, электроснабжение), промышленные объекты, дороги и пути. Лицензии I категории.',
 };
 
 // Map DB icon strings → Heroicon components
@@ -72,8 +73,29 @@ export default async function ServicesPage() {
   const construction = allServices.filter((s) => s.direction === 'construction');
   const control      = allServices.filter((s) => s.direction === 'control');
 
+  const servicesJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: allServices.map((s, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      item: {
+        '@type': 'Service',
+        name: s.title,
+        description: s.description,
+        serviceType: s.title,
+        provider: { '@id': `${SITE_URL}/#organization` },
+        areaServed: { '@type': 'Country', name: 'Казахстан' },
+      },
+    })),
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(servicesJsonLd) }}
+      />
       <main className={styles.main}>
 
         {/* ── Page Hero ── */}

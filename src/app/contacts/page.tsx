@@ -4,9 +4,9 @@ import ContactForm  from '@/components/ContactForm/ContactForm';
 import styles       from './contacts.module.css';
 
 export const metadata: Metadata = {
-  title: 'Контакты | West Arlan Group',
+  title: 'Контакты — офис в Актобе',
   description:
-    'Свяжитесь с West Arlan Group: офис в Актобе, телефон, email. Оставьте заявку на проект — ответим в течение 24 часов.',
+    'Свяжитесь с West Arlan Group: г. Актобе, ул. Казангапа 57В, офис 34. Телефон +7 (7132) 53-82-88. Оставьте заявку на проект — ответим в течение 24 часов.',
 };
 
 const contacts = [

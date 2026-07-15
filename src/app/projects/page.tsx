@@ -7,8 +7,8 @@ import Link   from 'next/link';
 import Image  from 'next/image';
 
 export const metadata: Metadata = {
-  title: 'Строительные работы | West Arlan Group',
-  description: 'Выполненные строительные работы West Arlan Group: железнодорожные пути, инженерные коммуникации и промышленные объекты по всему Казахстану.',
+  title: 'Выполненные объекты — строительно-монтажные работы',
+  description: 'Портфель СМР West Arlan Group: инженерные коммуникации, промышленные объекты, дороги и подъездные пути по всему Казахстану — с фото, сроками и объёмами работ.',
 };
 
 const STATUS_LABEL: Record<string, string> = {

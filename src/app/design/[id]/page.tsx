@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Footer from '@/components/Footer/Footer';
+import BreadcrumbJsonLd from '@/components/ui/BreadcrumbJsonLd';
 import { getDesignProjectById } from '@/lib/data';
 import type { DesignCategory } from '@/lib/types';
 import styles from './design-detail.module.css';
@@ -18,8 +19,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const project = await getDesignProjectById(Number(id));
   if (!project) return { title: 'Проект не найден' };
   return {
-    title: `${project.client} | Проектная деятельность | WAG`,
-    description: project.description ?? `Проектные работы для ${project.client}`,
+    // Суффикс «| West Arlan Group» добавит title.template из корневого layout.
+    title: `Проектирование: ${project.client}`,
+    description:
+      project.description ??
+      `Проектные работы West Arlan Group для ${project.client}: ${project.works.slice(0, 3).join(', ')}.`,
   };
 }
 
@@ -32,6 +36,13 @@ export default async function DesignDetailPage({ params }: { params: Promise<{ i
 
   return (
     <>
+      <BreadcrumbJsonLd
+        crumbs={[
+          { name: 'Главная', path: '/' },
+          { name: 'Проектная деятельность', path: '/design' },
+          { name: project.client },
+        ]}
+      />
       <main className={styles.main}>
 
         {/* Breadcrumb */}

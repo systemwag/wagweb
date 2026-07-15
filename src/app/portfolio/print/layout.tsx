@@ -1,5 +1,7 @@
 export const metadata = {
   title: 'WAG Portfolio · Print',
+  // Print-версии дублируют контент сайта — не индексировать.
+  robots: { index: false, follow: false },
 };
 
 export default function PrintLayout({ children }: { children: React.ReactNode }) {

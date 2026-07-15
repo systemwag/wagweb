@@ -3,6 +3,7 @@ import { notFound }         from 'next/navigation';
 import Link                  from 'next/link';
 import Image                 from 'next/image';
 import Footer                from '@/components/Footer/Footer';
+import BreadcrumbJsonLd      from '@/components/ui/BreadcrumbJsonLd';
 import { getProjectBySlug, getProjectSlugs } from '@/lib/data';
 import styles                from './project.module.css';
 
@@ -13,10 +14,11 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const project = await getProjectBySlug(id);
-  if (!project) return { title: 'Проект не найден | West Arlan Group' };
+  if (!project) return { title: 'Проект не найден' };
 
   return {
-    title: `${project.title} | West Arlan Group`,
+    // Суффикс «| West Arlan Group» добавит title.template из корневого layout.
+    title: project.title,
     description: project.description,
   };
 }
@@ -34,6 +36,13 @@ export default async function ProjectPage({ params }: Props) {
 
   return (
     <>
+      <BreadcrumbJsonLd
+        crumbs={[
+          { name: 'Главная', path: '/' },
+          { name: 'Проекты', path: '/projects' },
+          { name: project.title },
+        ]}
+      />
 
       <main className={styles.main}>
 

@@ -5,7 +5,7 @@ import { getTestimonials } from '@/lib/data';
 import styles from './testimonials.module.css';
 
 export const metadata: Metadata = {
-  title: 'Отзывы клиентов | West Arlan Group',
+  title: 'Отзывы клиентов',
   description:
     'Отзывы заказчиков о работе West Arlan Group и подрядной компании группы West Capital Construction LLP — реальные письма с печатями и подписями руководителей предприятий.',
 };

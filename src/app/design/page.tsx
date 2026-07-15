@@ -5,8 +5,8 @@ import DesignTable from './DesignTable';
 import styles from './design.module.css';
 
 export const metadata: Metadata = {
-  title: 'Проектная деятельность | West Arlan Group',
-  description: 'Перечень выполненных проектных работ West Arlan Group: рабочие проекты, изыскания, ПСД, техническая документация для объектов транспортной инфраструктуры Казахстана.',
+  title: 'Проектирование и разработка ПСД',
+  description: 'Проектирование инженерных сетей и промышленных объектов в Казахстане: рабочие проекты, ПСД, изыскания, техническая документация. 87 выполненных проектных работ.',
 };
 
 export const dynamic = 'force-dynamic';

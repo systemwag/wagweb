@@ -35,8 +35,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority:        0.6,
   }));
 
+  // Страница /design/[id] резолвит по числовому id (см. DesignTable → /design/${p.id});
+  // slug в URL не участвует.
   const designRoutes: MetadataRoute.Sitemap = designProjects.map((d) => ({
-    url:             `${BASE_URL}/design/${d.slug}`,
+    url:             `${BASE_URL}/design/${d.id}`,
     lastModified:    new Date(),
     changeFrequency: 'monthly',
     priority:        0.6,

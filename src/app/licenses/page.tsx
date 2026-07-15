@@ -5,9 +5,9 @@ import CertificateCards from './CertificateCards';
 import styles from './licenses.module.css';
 
 export const metadata: Metadata = {
-  title: 'Лицензии и сертификаты | West Arlan Group',
+  title: 'Лицензии I категории и сертификаты ISO',
   description:
-    'Лицензии, сертификаты и допуски West Arlan Group. Проектирование I категории, строительно-монтажные работы I категории.',
+    'Государственные лицензии РК на проектирование и строительно-монтажные работы I категории, сертификаты ISO 9001. Скан-копии документов West Arlan Group.',
 };
 
 export default function LicensesPage() {

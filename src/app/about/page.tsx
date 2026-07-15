@@ -7,9 +7,9 @@ import InteractiveCanvasBg from '@/components/Hero/InteractiveCanvasBg';
 import styles              from './about.module.css';
 
 export const metadata: Metadata = {
-  title: 'О компании | West Arlan Group',
+  title: 'О компании',
   description:
-    'West Arlan Group — профессиональное проектирование и строительство железнодорожной и инженерной инфраструктуры в Казахстане. Наша миссия, ценности и команда.',
+    'West Arlan Group — инжиниринговая компания полного цикла из Актобе: проектирование, строительство и обслуживание инженерной инфраструктуры по всему Казахстану. Команда, миссия, цифры.',
 };
 
 /** `gold` — substring within `title` that gets the gold gradient on render. */

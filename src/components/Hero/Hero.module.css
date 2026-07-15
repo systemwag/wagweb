@@ -158,7 +158,14 @@
   /* Левая колонка: текст не заходит в зону знака (центр-право) */
   max-width: 600px;
   text-wrap: balance;
-  animation: fadeInUp var(--phrase) var(--ease-out) calc(var(--beat) * 0.75) both;
+  /* H1 — LCP-элемент: анимируем только transform, без opacity.
+   * Скрытый opacity:0 текст не считается отрисованным → LCP уезжал на ~7с. */
+  animation: riseUp var(--phrase) var(--ease-out) calc(var(--beat) * 0.75) both;
+}
+
+@keyframes riseUp {
+  from { transform: translateY(30px); }
+  to   { transform: translateY(0); }
 }
 
 /* ── Циклическая золотая «волна» по словам H1 ── */
