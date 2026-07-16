@@ -1,49 +1,112 @@
 'use client';
 
-import dynamic from 'next/dynamic';
+import { useState } from 'react';
+import Image from 'next/image';
 import styles from './licenses.module.css';
 
-const PdfPreview = dynamic(() => import('@/components/ui/PdfPreview'), { ssr: false });
-
+/* Реквизиты сверены со скан-копиями (public/licenses/) 2026-07-16. */
 const licenses = [
   {
-    title: 'Лицензия на проектную деятельность',
-    file: '/licenses/Лицензия проектной деятельности.pdf',
+    title: 'Строительно-монтажные работы',
+    badge: 'I категория',
+    number: '25008103',
+    meta: [
+      { label: 'Выдана', value: '14.03.2025' },
+      { label: 'Первичная выдача', value: '13.07.2010' },
+      { label: 'Срок действия', value: 'Бессрочная · класс 1' },
+      { label: 'Лицензиар', value: 'ГАСК Актюбинской области' },
+    ],
+    file: '/licenses/license-smr.jpg',
   },
   {
-    title: 'Лицензия на СМР — I категория',
-    file: '/licenses/Лицензия СМР 1-ой кат.pdf',
+    title: 'Проектная деятельность',
+    badge: 'I категория',
+    number: '25031072',
+    meta: [
+      { label: 'Выдана', value: '05.09.2025' },
+      { label: 'Первичная выдача', value: '28.04.2010' },
+      { label: 'Срок действия', value: 'Бессрочная · класс 1' },
+      { label: 'Лицензиар', value: 'ГАСК Актюбинской области' },
+    ],
+    file: '/licenses/license-pd-2025.jpg',
   },
   {
-    title: 'Проектные работы WAG',
-    file: '/licenses/Проектные работы WAG.pdf',
-  },
-  {
-    title: 'Строительно-монтажные работы WAG',
-    file: '/licenses/Строительно-монтажные работы WAG.pdf',
+    title: 'Охрана окружающей среды',
+    badge: 'Работы и услуги',
+    number: '02962Р',
+    meta: [
+      { label: 'Выдана', value: '22.09.2025 · г. Астана' },
+      { label: 'Срок действия', value: 'Неотчуждаемая · класс 1' },
+      { label: 'Лицензиар', value: 'Минэкологии и природных ресурсов РК' },
+      { label: 'Область', value: 'Работы и услуги в области охраны окружающей среды' },
+    ],
+    file: '/licenses/license-eco.jpg',
   },
 ];
 
 export default function LicenseCards() {
+  const [open, setOpen] = useState<string | null>(null);
+
   return (
-    <div className={styles.grid}>
-      {licenses.map((lic) => (
-        <div key={lic.title} className={`glass-card ${styles.card}`}>
-          <PdfPreview file={lic.file} title={lic.title} />
-          <h3 className={styles.cardTitle}>{lic.title}</h3>
-          <a
-            href={lic.file}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`btn btn-outline ${styles.cardBtn}`}
+    <>
+      <div className={styles.licGrid}>
+        {licenses.map((lic) => (
+          <button
+            key={lic.number}
+            type="button"
+            className={`glass-card ${styles.licCard}`}
+            onClick={() => setOpen(lic.file)}
+            aria-label={`Открыть скан лицензии: ${lic.title}`}
           >
-            <svg viewBox="0 0 16 16" fill="none" width="16" height="16">
-              <path d="M8 2v8M5 7l3 3 3-3M3 12h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            Открыть PDF
-          </a>
+            <div className={styles.certImageWrap}>
+              <Image
+                src={lic.file}
+                alt={`Лицензия: ${lic.title}`}
+                width={400}
+                height={540}
+                unoptimized
+              />
+            </div>
+            <div className={styles.licHead}>
+              <span className={styles.licBadge}>{lic.badge}</span>
+              <span className={styles.licNumber}>№ {lic.number}</span>
+            </div>
+            <h3 className={styles.cardTitle}>{lic.title}</h3>
+            <dl className={styles.licMeta}>
+              {lic.meta.map((m) => (
+                <div key={m.label} className={styles.licMetaRow}>
+                  <dt>{m.label}</dt>
+                  <dd>{m.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </button>
+        ))}
+      </div>
+
+      {open && (
+        <div
+          className={styles.lightbox}
+          onClick={() => setOpen(null)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <button
+            type="button"
+            className={styles.lightboxClose}
+            onClick={() => setOpen(null)}
+            aria-label="Закрыть"
+          >
+            ✕
+          </button>
+          <img
+            src={open}
+            alt={licenses.find((l) => l.file === open)?.title ?? 'Лицензия'}
+            className={styles.lightboxImg}
+            onClick={(e) => e.stopPropagation()}
+          />
         </div>
-      ))}
-    </div>
+      )}
+    </>
   );
 }

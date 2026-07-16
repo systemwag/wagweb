@@ -92,6 +92,104 @@
   margin-top: auto;
 }
 
+/* ── Licenses ─────────────────────────── */
+.licGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-lg);
+}
+
+.licCard {
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  cursor: pointer;
+  text-align: left;
+}
+
+.licHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-top: var(--space-xs);
+}
+
+.licBadge {
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 168, 67, 0.4);
+  color: var(--gold);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.licNumber {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+}
+
+.licMeta {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.licMetaRow {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.licMetaRow dt {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.licMetaRow dd {
+  margin: 0;
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+/* ── Accreditations ───────────────────── */
+.accrGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-md);
+}
+
+.accrCard {
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  cursor: pointer;
+  text-align: left;
+}
+
+.accrNumber {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--gold);
+}
+
+.accrScope {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+  flex: 1;
+}
+
 /* ── Certificates ─────────────────────── */
 .certSection {
   padding: 0 0 var(--space-3xl);
@@ -216,8 +314,11 @@
 /* ── Responsive ───────────────────────── */
 @media (max-width: 900px) {
   .certGrid { grid-template-columns: repeat(2, 1fr); }
+  .licGrid  { grid-template-columns: 1fr; }
+  .accrGrid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 600px) {
   .grid { grid-template-columns: 1fr; }
+  .accrGrid { grid-template-columns: 1fr; }
 }

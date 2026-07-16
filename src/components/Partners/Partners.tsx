@@ -148,8 +148,8 @@ export default function Partners({ partners }: { partners: Partner[] }) {
               Готовы обсудить ваш проект?
             </h3>
             <p className={styles.ctaDesc}>
-              Свяжитесь с нами — и мы подготовим индивидуальное предложение
-              в течение 24 часов.
+              Свяжитесь с нами — ответим в течение одного рабочего дня
+              и подготовим индивидуальное предложение.
             </p>
           </div>
           <div className={styles.ctaActions}>

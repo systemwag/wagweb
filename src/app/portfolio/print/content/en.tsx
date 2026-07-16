@@ -71,7 +71,7 @@ const EN_CONTENT: PrintContent = {
     statSmrLabel: 'projects',
     statPdLabel: 'engineering works',
     statSectorsLabel: 'sectors',
-    statRegionsLabel: 'regions',
+    statRegionsLabel: 'years in business',
     lead: (
       <>
         <span className={styles.aboutColLede}>Full cycle</span> — from surveys and engineering through construction to turnkey commissioning.
@@ -104,7 +104,7 @@ const EN_CONTENT: PrintContent = {
         The group delivers the entire cycle in-house:
         engineering surveys, engineering and working documentation, clearance through the State Expert Review (GosExpertiza),
         construction &amp; installation works and commissioning. Timelines and quality are backed by Category I licenses
-        and ISO 9001 / 14001 systems.
+        and state accreditations of the authorized bodies.
       </>
     ),
     legalLabel: ' GROUP LEGAL ENTITIES',
@@ -119,8 +119,8 @@ const EN_CONTENT: PrintContent = {
     legalNote: (
       <>
         All divisions operate under unified management and a shared quality policy: Category I
-        licenses, ISO 9001 / 14001 systems and end-to-end control at every stage — from engineering
-        through commissioning.
+        licenses, state accreditations valid through 2028 and end-to-end control at every stage —
+        from engineering through commissioning.
       </>
     ),
   },
@@ -136,13 +136,13 @@ const EN_CONTENT: PrintContent = {
     lead: (
       <>
         The infrastructure that carries the nation&rsquo;s economy, the networks that power its cities, the industrial
-        facilities that sustain production — across dozens of regions of Kazakhstan and beyond.
+        facilities that sustain production — across the regions of Kazakhstan and beyond.
       </>
     ),
     statBuildLabel: 'Construction',
     statMaintenanceLabel: <>Maintenance<br />&amp; repair</>,
     statPdLabel: <>Engineering<br />works</>,
-    statRegionsLabel: 'Regions',
+    statRegionsLabel: <>Years in<br />business</>,
     statCountriesLabel: 'Countries',
     peopleTitle: (
       <>
@@ -159,6 +159,10 @@ const EN_CONTENT: PrintContent = {
   },
 
   iso: {
+    // ⚠️ ISO page removed from the brochure 2026-07-16: the certificates (ST RK ISO
+    // 9001/14001/45001) were issued to Global Construction Project LLP and expired
+    // 19.06.2023. The block below is not rendered (PrintBrochure) — kept for the
+    // PrintContent type; restore the page after recertification.
     eyebrow: 'CERTIFICATES · ISO',
     title: (
       <>
@@ -197,7 +201,7 @@ const EN_CONTENT: PrintContent = {
       meta: [
         { label: 'ISSUING AUTHORITY', value: 'GASK Department, Aktobe Region' },
         { label: 'FIRST ISSUED', value: '13.07.2010' },
-        { label: 'VALID UNTIL', value: 'until 25.06.2027' },
+        { label: 'VALID UNTIL', value: 'Termless · class 1' },
         { label: 'SCOPE', value: 'All Category I CIW types' },
       ],
     },
@@ -450,7 +454,7 @@ const EN_CONTENT: PrintContent = {
       { file: '7a29c2e4-bc43-4817-8212-f7e985ee9929.jpg', name: 'SPS Energo' },
       { file: '2.png',          name: 'Zerde Keramika' },
     ],
-    repeatLabel: 'REPEAT CONTRACTS',
+    repeatLabel: 'CLIENTS WITH REPEAT CONTRACTS',
     registryLabel: 'FULL CLIENT REGISTRY · www.westarlangroup.kz',
   },
 

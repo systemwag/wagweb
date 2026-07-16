@@ -13,7 +13,14 @@ const trustLogos = [
   { file: '4.png',                          name: 'Shubarkol Premium' },
 ];
 
-export default function Hero() {
+interface HeroProps {
+  /** Объектов и работ в реестре (СМР + обслуживание + проектирование), из data.ts */
+  registryTotal: number;
+  /** Полных лет на рынке, от 2010 */
+  years: number;
+}
+
+export default function Hero({ registryTotal, years }: HeroProps) {
   return (
     <section className={`${styles.hero} filmgrain`}>
       <HeroAnimatedBackground />
@@ -50,17 +57,14 @@ export default function Hero() {
             </span>
           </p>
 
-          {/* Цифры синхронизированы с реестром сайта/брошюры:
-           * 136 = 49 СМР + 87 ПД (константы брошюры — src/app/portfolio/print/PrintBrochure.tsx),
-           * 16 лет = с 2010 года. */}
           <div className={styles.subtitleStats}>
             <span className={styles.subtitleStat}>
-              <span className={styles.subtitleStatNum}>136</span>
-              <span className={styles.subtitleStatLabel}>объектов</span>
+              <span className={styles.subtitleStatNum}>{registryTotal}</span>
+              <span className={styles.subtitleStatLabel}>объектов и работ</span>
             </span>
             <span className={styles.subtitleStatSep} aria-hidden="true" />
             <span className={styles.subtitleStat}>
-              <span className={styles.subtitleStatNum}>16</span>
+              <span className={styles.subtitleStatNum}>{years}</span>
               <span className={styles.subtitleStatLabel}>лет на рынке</span>
             </span>
           </div>

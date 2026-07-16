@@ -6,12 +6,12 @@ const navColumns = [
   {
     title: 'Компания',
     links: [
-      { label: 'О нас',               href: '/about'      },
-      { label: 'Лицензии',            href: '/licenses'   },
-      { label: 'Проекты',             href: '/projects'   },
-      { label: 'Отзывы клиентов',     href: '/testimonials' },
-      { label: 'Портфолио (PDF)',     href: '/portfolio.pdf' },
-      { label: 'Контакты',            href: '/contacts'   },
+      { label: 'О нас',                    href: '/about'      },
+      { label: 'Лицензии и аккредитации',  href: '/licenses'   },
+      { label: 'Заказчикам',               href: '/zakazchikam' },
+      { label: 'Отзывы клиентов',          href: '/testimonials' },
+      { label: 'Портфолио (PDF)',          href: '/portfolio.pdf' },
+      { label: 'Контакты',                 href: '/contacts'   },
     ],
   },
   {
@@ -26,11 +26,11 @@ const navColumns = [
   {
     title: 'Услуги',
     links: [
-      { label: 'Геодезические изыскания',    href: '/services' },
-      { label: 'Геологические изыскания',    href: '/services' },
-      { label: 'Строительство ж/д путей',    href: '/projects' },
-      { label: 'Инженерные коммуникации',    href: '/services' },
-      { label: 'Промышленное строительство', href: '/projects' },
+      { label: 'Изыскания и проектирование',    href: '/services#proektnaya'   },
+      { label: 'Строительно-монтажные работы',  href: '/services#stroitelnaya' },
+      { label: 'Инженерные сети',               href: '/services#vidy-rabot'   },
+      { label: 'Содержание и ремонт путей',     href: '/maintenance'           },
+      { label: 'Технадзор и обследование',      href: '/licenses#akkreditacii' },
     ],
   },
 ];
@@ -98,20 +98,9 @@ export default function Footer() {
                 </div>
               </Link>
               <p className={styles.brandDesc}>
-                Проектирование и строительство инженерной и железнодорожной
+                Проектирование и строительство инженерной и транспортной
                 инфраструктуры в Казахстане. Качество. Надёжность. Опыт.
               </p>
-              <div className={styles.socials}>
-                {[
-                  { label: 'LinkedIn', href: '#', icon: 'in' },
-                  { label: 'Telegram', href: '#', icon: 'tg' },
-                  { label: 'Instagram', href: '#', icon: 'ig' },
-                ].map((s) => (
-                  <a key={s.label} href={s.href} className={styles.socialBtn} aria-label={s.label}>
-                    <span className={styles.socialIcon}>{s.icon}</span>
-                  </a>
-                ))}
-              </div>
             </div>
 
             {/* Nav columns */}

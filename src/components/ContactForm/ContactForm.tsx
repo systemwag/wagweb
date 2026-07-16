@@ -16,11 +16,14 @@ export default function ContactForm() {
     setState({ status: 'loading', message: '' });
 
     const form = e.currentTarget;
+    const workType = (form.elements.namedItem('workType') as HTMLSelectElement).value;
+    const rawMessage = (form.elements.namedItem('message') as HTMLTextAreaElement).value.trim();
     const data = {
       name:    (form.elements.namedItem('name')    as HTMLInputElement).value.trim(),
       email:   (form.elements.namedItem('email')   as HTMLInputElement).value.trim(),
       phone:   (form.elements.namedItem('phone')   as HTMLInputElement).value.trim(),
-      message: (form.elements.namedItem('message') as HTMLTextAreaElement).value.trim(),
+      // Тип работ уходит в начале сообщения — без изменения схемы API/БД.
+      message: workType ? `[${workType}] ${rawMessage}` : rawMessage,
       website: (form.elements.namedItem('website') as HTMLInputElement).value,
     };
 
@@ -104,6 +107,26 @@ export default function ContactForm() {
           placeholder="+7 (___) ___-__-__"
           disabled={state.status === 'loading' || state.status === 'success'}
         />
+      </div>
+
+      <div className={styles.field}>
+        <label htmlFor="workType" className={styles.label}>
+          Тип работ
+        </label>
+        <select
+          id="workType"
+          name="workType"
+          className={styles.input}
+          defaultValue=""
+          disabled={state.status === 'loading' || state.status === 'success'}
+        >
+          <option value="">Не выбран</option>
+          <option value="Проектирование">Проектирование и изыскания</option>
+          <option value="СМР">Строительно-монтажные работы</option>
+          <option value="Обслуживание">Обслуживание и текущее содержание</option>
+          <option value="Технадзор">Технадзор / обследование зданий</option>
+          <option value="Другое">Другое</option>
+        </select>
       </div>
 
       <div className={styles.field}>

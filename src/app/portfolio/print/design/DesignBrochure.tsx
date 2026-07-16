@@ -497,7 +497,7 @@ export default async function DesignBrochure({ content: c, buttons }: { content:
 
           <div className={`${styles.partnerFooter} ${d.mergedFooterPad}`}>
             <div className={styles.partnerFooterLeft}>
-              <span className={styles.partnerFooterNum}>94%</span>
+              <span className={styles.partnerFooterNum}>5+</span>
               <span className={styles.partnerFooterText}>
                 <span className={styles.aboutColRule} />{MAIN.partners.repeatLabel}
               </span>

@@ -112,6 +112,75 @@
 }
 
 /* ── Values — horizontal infinite marquee ── */
+.valuesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+}
+
+/* Group structure */
+.groupGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+}
+
+.groupCard {
+  padding: var(--space-xl) var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.groupBadge {
+  align-self: flex-start;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 168, 67, 0.4);
+  color: var(--gold);
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.groupName {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.groupRole {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  flex: 1;
+}
+
+.groupMeta {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+.groupNote {
+  margin-top: var(--space-lg);
+  max-width: 720px;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.groupNoteLink {
+  color: var(--gold);
+  text-decoration: none;
+}
+
+.groupNoteLink:hover {
+  text-decoration: underline;
+}
+
 .valuesCarousel {
   position: relative;
   width: 100%;
@@ -144,10 +213,8 @@
    — that way -50% translate lands the second copy exactly where the first
    started, giving a seamless loop. */
 .valueCard {
-  flex: 0 0 clamp(260px, 24vw, 340px);
-  margin-right: var(--space-md);
   padding: var(--space-xl) var(--space-lg);
-  min-height: 240px;
+  min-height: 220px;
   display: flex;
   flex-direction: column;
   /* No `transform` transition — global Tilt updates --tilt-* vars per mousemove,
@@ -478,6 +545,7 @@
   .teamGrid       { grid-template-columns: repeat(2, 1fr); }
   .equipmentGrid  { grid-template-columns: repeat(2, 1fr); }
   .leadershipGrid { grid-template-columns: repeat(3, 1fr); }
+  .valuesGrid     { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 768px) {
@@ -485,6 +553,8 @@
   .licensesGrid  { grid-template-columns: 1fr; }
   .partnersGrid  { grid-template-columns: 1fr; }
   .leadershipGrid { grid-template-columns: repeat(2, 1fr); }
+  .valuesGrid    { grid-template-columns: 1fr; }
+  .groupGrid     { grid-template-columns: 1fr; }
 
   .hero { min-height: clamp(320px, 46vh, 480px); }
 }

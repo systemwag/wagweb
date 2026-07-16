@@ -4,6 +4,8 @@ import { Construction, TrainTrack, Truck, Ruler } from 'lucide-react';
 import Footer              from '@/components/Footer/Footer';
 import HeroCycler          from '@/components/HeroCycler/HeroCycler';
 import InteractiveCanvasBg from '@/components/Hero/InteractiveCanvasBg';
+import { getProjects, getMaintenanceProjects, getDesignProjects } from '@/lib/data';
+import { yearsOnMarket, BIN, LICENSES } from '@/lib/company-facts';
 import styles              from './about.module.css';
 
 export const metadata: Metadata = {
@@ -14,20 +16,35 @@ export const metadata: Metadata = {
 
 /** `gold` — substring within `title` that gets the gold gradient on render. */
 const values = [
-  { title: 'Уважение к делу',                         gold: 'Уважение',                desc: 'Уважение к делу, которым мы занимаемся.' },
-  { title: 'Компетентная самостоятельность',          gold: 'Компетентная',            desc: 'Мы стремимся принимать обоснованные решения в рамках своих полномочий и несём ответственность за каждый шаг.' },
   { title: 'Профессионализм и саморазвитие',          gold: 'Профессионализм',         desc: 'Бесспорный профессионализм и постоянное стремление к саморазвитию. Мы непрерывно совершенствуем свои знания и навыки, внедряя лучшие мировые практики в нашу работу.' },
-  { title: 'Командный дух',                           gold: 'Командный дух',           desc: 'Командный дух и позитивное отношение к жизни. Мы ценим командную работу, создаём комфортные условия внутри коллектива и поддерживаем тёплые, дружеские отношения.' },
+  { title: 'Компетентная самостоятельность',          gold: 'Компетентная',            desc: 'Мы стремимся принимать обоснованные решения в рамках своих полномочий и несём ответственность за каждый шаг.' },
   { title: 'Уважение к каждому клиенту',              gold: 'Уважение',                desc: 'Мы ценим доверие наших клиентов и обеспечиваем индивидуальный подход к каждому.' },
-  { title: 'Активность и энергичность',               gold: 'Активность',              desc: 'Мы ценим целеустремлённость, инициативность и способность заряжать окружающих позитивом.' },
-  { title: 'Лояльность в компании',                   gold: 'Лояльность',              desc: 'Мы убеждены, что интересы компании — это интересы каждого сотрудника. Личные достижения каждого — это общий успех.' },
-  { title: 'Порядок и чистота во всём',               gold: 'Порядок',                 desc: 'Это один из главных принципов нашей компании.' },
-  { title: 'Здоровье и здоровый образ жизни',         gold: 'Здоровье',                desc: 'Мы поддерживаем культуру здорового образа жизни и выступаем против вредных привычек.' },
-  { title: 'Забота о семье',                          gold: 'Забота',                  desc: 'Для нас семья — это основа и смысл жизни. После рабочего дня нас ждут дома наши близкие.' },
-  { title: 'История и традиции',                      gold: 'История',                 desc: 'Мы знаем, любим и чтим свои корни, гордимся нашей историей и уважаем традиции.' },
-  { title: 'Экология',                                gold: 'Экология',                desc: 'Мы бережно относимся к природе и не оставляем после себя негативного следа.' },
-  { title: 'Стиль и имидж',                           gold: 'Стиль',                   desc: 'Мы придерживаемся собственного уникального стиля и последовательно его поддерживаем.' },
-  { title: 'Стабильное процветание и вера в будущее', gold: 'Стабильное процветание',  desc: 'Мы уверены, что завтра будем жить лучше, чем сегодня.' },
+  { title: 'Командный дух',                           gold: 'Командный дух',           desc: 'Мы ценим командную работу, создаём комфортные условия внутри коллектива и поддерживаем тёплые, дружеские отношения.' },
+  { title: 'Порядок и чистота во всём',               gold: 'Порядок',                 desc: 'На площадке и в документации: аккуратность исполнения — часть производственной культуры компании.' },
+  { title: 'Экология',                                gold: 'Экология',                desc: 'Мы бережно относимся к природе и не оставляем после себя негативного следа. Работы в области охраны окружающей среды лицензированы.' },
+];
+
+/* Юридические лица группы — только подтверждённые документами
+   (лицензии, аккредитации, письма заказчиков). */
+const groupCompanies = [
+  {
+    badge: 'HQ',
+    name: 'West Arlan Group',
+    role: 'Головная компания группы: лицензии I категории на СМР и проектирование, аккредитации на технадзор, обследование зданий и управление проектами.',
+    meta: `ТОО · БИН ${BIN} · Актобе`,
+  },
+  {
+    badge: 'ПД',
+    name: 'Global Construction Project',
+    role: 'Проектная деятельность в составе группы. Аккредитация на технический надзор I уровня ответственности.',
+    meta: 'ТОО · Актобе',
+  },
+  {
+    badge: 'СМР',
+    name: 'West Capital Construction',
+    role: 'Строительно-монтажные работы в составе группы. Компания, которой адресованы благодарственные письма заказчиков.',
+    meta: 'LLP · Актобе',
+  },
 ];
 
 /** Render a title with the `gold` substring wrapped in the gold-gradient span. */
@@ -62,7 +79,15 @@ const leadership = [
   { name: 'Айекешов Айбек Карлович',         role: 'Специалист по БиОТ',                      photo: '/team/ayekeshov.jpg' },
 ];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const [projects, maintenance, design] = await Promise.all([
+    getProjects(),
+    getMaintenanceProjects(),
+    getDesignProjects(),
+  ]);
+  const registryTotal = projects.length + maintenance.length + design.length;
+  const years = yearsOnMarket();
+
   return (
     <>
 
@@ -87,10 +112,9 @@ export default function AboutPage() {
                   <span className="text-gradient-gold">будущего&nbsp;Казахстана</span>
                 </h2>
                 <p className={styles.body}>
-                  Важной причиной успеха нашей компании является слаженная работа
-                  специалистов, их целеустремлённость и нацеленность на результат.
-                  Мы неукоснительно следуем нашим ценностям, формируя положительный
-                  имидж компании и укрепляя доверие наших партнёров.
+                  Безопасность эксплуатации, долговечность и точное соблюдение
+                  сроков — обязательства, которые мы фиксируем в каждом договоре.
+                  Техническая дисциплина и проектная точность — основа нашей репутации.
                 </p>
                 <p className={styles.body}>
                   Компания ведёт инженерно-изыскательскую деятельность, проектную деятельность
@@ -100,10 +124,10 @@ export default function AboutPage() {
               </div>
               <div className={styles.missionStats}>
                 {[
-                  { value: '2010', label: 'Год основания' },
-                  { value: '15+',  label: 'Лет на рынке' },
-                  { value: '300+', label: 'Сданных объектов' },
-                  { value: '16',   label: 'Регионов охвата' },
+                  { value: '2010',                 label: 'Год основания' },
+                  { value: String(years),          label: 'Лет на рынке' },
+                  { value: String(registryTotal),  label: 'Объектов и работ в реестре' },
+                  { value: '2',                    label: 'Страны: Казахстан и Россия' },
                 ].map((s) => (
                   <div key={s.label} className={`glass-card ${styles.miniStat}`}>
                     <span className={`text-gradient-gold ${styles.miniStatValue}`}>{s.value}</span>
@@ -122,24 +146,43 @@ export default function AboutPage() {
             <h2 className="heading-2" style={{ marginBottom: 'var(--space-2xl)' }}>
               <span className="text-gradient-gold">Ценности</span> нашей компании
             </h2>
-            <div className={styles.valuesCarousel} aria-label="Карусель ценностей компании">
-              <div className={styles.valuesTrack}>
-                {/* Cards rendered twice for seamless marquee loop */}
-                {[...values, ...values].map((v, i) => (
-                  <article
-                    key={i}
-                    className={`glass-card ${styles.valueCard}`}
-                    aria-hidden={i >= values.length ? 'true' : undefined}
-                  >
-                    <div className={styles.valueIndex}>{(i % values.length) + 1}</div>
-                    <h3 className={`heading-3 ${styles.valueTitle}`}>
-                      {goldTitle(v.title, v.gold)}
-                    </h3>
-                    <p className={styles.valueDesc}>{v.desc}</p>
-                  </article>
-                ))}
-              </div>
+            <div className={styles.valuesGrid}>
+              {values.map((v, i) => (
+                <article key={v.title} className={`glass-card ${styles.valueCard}`}>
+                  <div className={styles.valueIndex}>{i + 1}</div>
+                  <h3 className={`heading-3 ${styles.valueTitle}`}>
+                    {goldTitle(v.title, v.gold)}
+                  </h3>
+                  <p className={styles.valueDesc}>{v.desc}</p>
+                </article>
+              ))}
             </div>
+          </div>
+        </section>
+
+        {/* ── Group structure ── */}
+        <section className={styles.section}>
+          <div className="container">
+            <span className="section-label">Структура группы</span>
+            <h2 className="heading-2" style={{ marginBottom: 'var(--space-2xl)' }}>
+              <span className="text-gradient-gold">Компании</span> группы
+            </h2>
+            <div className={styles.groupGrid}>
+              {groupCompanies.map((c) => (
+                <div key={c.name} className={`glass-card ${styles.groupCard}`}>
+                  <div className={styles.groupBadge}>{c.badge}</div>
+                  <div className={styles.groupName}>{c.name}</div>
+                  <p className={styles.groupRole}>{c.role}</p>
+                  <div className={styles.groupMeta}>{c.meta}</div>
+                </div>
+              ))}
+            </div>
+            <p className={styles.groupNote}>
+              Подразделения работают под единым управлением и общей политикой качества.
+              Лицензии: СМР № {LICENSES.smr.number} и проектирование № {LICENSES.pd.number} —
+              I категория, охрана окружающей среды № {LICENSES.eco.number}.{' '}
+              <Link href="/licenses" className={styles.groupNoteLink}>Скан-копии документов →</Link>
+            </p>
           </div>
         </section>
 
@@ -274,7 +317,7 @@ export default function AboutPage() {
                 Готовы к <span className="text-gradient-gold">сотрудничеству</span>?
               </h2>
               <p className={styles.ctaDesc}>
-                Обсудим ваш проект и подготовим предложение в течение 24 часов.
+                Расскажите о проекте — ответим в течение одного рабочего дня.
               </p>
               <div className={styles.ctaActions}>
                 <a href="/contacts" className="btn btn-primary">Написать нам</a>

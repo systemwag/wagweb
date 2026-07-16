@@ -1,4 +1,4 @@
-import { Fragment, type ReactNode } from 'react';
+﻿import { Fragment, type ReactNode } from 'react';
 import { getProjects, getMaintenanceProjects, getDesignProjects } from '@/lib/data';
 import styles from './print.module.css';
 import type { PrintContent, PrintTestimonial } from './content/types';
@@ -147,13 +147,6 @@ const SVC_BUILD_ICONS: ReactNode[] = [
   (<svg key="b6" {...svcIconProps}><circle cx="12" cy="12" r="9" /><polyline points="8 12 11 15 16 9" /></svg>),
 ];
 
-const ISO_SCANS = [
-  { src: '/licenses/sertifikat-iso-9001-ru.webp', alt: 'ISO 9001' },
-  { src: '/licenses/sertifikat-iso-9001-kz.webp', alt: 'ISO 9001 KZ' },
-  { src: '/licenses/sertifikat-ekologicheskiy-menedzhment.webp', alt: 'ISO 14001' },
-  { src: '/licenses/sertifikat-iso-9001-2016.webp', alt: 'ISO 9001:2016' },
-];
-
 const CONTACT_ICONS: ReactNode[] = [
   (
     <svg key="phone" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
@@ -190,13 +183,14 @@ const LEGAL_BADGE_CLASSES = [
    Reusable bits
    ───────────────────────────────────────────────────────────────── */
 
-// Pagination is derived, not hand-counted: 10 front pages, then case sheets
-// from page 11 (a case with an annex takes two pages), then 5 tail pages
+// Pagination is derived, not hand-counted: 9 front pages (the ISO page was
+// removed 2026-07-16 — certificates expired), then case sheets from page 10
+// (a case with an annex takes two pages), then 5 tail pages
 // (QR · testimonials · partners · contacts · closing). Adding/merging a case
 // in content/cases-ru.tsx auto-updates every page number and TOTAL — no manual
 // renumber pass needed anymore.
-const QR_PAGE = 11;                          // portfolio QR registry — intro to the cases
-const PZTM_START = 12;                        // bespoke ПЗТМ СМР showcase (2 pages)
+const QR_PAGE = 10;                          // portfolio QR registry — intro to the cases
+const PZTM_START = QR_PAGE + 1;               // bespoke ПЗТМ СМР showcase (2 pages)
 const CASE_START = PZTM_START + 2;            // first drawing-based project case page
 const CASE_SHEET_PAGES = PROJECT_CASES.length + PROJECT_CASES.filter((cs) => cs.annex).length;
 const TAIL_START = CASE_START + CASE_SHEET_PAGES;  // first tail page (testimonials)
@@ -259,8 +253,9 @@ export default async function PrintBrochure({
   const COUNT_SMR = COUNT_SMR_BUILD + COUNT_MAINTENANCE; // total СМР, used elsewhere
   const COUNT_PD = design.length || 87;
   const COUNT_REGISTRY = COUNT_SMR + COUNT_PD;
-  // Geography metrics are not derivable from project rows — kept as copy.
-  const COUNT_REGIONS = 16;
+  // «16 регионов» не подтверждается реестром (аудит 2026-07-16) — вместо него
+  // показываем документированный стаж: годы от первичной выдачи лицензий (2010).
+  const COUNT_YEARS = new Date().getFullYear() - 2010;
   const COUNT_COUNTRIES = 2;
 
   // QR codes are pre-baked by scripts/bake-qr-codes.mjs to PNGs under
@@ -357,7 +352,7 @@ export default async function PrintBrochure({
               <div className={styles.inlineStatDiv} />
               <div className={styles.inlineStat}><span className={styles.inlineStatNum}>5</span><span className={styles.inlineStatLabel}>{c.about.statSectorsLabel}</span></div>
               <div className={styles.inlineStatDiv} />
-              <div className={styles.inlineStat}><span className={styles.inlineStatNum}>{COUNT_REGIONS}</span><span className={styles.inlineStatLabel}>{c.about.statRegionsLabel}</span></div>
+              <div className={styles.inlineStat}><span className={styles.inlineStatNum}>{COUNT_YEARS}</span><span className={styles.inlineStatLabel}>{c.about.statRegionsLabel}</span></div>
             </div>
           </div>
 
@@ -436,7 +431,7 @@ export default async function PrintBrochure({
               <div className={styles.statBarLabel}>{c.scale.statPdLabel}</div>
             </div>
             <div className={styles.statBarItem}>
-              <div className={styles.statBarNum}>{COUNT_REGIONS}</div>
+              <div className={styles.statBarNum}>{COUNT_YEARS}</div>
               <div className={styles.statBarLabel}>{c.scale.statRegionsLabel}</div>
             </div>
             <div className={styles.statBarItem}>
@@ -478,51 +473,24 @@ export default async function PrintBrochure({
         </div>
       </section>
 
-      {/* ═══ 04 · ISO CERTIFICATES ════════════════════════════════ */}
-      <section className={`${styles.page} ${styles.pageLight}`}>
-        <PageChrome pageNum={4} />
-        <div className={styles.pageInner}>
-          <div className={styles.eyebrow}>{c.iso.eyebrow}</div>
-          <div className={styles.titleRow}>
-            <h2 className={styles.titleH1}>{c.iso.title}</h2>
-            <div className={styles.bigBadge}>
-              <div className={styles.bigBadgeNum}>04</div>
-              <div className={styles.bigBadgeLabel}>{c.iso.badgeLabel}</div>
-            </div>
-          </div>
+      {/* ISO page removed 2026-07-16 — certificates (GCP, СТ РК ISO 9001/14001/45001)
+          expired 19.06.2023; restore after recertification. */}
 
-          <div className={styles.leadBox}>{c.iso.lead}</div>
+      {/* ═══ 04 · LICENSE СМР ═════════════════════════════════════ */}
+      <LicensePage pageNum={4} numberPrefix={c.licNumberPrefix} {...c.licenses[0]} />
 
-          <div className={styles.isoGrid}>
-            {ISO_SCANS.map((scan, i) => (
-              <div key={scan.src} className={styles.isoCard}>
-                <img src={scan.src} alt={scan.alt} className={styles.isoImg} />
-                <div className={styles.isoMeta}>
-                  <div className={styles.isoName}>{c.iso.cards[i].name}</div>
-                  <div className={styles.isoDetail}>{c.iso.cards[i].detail}</div>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* ═══ 05 · LICENSE ПД ══════════════════════════════════════ */}
+      <LicensePage pageNum={5} numberPrefix={c.licNumberPrefix} {...c.licenses[1]} />
 
-        </div>
-      </section>
+      {/* ═══ 06 · LICENSE ОС ══════════════════════════════════════ */}
+      <LicensePage pageNum={6} numberPrefix={c.licNumberPrefix} {...c.licenses[2]} />
 
-      {/* ═══ 05 · LICENSE СМР ═════════════════════════════════════ */}
-      <LicensePage pageNum={5} numberPrefix={c.licNumberPrefix} {...c.licenses[0]} />
+      {/* ═══ 07 · ACCREDITATIONS (2×2 grid, 2026 certificates) ════ */}
+      <AccreditationsPage pageNum={7} content={c.accreditations} />
 
-      {/* ═══ 06 · LICENSE ПД ══════════════════════════════════════ */}
-      <LicensePage pageNum={6} numberPrefix={c.licNumberPrefix} {...c.licenses[1]} />
-
-      {/* ═══ 07 · LICENSE ОС ══════════════════════════════════════ */}
-      <LicensePage pageNum={7} numberPrefix={c.licNumberPrefix} {...c.licenses[2]} />
-
-      {/* ═══ 08 · ACCREDITATIONS (2×2 grid, 2026 certificates) ════ */}
-      <AccreditationsPage pageNum={8} content={c.accreditations} />
-
-      {/* ═══ 09 · DIRECTION 01 — DESIGN ═══════════════════════════ */}
+      {/* ═══ 08 · DIRECTION 01 — DESIGN ═══════════════════════════ */}
       <section className={`${styles.page} ${styles.pageDark}`}>
-        <PageChrome pageNum={9} dark />
+        <PageChrome pageNum={8} dark />
         <div className={styles.pageInner}>
           <div className={`${styles.eyebrow} ${styles.eyebrowDark}`}>{c.dirDesign.eyebrow}</div>
           <div className={styles.titleRow}>
@@ -575,9 +543,9 @@ export default async function PrintBrochure({
         </div>
       </section>
 
-      {/* ═══ 10 · DIRECTION 02 — BUILD ════════════════════════════ */}
+      {/* ═══ 09 · DIRECTION 02 — BUILD ════════════════════════════ */}
       <section className={`${styles.page} ${styles.pageDark}`}>
-        <PageChrome pageNum={10} dark />
+        <PageChrome pageNum={9} dark />
         <div className={styles.pageInner}>
           <div className={`${styles.eyebrow} ${styles.eyebrowDark}`}>{c.dirBuild.eyebrow}</div>
           <div className={styles.titleRow}>
@@ -781,7 +749,7 @@ export default async function PrintBrochure({
 
           <div className={styles.partnerFooter}>
             <div className={styles.partnerFooterLeft}>
-              <span className={styles.partnerFooterNum}>94%</span>
+              <span className={styles.partnerFooterNum}>5+</span>
               <span className={styles.partnerFooterText}>
                 <span className={styles.aboutColRule} />{c.partners.repeatLabel}
               </span>

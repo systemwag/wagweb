@@ -27,6 +27,24 @@ export function DesignIcon() {
   );
 }
 
+export function MaintenanceIcon() {
+  return (
+    <svg className="svg-draw" viewBox="0 0 64 64" fill="none" width="64" height="64">
+      {/* Ground line */}
+      <path d="M6 54h52" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      {/* Rails in perspective */}
+      <path d="M14 54L28 20M50 54L36 20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      {/* Sleepers */}
+      <path d="M18 48h28M21 40h22M24 32h16M27 24h10" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity="0.7"/>
+      {/* Wrench overlay */}
+      <circle cx="46" cy="18" r="7" stroke="currentColor" strokeWidth="1.4" fill="none"/>
+      <path d="M43 15l6 6M49 15l-6 6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity="0.8"/>
+      {/* Check tick */}
+      <path d="M10 16l3 3 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
 export function ConstructionIcon() {
   return (
     <svg className="svg-draw" viewBox="0 0 64 64" fill="none" width="64" height="64">

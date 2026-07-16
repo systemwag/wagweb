@@ -53,6 +53,75 @@
 }
 
 /* ── Direction section ────────────────── */
+/* ── Principle strip: «Один договор — один ответственный» ── */
+.principleSection {
+  padding: var(--space-xl) 0 var(--space-2xl);
+}
+
+.principleBox {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xl);
+  padding: var(--space-xl);
+}
+
+.principleText {
+  flex: 1 1 340px;
+  min-width: 280px;
+}
+
+.principleTitle {
+  margin-bottom: var(--space-sm);
+}
+
+.principleDesc {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+.principleSteps {
+  flex: 1 1 380px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-sm);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: none;
+}
+
+.principleStep {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  background: var(--glass-bg);
+}
+
+.principleStepRoman {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--gold);
+}
+
+.principleStepLabel {
+  font-family: var(--font-heading);
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.principleStepMeta {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
 .directionSection {
   padding: var(--space-2xl) 0 var(--space-3xl);
   border-top: 1px solid var(--glass-border);

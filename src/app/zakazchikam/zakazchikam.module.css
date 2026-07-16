@@ -1,0 +1,192 @@
+.main {
+  min-height: 100vh;
+  padding-top: var(--header-height);
+}
+
+/* ── Hero ── */
+.hero {
+  position: relative;
+  padding: var(--space-3xl) 0 var(--space-2xl);
+}
+
+.title {
+  margin-bottom: var(--space-md);
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  opacity: 0.85;
+  line-height: 1.8;
+  max-width: 620px;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  margin-top: var(--space-xl);
+}
+
+/* ── Content ── */
+.section {
+  padding-bottom: var(--space-3xl);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+.card {
+  padding: var(--space-xl);
+}
+
+.cardTitle {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-lg);
+}
+
+.reqList {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.reqRow {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-md);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: var(--space-sm);
+}
+
+.reqRow:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.reqRow dt {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.reqRow dd {
+  margin: 0;
+  color: var(--text-primary);
+  text-align: right;
+  word-break: break-word;
+}
+
+.docList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.docItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.docName {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.docDetail {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.docsLink {
+  display: inline-block;
+  margin-top: var(--space-lg);
+  font-size: 0.88rem;
+  color: var(--gold);
+  text-decoration: none;
+}
+
+.docsLink:hover {
+  text-decoration: underline;
+}
+
+/* ── Proof row ── */
+.proofRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+  margin-top: var(--space-lg);
+}
+
+.proofCard {
+  padding: var(--space-xl);
+}
+
+.proofTitle {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.proofDesc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+.proofDesc a {
+  color: var(--gold);
+  text-decoration: none;
+}
+
+.proofDesc a:hover {
+  text-decoration: underline;
+}
+
+/* ── CTA ── */
+.cta {
+  margin-top: var(--space-2xl);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  padding: var(--space-xl);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  background: var(--glass-bg);
+}
+
+.ctaText {
+  font-size: 1rem;
+  color: var(--text-primary);
+  max-width: 480px;
+  line-height: 1.7;
+}
+
+.ctaActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .grid     { grid-template-columns: 1fr; }
+  .proofRow { grid-template-columns: 1fr; }
+}

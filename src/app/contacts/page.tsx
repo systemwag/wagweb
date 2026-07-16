@@ -6,7 +6,7 @@ import styles       from './contacts.module.css';
 export const metadata: Metadata = {
   title: 'Контакты — офис в Актобе',
   description:
-    'Свяжитесь с West Arlan Group: г. Актобе, ул. Казангапа 57В, офис 34. Телефон +7 (7132) 53-82-88. Оставьте заявку на проект — ответим в течение 24 часов.',
+    'Свяжитесь с West Arlan Group: г. Актобе, ул. Казангапа 57В, офис 34. Телефон +7 (7132) 53-82-88. Оставьте заявку на проект — ответим в течение одного рабочего дня.',
 };
 
 const contacts = [
@@ -61,8 +61,8 @@ const contacts = [
       </svg>
     ),
     label: 'Сайт',
-    value: 'arlan-gr.kz',
-    link: 'https://arlan-gr.kz',
+    value: 'westarlangroup.kz',
+    link: 'https://www.westarlangroup.kz',
   },
 ];
 
@@ -82,7 +82,7 @@ export default function ContactsPage() {
             </h1>
             <p className={styles.heroDesc}>
               Оставьте заявку или свяжитесь с нами напрямую —
-              ответим в течение 24 часов и подготовим коммерческое предложение.
+              ответим в течение одного рабочего дня и подготовим коммерческое предложение.
             </p>
           </div>
           <div className={styles.heroGlow} aria-hidden="true" />
@@ -172,7 +172,7 @@ export default function ContactsPage() {
                 <div className={styles.formHeader}>
                   <h2 className={`heading-3 ${styles.formTitle}`}>Оставить заявку</h2>
                   <p className={styles.formSubtitle}>
-                    Опишите ваш проект — мы подберём оптимальное решение.
+                    Опишите ваш проект — ответим в течение одного рабочего дня.
                   </p>
                 </div>
                 <ContactForm />

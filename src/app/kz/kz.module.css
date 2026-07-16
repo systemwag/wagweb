@@ -1,0 +1,133 @@
+.main {
+  min-height: 100vh;
+  padding-top: var(--header-height);
+}
+
+.hero {
+  padding: var(--space-3xl) 0 var(--space-2xl);
+}
+
+.title {
+  margin-bottom: var(--space-md);
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  opacity: 0.85;
+  line-height: 1.8;
+  max-width: 640px;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  margin-top: var(--space-xl);
+}
+
+.section {
+  padding-bottom: var(--space-3xl);
+}
+
+.dirGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.dirCard {
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  text-decoration: none;
+}
+
+.dirTitle {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.dirDesc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  flex: 1;
+}
+
+.dirMore {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+.contactCard {
+  padding: var(--space-xl);
+  max-width: 640px;
+}
+
+.contactTitle {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-lg);
+}
+
+.contactList {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.contactRow {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-md);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.contactRow dt {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.contactRow dd {
+  margin: 0;
+  color: var(--text-primary);
+  text-align: right;
+}
+
+.contactRow dd a {
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.contactRow dd a:hover {
+  color: var(--gold);
+}
+
+.note {
+  margin-top: var(--space-lg);
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.note a {
+  color: var(--gold);
+  text-decoration: none;
+}
+
+.note a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .dirGrid { grid-template-columns: 1fr; }
+}

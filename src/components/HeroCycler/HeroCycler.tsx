@@ -14,10 +14,10 @@ type Word = {
    the 1280-container max (content ≈ 1152px); vw rates and floors hold
    even on 320px screens (content ≈ 272px). */
 const WORDS: Word[] = [
-  { lines: ['ПРОЕКТИРУЕМ'],                  size: 'clamp(28px, 9vw, 120px)' },
-  { lines: ['СТРОИМ'],                        size: 'clamp(50px, 16vw, 220px)' },
-  { lines: ['ОБСЛУЖИВАЕМ'],                  size: 'clamp(28px, 9vw, 120px)' },
-  { lines: ['ДЕЛАЕМ ТЕХНИЧЕСКИЙ', 'АУДИТ'],  size: 'clamp(16px, 5.2vw, 72px)' },
+  { lines: ['ПРОЕКТИРУЕМ'],                    size: 'clamp(28px, 9vw, 120px)' },
+  { lines: ['СТРОИМ'],                          size: 'clamp(50px, 16vw, 220px)' },
+  { lines: ['ОБСЛУЖИВАЕМ'],                    size: 'clamp(28px, 9vw, 120px)' },
+  { lines: ['ОБСЛЕДУЕМ ЗДАНИЯ', 'И СООРУЖЕНИЯ'], size: 'clamp(16px, 5.2vw, 72px)' },
 ];
 
 const CYCLE_MS = 3400;
@@ -34,7 +34,8 @@ export default function HeroCycler() {
     <div className={styles.wrap}>
       {/* Semantic H1 for SEO / screen-readers — visual is decorative */}
       <h1 className={styles.sr}>
-        Мы проектируем, строим, обслуживаем и проводим технический аудит инфраструктуры Казахстана.
+        Мы проектируем, строим, обслуживаем инфраструктуру и проводим техническое
+        обследование зданий и сооружений по всему Казахстану.
       </h1>
       <div className={styles.stage} aria-hidden="true">
         <Cycle key={i} word={WORDS[i]} />

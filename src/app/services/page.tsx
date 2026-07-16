@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Footer from '@/components/Footer/Footer';
 import ServicesHeroAnim from '@/components/ServicesHeroAnim/ServicesHeroAnim';
-import { getServices } from '@/lib/data';
+import { getServices, getMaintenanceProjects } from '@/lib/data';
 import { SITE_URL } from '@/lib/site';
 import styles from './services.module.css';
 import {
@@ -68,10 +68,14 @@ function ServiceIcon({ icon, color }: { icon: string; color: 'gold' | 'teal' | '
 }
 
 export default async function ServicesPage() {
-  const allServices = await getServices();
+  const [allServices, maintenanceProjects] = await Promise.all([
+    getServices(),
+    getMaintenanceProjects(),
+  ]);
   const design       = allServices.filter((s) => s.direction === 'design');
   const construction = allServices.filter((s) => s.direction === 'construction');
   const control      = allServices.filter((s) => s.direction === 'control');
+  const maintenanceCount = maintenanceProjects.length;
 
   const servicesJsonLd = {
     '@context': 'https://schema.org',
@@ -105,9 +109,10 @@ export default async function ServicesPage() {
               Услуги <span className="text-gradient-gold">полного цикла</span>
             </h1>
             <p className={styles.heroDesc}>
-              Проектирование, строительство и инженерный контроль. Полный цикл от
-              геодезических изысканий до сдачи объектов «под&nbsp;ключ» —
-              для транспортной и промышленной инфраструктуры Казахстана.
+              Проектирование, строительство, обслуживание и инженерный контроль.
+              Полный цикл от геодезических изысканий до сдачи объектов
+              «под&nbsp;ключ» — для инженерной, транспортной и промышленной
+              инфраструктуры Казахстана и России.
             </p>
 
             {/* CTAs */}
@@ -129,6 +134,39 @@ export default async function ServicesPage() {
           <ServicesHeroAnim />
         </section>
 
+        {/* ── Principle: полный цикл внутри группы ── */}
+        <section className={styles.principleSection}>
+          <div className="container">
+            <div className={`glass-card ${styles.principleBox}`}>
+              <div className={styles.principleText}>
+                <h2 className={`heading-3 ${styles.principleTitle}`}>
+                  Один договор — <span className="text-gradient-gold">один ответственный</span>
+                </h2>
+                <p className={styles.principleDesc}>
+                  Группа закрывает весь цикл собственными силами: инженерные изыскания,
+                  проектная и рабочая документация, прохождение РГП «ГосЭкспертиза»,
+                  строительно-монтажные работы и сдача объекта в эксплуатацию —
+                  без субподрядных цепочек и размытой ответственности.
+                </p>
+              </div>
+              <ol className={styles.principleSteps}>
+                {[
+                  { roman: 'I',   label: 'Изыскания',     meta: 'геодезия · геология · гидрология' },
+                  { roman: 'II',  label: 'ПСД и РД',      meta: 'проектно-сметная и рабочая' },
+                  { roman: 'III', label: 'ГосЭкспертиза', meta: 'согласование РГП' },
+                  { roman: 'IV',  label: 'СМР и сдача',   meta: 'строительство · ввод в эксплуатацию' },
+                ].map((s) => (
+                  <li key={s.roman} className={styles.principleStep}>
+                    <span className={styles.principleStepRoman}>{s.roman}</span>
+                    <span className={styles.principleStepLabel}>{s.label}</span>
+                    <span className={styles.principleStepMeta}>{s.meta}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        </section>
+
         {/* ── Direction 01: Design ── */}
         <section className={styles.directionSection} data-accent="gold" id="proektnaya">
           <div className="container">
@@ -138,9 +176,9 @@ export default async function ServicesPage() {
                 <span className="text-gradient-gold">Проектная</span> деятельность
               </h2>
               <p className={styles.directionDesc}>
-                Специализация на выполнении полного комплекса проектных работ в области
-                железнодорожной и инженерной инфраструктуры. Разработка технически
-                обоснованных решений, соответствующих национальным и международным стандартам.
+                Полный комплекс проектных работ в области инженерной и транспортной
+                инфраструктуры: лицензия I категории с 2010 года. Комплект ПСД
+                и рабочей документации с сопровождением прохождения РГП «ГосЭкспертиза».
               </p>
               <Link href="/design" className={`btn btn-outline ${styles.directionBtn}`}>
                 Подробнее о проектировании
@@ -189,6 +227,31 @@ export default async function ServicesPage() {
                   <p className={styles.serviceDesc}>{s.description}</p>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Maintenance teaser — реестр обслуживания живёт на /maintenance ── */}
+        <section className={styles.directionSection} data-accent="blue" id="obsluzhivanie">
+          <div className="container">
+            <div className={styles.directionHeader}>
+              <div className={styles.directionBadge} data-color="gold">Обслуживание</div>
+              <h2 className="heading-2">
+                Текущее содержание <span className="text-gradient-gold">и ремонт</span>
+              </h2>
+              <p className={styles.directionDesc}>
+                Текущее содержание, ремонт и демонтаж подъездных путей и инфраструктуры
+                предприятий: {maintenanceCount} объектов в реестре обслуживания.
+                Регулярные осмотры, устранение дефектов и ответственность
+                за безопасную эксплуатацию — то, за что нас благодарят заказчики
+                в письмах годами.
+              </p>
+              <Link href="/maintenance" className={`btn btn-outline ${styles.directionBtn}`}>
+                Реестр обслуживания
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </Link>
             </div>
           </div>
         </section>
@@ -403,18 +466,56 @@ export default async function ServicesPage() {
           </div>
         </section>
 
-        {/* ── Additional services ── */}
+        {/* ── Additional services: контроль, аккредитованный надзор, поставки ── */}
         <section className={styles.directionSection} data-accent="gold" id="dopolnitelnye">
           <div className="container">
             <div className={styles.directionHeader}>
               <div className={styles.directionBadge} data-color="gold">Дополнительно</div>
-              <h2 className="heading-2">Контроль и поставки</h2>
+              <h2 className="heading-2">Контроль, надзор и поставки</h2>
               <p className={styles.directionDesc}>
-                Строительный контроль, технадзор, а также поставка специализированных
-                материалов и техники от проверенных поставщиков.
+                Аккредитованные инжиниринговые услуги — технический надзор,
+                обследование зданий и управление проектами (свидетельства
+                уполномоченных органов действуют до 26.06.2028), а также
+                строительный контроль и поставка специализированных материалов
+                и техники.
               </p>
+              <Link href="/licenses#akkreditacii" className={`btn btn-outline ${styles.directionBtn}`}>
+                Свидетельства об аккредитации
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </Link>
             </div>
             <div className={styles.servicesGrid}>
+              {[
+                {
+                  id: 'accr-supervision',
+                  icon: '✅',
+                  title: 'Технический надзор',
+                  description:
+                    'Инжиниринговые услуги по техническому надзору на технически и технологически сложных объектах I уровня ответственности — для сторонних заказчиков. Аккредитация № KZ56VWC00283700.',
+                },
+                {
+                  id: 'accr-survey',
+                  icon: '🔬',
+                  title: 'Обследование зданий и сооружений',
+                  description:
+                    'Экспертные работы по техническому обследованию надёжности и устойчивости зданий и сооружений, I–II уровни ответственности. Аккредитация № KZ83VWC00283699.',
+                },
+                {
+                  id: 'accr-pm',
+                  icon: '📋',
+                  title: 'Управление проектами',
+                  description:
+                    'Управление проектами в области архитектуры, градостроительства и строительства. Свидетельство № KZ29VWC00283701.',
+                },
+              ].map((s) => (
+                <div key={s.id} className={`glass-card ${styles.serviceCard}`}>
+                  <ServiceIcon icon={s.icon} color="gold" />
+                  <h3 className={styles.serviceTitle}>{s.title}</h3>
+                  <p className={styles.serviceDesc}>{s.description}</p>
+                </div>
+              ))}
               {control.map((s) => (
                 <div key={s.id} className={`glass-card ${styles.serviceCard}`}>
                   <ServiceIcon icon={s.icon} color="gold" />

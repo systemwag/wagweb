@@ -10,18 +10,19 @@ interface StatItem {
   sublabel: string;
 }
 
-const stats: StatItem[] = [
-  { value: 15, suffix: '+', label: 'Лет на рынке',         sublabel: 'с 2010 года'                },
-  { value: 80, suffix: '+', label: 'Специалистов',         sublabel: 'ГИПы, инженеры, прорабы'    },
-  { value: 14, suffix: '',  label: 'Регионов Казахстана',  sublabel: 'от Атырау до Хоргоса'       },
-  { value: 94, suffix: '%', label: 'Повторных контрактов', sublabel: 'клиенты возвращаются'       },
-];
+interface StatsProps {
+  /** Объектов и работ в реестре (СМР + обслуживание + проектирование), из data.ts */
+  registryTotal: number;
+  /** Полных лет на рынке, считается от 2010 */
+  years: number;
+}
 
+/* Регалии — только подтверждённое документами (сканы в public/licenses/) */
 const regalia = [
-  'I категория',
-  'ISO 9001:2015',
-  'ISO 14001:2015',
-  'Допуск СРО',
+  'СМР — I категория',
+  'Проектирование — I категория',
+  'Технадзор — I уровень',
+  'Обследование зданий — I–II уровни',
 ];
 
 function StatCell({ item, index }: { item: StatItem; index: number }) {
@@ -44,7 +45,14 @@ function StatCell({ item, index }: { item: StatItem; index: number }) {
   );
 }
 
-export default function Stats() {
+export default function Stats({ registryTotal, years }: StatsProps) {
+  const stats: StatItem[] = [
+    { value: years,         suffix: '',  label: 'Лет на рынке',          sublabel: 'с 2010 года'                          },
+    { value: registryTotal, suffix: '',  label: 'Объектов и работ',      sublabel: 'в публичном реестре'                  },
+    { value: 80,            suffix: '+', label: 'Специалистов',          sublabel: 'ГИПы, инженеры, прорабы'              },
+    { value: 2,             suffix: '',  label: 'Страны присутствия',    sublabel: 'Казахстан и Россия'                   },
+  ];
+
   return (
     <section className={styles.section}>
       <div className={`container ${styles.inner}`}>
@@ -55,7 +63,7 @@ export default function Stats() {
           ))}
         </div>
 
-        <div className={styles.regalia} aria-label="Лицензии и сертификаты">
+        <div className={styles.regalia} aria-label="Лицензии и аккредитации">
           {regalia.map((item, i) => (
             <span key={item} className={styles.regaliaWrap}>
               <span className={styles.regaliaItem}>{item}</span>

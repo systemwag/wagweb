@@ -1,12 +1,12 @@
 import Link from 'next/link';
 import styles from './Services.module.css';
-import { DesignIcon, ConstructionIcon } from '@/components/icons/ServiceIcons';
+import { DesignIcon, ConstructionIcon, MaintenanceIcon } from '@/components/icons/ServiceIcons';
 
 interface Direction {
   id: string;
   label: string;
   href: string;
-  color: 'gold' | 'teal';
+  color: 'gold' | 'teal' | 'blue';
   icon: React.ReactNode;
   description: string;
   workCount: number;
@@ -29,8 +29,8 @@ const directions: Direction[] = [
       'Инженерно-геологические изыскания',
       'Инженерно-гидрологические изыскания',
       'Разработка проектной документации',
-      'BIM-проектирование',
-      'Экспертиза проектов',
+      'Сопровождение госэкспертизы',
+      'Авторский надзор',
     ],
   },
   {
@@ -52,6 +52,24 @@ const directions: Direction[] = [
       'Земляные и специальные работы в грунтах',
     ],
   },
+  {
+    id: 'maintenance',
+    label: 'Обслуживание и содержание',
+    href: '/maintenance',
+    color: 'blue',
+    icon: <MaintenanceIcon />,
+    description:
+      'Текущее содержание, ремонт и демонтаж инфраструктуры предприятий — с ответственностью за безопасную эксплуатацию.',
+    workCount: 20,
+    services: [
+      'Текущее содержание подъездных путей',
+      'Капитальный ремонт и перебортовка',
+      'Ремонт стрелочных переводов',
+      'Демонтаж путей и сооружений',
+      'Регулярные осмотры и устранение дефектов',
+      'Обслуживание инженерных сетей',
+    ],
+  },
 ];
 
 
@@ -64,14 +82,14 @@ export default function Services() {
           <div className={styles.sectionHeaderLeft}>
             <span className="section-label">Направления деятельности</span>
             <h2 className={`heading-2 ${styles.sectionTitle}`}>
-              Два ключевых<br />
-              <span className="text-gradient-gold">направления группы</span>
+              Три направления<br />
+              <span className="text-gradient-gold">работы группы</span>
             </h2>
           </div>
 
           <div className={styles.sectionHeaderRight}>
             <div className={styles.sideStat}>
-              <span className={styles.sideStatNum}>2</span>
+              <span className={styles.sideStatNum}>3</span>
               <span className={styles.sideStatLabel}>направления</span>
             </div>
             <div className={styles.sideStatDivider} aria-hidden="true" />
