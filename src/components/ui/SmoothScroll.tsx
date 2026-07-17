@@ -14,6 +14,10 @@ export default function SmoothScroll() {
       touchMultiplier: 1.5,
     });
 
+    // Доступ для страниц с программным скроллом (навигация по этапам в 3D-историях):
+    // нативный window.scrollTo(smooth) дёргается вместе с Lenis, поэтому даём инстанс.
+    (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
+
     let rafId: number;
     function raf(time: number) {
       lenis.raf(time);
@@ -23,6 +27,7 @@ export default function SmoothScroll() {
 
     return () => {
       cancelAnimationFrame(rafId);
+      delete (window as unknown as { __lenis?: Lenis }).__lenis;
       lenis.destroy();
     };
   }, []);
