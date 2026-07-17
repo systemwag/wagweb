@@ -4,38 +4,16 @@
   overflow: hidden;
 }
 
+/* Flat dark backdrop — the map reads far better without the photo underlay
+   (see the clean map variant on /projects). */
 .section::after {
   content: '';
   position: absolute;
   inset: 0;
   z-index: -1;
   background:
-    linear-gradient(to bottom, #04060C 0%, #04060C 5%, rgba(4,6,12,0.55) 35%,
-    rgba(4,6,12,0.55) 65%, #04060C 95%, #04060C 100%),
-    url('/images/stats-bg.webp');
-  background-size: cover;
-  background-position: center;
-  width: 120%;
-  left: -10%;
-  animation: bgPan calc(var(--cycle) * 11) ease-in-out infinite calc(var(--cycle) * -4);
-}
-
-@keyframes bgPan {
-  0%   { transform: translateX(0); }
-  50%  { transform: translateX(-8%); }
-  100% { transform: translateX(0); }
-}
-
-@supports (animation-timeline: view()) {
-  .section::after {
-    animation: bgParallaxGeo linear;
-    animation-timeline: view();
-    animation-range: entry 0% exit 100%;
-  }
-  @keyframes bgParallaxGeo {
-    from { transform: translate(0, -8%); }
-    to   { transform: translate(-5%, 8%); }
-  }
+    radial-gradient(ellipse 55% 45% at 50% 45%, rgba(0,196,167,0.05) 0%, transparent 70%),
+    var(--bg-primary);
 }
 
 /* ── Header: title left, desc right ──── */

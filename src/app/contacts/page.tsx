@@ -73,14 +73,15 @@ export default function ContactsPage() {
       <main className={styles.main}>
 
         {/* ── Hero ── */}
-        <section className={styles.hero}>
-          <div className="container">
-            <span className="section-label">Контакты</span>
-            <h1 className={`heading-1 ${styles.heroTitle}`}>
+        <section className={`${styles.hero} filmgrain`}>
+          <div className="hero-hairline" aria-hidden="true" />
+          <div className="container hero-parallax">
+            <span className="section-label hero-reveal-1">Контакты</span>
+            <h1 className={`heading-1 ${styles.heroTitle} hero-reveal-2`}>
               Давайте обсудим<br />
               <span className="text-gradient-gold">ваш проект</span>
             </h1>
-            <p className={styles.heroDesc}>
+            <p className={`${styles.heroDesc} hero-reveal-3`}>
               Оставьте заявку или свяжитесь с нами напрямую —
               ответим в течение одного рабочего дня и подготовим коммерческое предложение.
             </p>

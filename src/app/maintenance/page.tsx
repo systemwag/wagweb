@@ -58,19 +58,20 @@ export default async function MaintenancePage({
       <main className={styles.main}>
 
         {/* ── Hero ─────────────────────────────────── */}
-        <section className={styles.hero}>
-          <div className="container">
-            <span className="section-label">Обслуживание инфраструктуры</span>
-            <h1 className={`heading-1 ${styles.heroTitle}`}>
+        <section className={`${styles.hero} filmgrain`}>
+          <div className="hero-hairline" aria-hidden="true" />
+          <div className="container hero-parallax">
+            <span className="section-label hero-reveal-1">Обслуживание инфраструктуры</span>
+            <h1 className={`heading-1 ${styles.heroTitle} hero-reveal-2`}>
               Обслуживание<br />
               <span className="text-gradient-gold">и текущий ремонт</span>
             </h1>
-            <p className={styles.heroDesc}>
+            <p className={`${styles.heroDesc} hero-reveal-3`}>
               Долгосрочные контракты содержания, текущий и капитальный ремонт,
               осмотр и дефектация, реконструкция инженерной инфраструктуры.
             </p>
 
-            <div className={styles.heroStats}>
+            <div className={`${styles.heroStats} hero-reveal-4`}>
               <div className={styles.statItem}>
                 <span className={styles.statValue}>{all.length}+</span>
                 <span className={styles.statLabel}>Объектов</span>
@@ -92,6 +93,7 @@ export default async function MaintenancePage({
               </div>
             </div>
           </div>
+          <div className="hero-glow-gold" aria-hidden="true" />
         </section>
 
         {/* ── Filters ──────────────────────────────── */}
@@ -133,6 +135,7 @@ export default async function MaintenancePage({
               <div className={styles.grid}>
                 {filtered.map((project, index) => {
                   const accentColor = WORK_TYPE_COLOR[project.work_type] ?? '#D4A843';
+                  const hasImage = Boolean(project.image_url || (project.images && project.images.length > 0));
                   const statusClass = project.status === 'completed'
                     ? styles.statusCompleted
                     : styles.statusInProgress;
@@ -148,8 +151,8 @@ export default async function MaintenancePage({
                         animationDelay: `${index * 0.05}s`,
                       } as React.CSSProperties}
                     >
-                      <div className={styles.cardImage}>
-                        {(project.image_url || (project.images && project.images.length > 0)) ? (
+                      <div className={`${styles.cardImage} ${hasImage ? '' : styles.cardImageEmpty}`}>
+                        {hasImage ? (
                           <img
                             src={project.image_url ?? project.images![0]}
                             alt={project.title}
@@ -179,7 +182,9 @@ export default async function MaintenancePage({
                         </div>
 
                         <h2 className={styles.cardTitle}>{project.title}</h2>
-                        <p className={styles.cardDesc}>{project.description}</p>
+                        {project.description && (
+                          <p className={styles.cardDesc}>{project.description}</p>
+                        )}
 
                         <div className={styles.cardMeta}>
                           {project.client && (

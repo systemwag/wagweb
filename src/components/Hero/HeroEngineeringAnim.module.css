@@ -10,3 +10,9 @@
   width: 100%;
   height: 100%;
 }
+
+/* On phones the theodolite readout labels land on top of the hero copy —
+   hide them; the compass itself stays. */
+@media (max-width: 768px) {
+  .theodoliteLabel { display: none; }
+}

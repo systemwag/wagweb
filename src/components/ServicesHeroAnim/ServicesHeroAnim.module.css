@@ -26,7 +26,7 @@
    All three remount with the drawing layer (React key) so they replay on every
    appearance — kept inside the ~3.2s visible window. */
 .drawClip {
-  animation: sha-wipe 1.25s cubic-bezier(0.45, 0, 0.2, 1) both;
+  animation: sha-wipe 1.25s var(--ease-draw) both;
 }
 @keyframes sha-wipe {
   from { clip-path: inset(0 100% 0 0); }
@@ -35,7 +35,7 @@
 
 .pen {
   animation:
-    sha-pen 1.25s cubic-bezier(0.45, 0, 0.2, 1) both,
+    sha-pen 1.25s var(--ease-draw) both,
     sha-pen-fade 1.25s linear both;
 }
 @keyframes sha-pen {
@@ -70,7 +70,7 @@
    hook drops last — then a gentle ambient slew/hoist gives it life. Keyed with
    the crane layer so it replays each cycle, inside the ~3.2s window. */
 .craneRise {
-  animation: sha-crane-rise 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation: sha-crane-rise 0.6s var(--ease-draw) both;
 }
 @keyframes sha-crane-rise {
   from { clip-path: inset(100% 0 0 0); }
@@ -97,7 +97,7 @@
    context (trench + spoil) and the arm fade in, then the arm runs an ambient
    articulated dig loop. Keyed with the layer so it replays each cycle. */
 .exDrive {
-  animation: sha-ex-drive 0.7s cubic-bezier(0.16, 0.84, 0.3, 1) both;
+  animation: sha-ex-drive 0.7s var(--ease-out) both;
 }
 @keyframes sha-ex-drive {
   from { transform: translateX(var(--ex-in, -40px)); opacity: 0.2; }

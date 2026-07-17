@@ -237,11 +237,13 @@ export default function HeroEngineeringAnim() {
           stroke="var(--teal)" strokeWidth="2" strokeOpacity="0.7" />
 
         <text x={CX - R - 55} y={CY - 6}
+          className={styles.theodoliteLabel}
           fill="var(--teal)" fontSize="8" fontFamily="monospace"
           textAnchor="end" opacity="0.55" letterSpacing="1.5px">
           ТЕОДОЛИТ T-02
         </text>
         <text ref={azimuthTextRef} x={CX - R - 55} y={CY + 8}
+          className={styles.theodoliteLabel}
           fill="var(--gold)" fontSize="9" fontFamily="monospace"
           textAnchor="end" letterSpacing="0.5px">
           α = 0.0°

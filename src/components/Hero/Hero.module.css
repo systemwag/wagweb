@@ -523,8 +523,16 @@
   100% { transform: rotateY(360deg); }
 }
 
+/* Блик поверх знака: сам градиент анимируется SMIL-ом внутри SVG,
+ * здесь только screen-блендинг и отключение при reduced-motion
+ * (SMIL не слушает prefers-reduced-motion). */
+.sheenPath {
+  mix-blend-mode: screen;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .heroLogoSvg { animation: none; }
+  .sheenPath { display: none; }
 }
 
 /* ── Scroll indicator ─────────────────── */

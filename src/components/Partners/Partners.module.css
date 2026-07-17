@@ -5,23 +5,16 @@
   z-index: 50;
 }
 
+/* Flat dark backdrop — the photo underlay made the logo marquee and the
+   testimonial slider hard to read (white circles landed on faces). */
 .section::after {
   content: '';
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(to bottom, #04060C 0%, #04060C 5%, rgba(4,6,12,0.6) 35%, rgba(4,6,12,0.6) 65%, #04060C 95%, #04060C 100%), url('/images/6.webp');
-  background-size: cover;
-  background-position: center;
-  width: 120%;
-  left: -10%;
-  animation: bgPan 33s ease-in-out infinite -18s;
-}
-
-@keyframes bgPan {
-  0%   { transform: translateX(0); }
-  50%  { transform: translateX(-8%); }
-  100% { transform: translateX(0); }
+  background:
+    radial-gradient(ellipse 60% 45% at 50% 28%, rgba(212,168,67,0.05) 0%, transparent 70%),
+    var(--bg-primary);
 }
 
 /* ── Header ───────────────────────────── */

@@ -23,14 +23,15 @@ export default async function DesignPage() {
     <>
       <main className={styles.main}>
 
-        <section className={styles.hero}>
-          <div className="container">
-            <span className="section-label">Проектная деятельность</span>
-            <h1 className={`heading-1 ${styles.heroTitle}`}>
+        <section className={`${styles.hero} filmgrain`}>
+          <div className="hero-hairline" aria-hidden="true" />
+          <div className="container hero-parallax">
+            <span className="section-label hero-reveal-1">Проектная деятельность</span>
+            <h1 className={`heading-1 ${styles.heroTitle} hero-reveal-2`}>
               Выполненные<br />
               <span className="text-gradient-gold">проектные работы</span>
             </h1>
-            <p className={styles.heroDesc}>
+            <p className={`${styles.heroDesc} hero-reveal-3`}>
               {projects.length} объектов в реестре —{' '}
               {fullCycle} полных цикла,{' '}
               {design} рабочих проектов,{' '}

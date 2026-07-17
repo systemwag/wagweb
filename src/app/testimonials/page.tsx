@@ -17,19 +17,21 @@ export default async function TestimonialsPage() {
     <>
       <main className={styles.main}>
         {/* ── Hero ── */}
-        <section className={styles.hero}>
-          <div className="container">
-            <span className="section-label">Отзывы клиентов</span>
-            <h1 className={`heading-1 ${styles.heroTitle}`}>
+        <section className={`${styles.hero} filmgrain`}>
+          <div className="hero-hairline" aria-hidden="true" />
+          <div className="container hero-parallax">
+            <span className="section-label hero-reveal-1">Отзывы клиентов</span>
+            <h1 className={`heading-1 ${styles.heroTitle} hero-reveal-2`}>
               Что говорят<br />
               <span className="text-gradient-gold">наши заказчики</span>
             </h1>
-            <p className={styles.heroDesc}>
+            <p className={`${styles.heroDesc} hero-reveal-3`}>
               Реальные письма с печатями и подписями руководителей предприятий — заказчиков,
               для которых группа West Arlan Group выполнила проектирование и строительство
               железнодорожной инфраструктуры.
             </p>
           </div>
+          <div className="hero-glow-gold" aria-hidden="true" />
         </section>
 
         {/* ── Note strip ── */}

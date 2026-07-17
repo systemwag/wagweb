@@ -48,7 +48,8 @@
   /* Text */
   --text-primary:       #F0F2F8;
   --text-secondary:     #8892A4;
-  --text-muted:         #4A5568;
+  /* WCAG AA ≥ 4.5:1 on --bg-primary (5.06:1) and on card bg (4.65:1) */
+  --text-muted:         #75808F;
 
   /* Typography fallbacks — next/font overrides these via html className */
   --font-heading: 'Space Grotesk', system-ui, sans-serif;
@@ -82,6 +83,7 @@
   /* Easings */
   --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring: linear(0, 0.45, 0.78 22%, 0.99, 1.13, 1.16, 1.05, 0.99, 1);
+  --ease-draw:   cubic-bezier(0.45, 0, 0.2, 1);  /* draw-on / wipe эффекты */
   --t-fast: 0.15s var(--ease-out);
   --t-base: 0.30s var(--ease-out);
   --t-slow: 0.60s var(--ease-out);
@@ -104,7 +106,9 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
+  /* clip, не hidden: hidden превращает html в scroll-контейнер
+     и ломает position:sticky во всём документе */
+  overflow-x: clip;
   /* Firefox scrollbar parity with the webkit styling further down */
   scrollbar-width: thin;
   scrollbar-color: rgba(212, 168, 67, 0.4) var(--bg-primary);
@@ -127,7 +131,7 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.6;
-  overflow-x: hidden;
+  overflow-x: clip;
   min-height: 100vh;
   /* Text selection is allowed by default. Decorative SVG/canvas opt out
      individually via .no-select utility below. */
@@ -427,6 +431,69 @@ p { text-wrap: pretty; }
 @keyframes maskUp {
   0% { transform: translateY(110%); }
   100% { transform: translateY(0); }
+}
+
+/* ============================================
+   STATIC HERO (внутренние страницы) — единая
+   входная хореография на сетке --beat, как в
+   хиро главной (Hero.module.css).
+   ============================================ */
+.hero-reveal-1 { animation: fadeInUp calc(var(--phrase) * 0.9) var(--ease-out) 0.05s both; }
+/* H1 — LCP-элемент: только transform, без opacity (иначе LCP уезжает) */
+.hero-reveal-2 { animation: heroRise var(--phrase) var(--ease-out) calc(var(--beat) * 0.75) both; }
+.hero-reveal-3 { animation: fadeInUp calc(var(--phrase) * 0.9) var(--ease-out) calc(var(--beat) * 1.75) both; }
+.hero-reveal-4 { animation: fadeInUp calc(var(--phrase) * 0.9) var(--ease-out) calc(var(--beat) * 2.5) both; }
+
+@keyframes heroRise {
+  from { transform: translateY(30px); }
+  to   { transform: translateY(0); }
+}
+
+/* Золотая волосяная линия по верхнему краю hero-секции */
+.hero-hairline {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 4%, rgba(212, 168, 67, 0.35) 50%, transparent 96%);
+  pointer-events: none;
+  z-index: 1;
+  animation: fadeIn calc(var(--phrase) * 1.5) var(--ease-out) calc(var(--beat) * 3.5) both;
+}
+
+/* Тонкое золотое свечение в правом верхнем углу hero */
+.hero-glow-gold {
+  position: absolute;
+  top: -60px; right: -80px;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212, 168, 67, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Медленный Ken Burns фоновой фотографии (пан + наезд),
+   вешается на ::before/::after слоя с фото в модулях страниц */
+@keyframes heroKenBurns {
+  0%   { transform: translateX(0) scale(1); }
+  50%  { transform: translateX(-4%) scale(1.07); }
+  100% { transform: translateX(0) scale(1); }
+}
+
+/* Параллакс выхода: контент hero слегка уезжает вверх и гаснет
+   на первых ~600px прокрутки. Привязан к scroll(root), а не view():
+   hero-секции имеют overflow:hidden и сами были бы «scroll container»
+   для view(). Прогрессивное улучшение — без поддержки scroll-driven
+   animations просто ничего не происходит. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    .hero-parallax {
+      animation: heroExit linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0px 600px;
+    }
+    @keyframes heroExit {
+      to { transform: translateY(-44px); opacity: 0.15; }
+    }
+  }
 }
 
 /* ============================================

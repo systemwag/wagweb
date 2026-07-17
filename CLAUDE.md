@@ -59,7 +59,7 @@ src/
     Header/, Hero/, Stats/, About/, Services/, Projects/, Partners/, Footer/
     Map/            # Geography + KazakhstanMap + MapPopup
     ContactForm/    # POSTs to /api/contact (NOT direct Supabase)
-    AboutHeroAnim/, ServicesHeroAnim/    # ServicesHeroAnim = orchestrator + Motif*.tsx
+    HeroCycler/, ServicesHeroAnim/       # ServicesHeroAnim = orchestrator + Motif*.tsx
     ProjectShowcase/
     Admin/          # AdminShell, *Form, *Table (+ ContactsTable, TestimonialsAdmin,
                     # PartnersAdmin), MapCalibrator, MapPicker

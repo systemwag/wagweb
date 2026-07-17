@@ -10,7 +10,8 @@
   overflow: hidden;
 }
 
-.hero::after {
+/* Фото-слой на ::before, чтобы ::after остался за глобальным .filmgrain */
+.hero::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -22,26 +23,19 @@
     rgba(4,6,12,0.55) 65%,
     #04060C 95%,
     #04060C 100%
-  ), url('/images/Gemini_Generated_Image_ruq4dwruq4dwruq4.webp');
+  ),
+  /* Left-side scrim — keeps the heading off the person's face and readable */
+  linear-gradient(90deg, rgba(4,6,12,0.9) 0%, rgba(4,6,12,0.6) 38%, rgba(4,6,12,0.15) 68%, transparent 85%),
+  url('/images/Gemini_Generated_Image_ruq4dwruq4dwruq4.webp');
   background-size: cover;
-  background-position: center;
+  /* Photo layer shifted: subject moves right, clear of the title block */
+  background-position: center, center, 35% center;
   width: 120%;
   left: -10%;
-  animation: bgPan 30s ease-in-out infinite -10s;
-}
-
-@keyframes bgPan {
-  0%   { transform: translateX(0); }
-  50%  { transform: translateX(-8%); }
-  100% { transform: translateX(0); }
-}
-
-.hero::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+  /* Медленный Ken Burns (глобальный keyframe из globals.css) */
+  animation: heroKenBurns 36s ease-in-out infinite -10s;
+  will-change: transform;
+  pointer-events: none;
 }
 
 .heroTitle {

@@ -14,19 +14,21 @@ export default function LicensesPage() {
   return (
     <>
       <main className={styles.main}>
-        <section className={styles.hero}>
-          <div className="container">
-            <span className="section-label">Документы</span>
-            <h1 className={`heading-1 ${styles.title}`}>
+        <section className={`${styles.hero} filmgrain`}>
+          <div className="hero-hairline" aria-hidden="true" />
+          <div className="container hero-parallax">
+            <span className="section-label hero-reveal-1">Документы</span>
+            <h1 className={`heading-1 ${styles.title} hero-reveal-2`}>
               Лицензии и<br />
               <span className="text-gradient-gold">аккредитации</span>
             </h1>
-            <p className={styles.subtitle}>
+            <p className={`${styles.subtitle} hero-reveal-3`}>
               Все работы выполняются на основании государственных лицензий
               I категории и свидетельств об аккредитации уполномоченных
               органов Республики Казахстан.
             </p>
           </div>
+          <div className="hero-glow-gold" aria-hidden="true" />
         </section>
 
         <section className={styles.section} id="licenzii">

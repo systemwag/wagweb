@@ -44,7 +44,7 @@
   white-space: nowrap;
   /* per-line stagger for multi-line words */
   --enter-delay: calc(var(--line-idx, 0) * 0.32s);
-  animation: lifeLine 3.4s var(--enter-delay) cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: lifeLine 3.4s var(--enter-delay) var(--ease-out) forwards;
   opacity: 0;
 }
 
@@ -60,7 +60,7 @@
   -webkit-text-stroke: 0.011em var(--gold);
   text-shadow: 0 0 1em rgba(212, 168, 67, 0.1);
   clip-path: inset(0 102% 0 0);
-  animation: revealWipe 0.9s var(--enter-delay) cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: revealWipe 0.9s var(--enter-delay) var(--ease-out) forwards;
 }
 
 /* ── 2) Fill — ink follows the plotter (delay 0.45s, duration 0.85s) ── */
@@ -72,7 +72,7 @@
   -webkit-background-clip: text;
   background-clip: text;
   clip-path: inset(0 102% 0 0);
-  animation: fillWipe 0.85s calc(var(--enter-delay) + 0.45s) cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: fillWipe 0.85s calc(var(--enter-delay) + 0.45s) var(--ease-out) forwards;
 }
 
 /* ── 3) Plotter head — the WAG triangle drawing the word ── */
@@ -90,7 +90,7 @@
     drop-shadow(0 0 0.9em  rgba(250, 224, 138, 0.45))
     drop-shadow(0 0 2.2em  rgba(212, 168, 67, 0.25));
   opacity: 0;
-  animation: beamRun 0.9s var(--enter-delay) cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: beamRun 0.9s var(--enter-delay) var(--ease-out) forwards;
   will-change: transform, left;
   pointer-events: none;
 }

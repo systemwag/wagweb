@@ -54,20 +54,21 @@ export default async function ProjectsPage({
       <main className={styles.main}>
 
         {/* ── Hero ───────────────────────────────────── */}
-        <section className={styles.hero}>
-          <div className="container">
-            <span className="section-label">Строительная деятельность</span>
-            <h1 className={`heading-1 ${styles.heroTitle}`}>
+        <section className={`${styles.hero} filmgrain`}>
+          <div className="hero-hairline" aria-hidden="true" />
+          <div className="container hero-parallax">
+            <span className="section-label hero-reveal-1">Строительная деятельность</span>
+            <h1 className={`heading-1 ${styles.heroTitle} hero-reveal-2`}>
               Выполненные<br />
               <span className="text-gradient-gold">строительные работы</span>
             </h1>
-            <p className={styles.heroDesc}>
+            <p className={`${styles.heroDesc} hero-reveal-3`}>
               Железнодорожные пути, инженерные коммуникации
               и промышленные объекты — реализуем «под ключ»
               по всему Казахстану.
             </p>
 
-            <div className={styles.heroStats}>
+            <div className={`${styles.heroStats} hero-reveal-4`}>
               <div className={styles.statItem}>
                 <span className={styles.statValue}>{projects.length}+</span>
                 <span className={styles.statLabel}>Объектов</span>
@@ -89,6 +90,7 @@ export default async function ProjectsPage({
               </div>
             </div>
           </div>
+          <div className="hero-glow-gold" aria-hidden="true" />
         </section>
 
         {/* ── Map ────────────────────────────────────── */}
@@ -142,6 +144,7 @@ export default async function ProjectsPage({
                     styles.statusPlanned;
 
                   const accentColor = CATEGORY_COLOR[project.category] ?? 'var(--gold)';
+                  const hasImage = Boolean(project.image_url || (project.images && project.images.length > 0));
 
                   return (
                     <Link
@@ -155,8 +158,8 @@ export default async function ProjectsPage({
                       } as React.CSSProperties}
                     >
                       {/* Image / visual area */}
-                      <div className={styles.cardImage}>
-                        {(project.image_url || (project.images && project.images.length > 0)) ? (
+                      <div className={`${styles.cardImage} ${hasImage ? '' : styles.cardImageEmpty}`}>
+                        {hasImage ? (
                           <Image
                             src={project.image_url ?? project.images![0]}
                             alt={project.title}
@@ -189,7 +192,9 @@ export default async function ProjectsPage({
                         </div>
 
                         <h2 className={styles.cardTitle}>{project.title}</h2>
-                        <p className={styles.cardDesc}>{project.description}</p>
+                        {project.description && (
+                          <p className={styles.cardDesc}>{project.description}</p>
+                        )}
 
                         <div className={styles.cardMeta}>
                           <span className={styles.metaItem}>

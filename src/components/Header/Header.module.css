@@ -12,7 +12,7 @@
   max-width: var(--max-width);
   z-index: 1000;
   height: 64px;
-  background: rgba(4, 6, 12, 0.72);
+  background: rgba(4, 6, 12, 0.82);
   backdrop-filter: blur(20px) saturate(1.5);
   -webkit-backdrop-filter: blur(20px) saturate(1.5);
   border: 1px solid rgba(212, 168, 67, 0.08);
@@ -55,7 +55,7 @@
   top: 10px;
   height: 56px;
   width: calc(100% - 20px);
-  background: rgba(4, 6, 12, 0.92);
+  background: rgba(4, 6, 12, 0.95);
   border-color: rgba(212, 168, 67, 0.18);
   box-shadow:
     0 14px 40px rgba(0, 0, 0, 0.55),

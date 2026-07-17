@@ -15,19 +15,17 @@
   z-index: -1;
   background:
     linear-gradient(to bottom, #04060C 0%, #04060C 5%, rgba(4,6,12,0.6) 35%, rgba(4,6,12,0.6) 65%, #04060C 95%, #04060C 100%),
+    /* Left-side scrim — text block stays readable over the photo */
+    linear-gradient(90deg, rgba(4,6,12,0.9) 0%, rgba(4,6,12,0.6) 38%, rgba(4,6,12,0.15) 68%, transparent 85%),
     url('/images/2.webp');
   background-size: cover;
   background-position: center;
   width: 120%;
   left: -10%;
-  animation: heroBgPan 30s ease-in-out infinite -8s;
+  /* Медленный Ken Burns (глобальный keyframe из globals.css) */
+  animation: heroKenBurns 36s ease-in-out infinite -8s;
+  will-change: transform;
   pointer-events: none;
-}
-
-@keyframes heroBgPan {
-  0%   { transform: translateX(0); }
-  50%  { transform: translateX(-8%); }
-  100% { transform: translateX(0); }
 }
 
 .heroTitle {
@@ -89,11 +87,6 @@
   transform: translateY(-6px);
   border-color: rgba(212,168,67,0.3);
   box-shadow: 0 20px 60px rgba(0,0,0,0.55), 0 0 30px rgba(212,168,67,0.12);
-}
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* Top stripe */

@@ -28,8 +28,11 @@ const PARTICLE_PALETTE = [
 
 export default function InteractiveCanvasBg({
   particleCount = 120,
+  opacity = 1,
 }: {
   particleCount?: number;
+  /** Общая прозрачность слоя — чтобы частицы не спорили с фокус-объектом хиро */
+  opacity?: number;
 } = {}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: -1000, y: -1000, active: false });
@@ -254,6 +257,7 @@ export default function InteractiveCanvasBg({
         height: '100%',
         pointerEvents: 'none',
         zIndex: 1,
+        opacity,
       }}
     />
   );
