@@ -51,6 +51,7 @@ const EN_CONTENT: PrintContent = {
       { level: 'Category I', area: 'CIW' },
       { level: 'Category I', area: 'Engineering' },
       { level: 'Accreditation', area: 'Inspection of buildings & structures' },
+      { level: 'Class 1', area: 'Environmental engineering: EIA & SPZ' },
     ],
     tagline: [
       { main: 'Surveys' },
@@ -84,9 +85,9 @@ const EN_CONTENT: PrintContent = {
     industryChips: [
       'Railways & roads',
       'Pipelines',
-      'Power lines & comms',
+      'Power lines & low-current systems',
       'Industrial facilities',
-      'Engineering networks',
+      <>Engineering networks<span className={styles.industryCardSub}>gas · water supply · sewerage · power · heat supply</span></>,
     ],
     missionLabel: 'OUR MISSION',
     mission: (
@@ -152,9 +153,9 @@ const EN_CONTENT: PrintContent = {
     // Team composition — mirrors the «People who build» block on the website.
     people: [
       { num: '4+',  label: 'Top management',       desc: 'CEO and senior leadership' },
-      { num: '15+', label: 'Engineering department', desc: 'Design engineers and chief project engineers' },
-      { num: '10+', label: 'Survey department',    desc: 'Surveyors, geologists, estimators' },
-      { num: '50+', label: 'Construction crews',   desc: 'Foremen, supervisors, signalling engineers' },
+      { num: '15+', label: 'Engineering department', desc: 'Design engineers, chief project engineers, estimators' },
+      { num: '10+', label: 'Survey department',    desc: 'Surveyors, geologists' },
+      { num: '50+', label: 'Construction crews',   desc: 'Foremen, signalling engineers, track engineers, road masters, general construction foremen' },
     ],
   },
 
@@ -234,7 +235,7 @@ const EN_CONTENT: PrintContent = {
         { label: 'ISSUING BODY', value: 'Ministry of Ecology & Natural Resources of the RK' },
         { label: 'PLACE OF ISSUE', value: 'Astana' },
         { label: 'SPECIAL TERMS', value: 'Non-transferable' },
-        { label: 'SCOPE', value: 'EIA section within engineering documentation' },
+        { label: 'SCOPE', value: 'EIA section within design documentation & sanitary protection zones (SPZ)' },
       ],
     },
   ],
@@ -315,16 +316,16 @@ const EN_CONTENT: PrintContent = {
       { num: '01', title: 'Comprehensive engineering surveys', desc: 'Geodetic, geological, environmental, hydrological and archaeological surveys to substantiate engineering decisions.' },
       { num: '02', title: 'Industrial facilities',             desc: 'Process engineering of plants, factories and industrial production complexes.' },
       { num: '03', title: 'Residential & civil buildings',     desc: 'Engineering of residential and civil buildings and structures in line with applicable codes and standards.' },
-      { num: '04', title: 'Transport infrastructure',          desc: 'Engineering of transport, communications and utility facilities, including railway and road projects.' },
-      { num: '05', title: 'Engineering systems & networks',    desc: 'Engineering documentation for utility systems: power, water and heat supply and low-current networks.' },
+      { num: '04', title: 'Transport infrastructure',          desc: 'Engineering of transport, communications and utility facilities, including road and railway infrastructure.' },
+      { num: '05', title: 'Engineering systems & networks',    desc: 'Engineering documentation for utility systems: power, water and heat supply, sewerage and low-current networks.' },
       { num: '06', title: 'Reconstruction & strengthening',    desc: 'Structural engineering for the reconstruction of buildings and structures and the strengthening of load-bearing elements.' },
     ],
     processLabel: 'PROJECT WORKFLOW STAGES',
     process: [
       { roman: 'I',  title: 'Surveys',         meta: 'Geodesy · geology · hydrology' },
-      { roman: 'II', title: 'Engineering docs', meta: 'Engineering-estimate & working docs' },
+      { roman: 'II', title: 'Engineering docs', meta: 'Engineering-estimate & working documentation' },
       { roman: 'III',title: 'State Review',    meta: 'GosExpertiza approval' },
-      { roman: 'IV', title: 'Author supervision', meta: 'Construction oversight' },
+      { roman: 'IV', title: 'Author supervision', meta: 'Construction oversight · technical supervision' },
     ],
     footerLabel: 'ENGINEERING WORKS IN THE REGISTRY',
   },
@@ -358,8 +359,8 @@ const EN_CONTENT: PrintContent = {
     processLabel: 'ON-SITE WORK STAGES',
     process: [
       { roman: 'I',  title: 'Preparation',     meta: 'Mobilization · temporary utilities' },
-      { roman: 'II', title: 'Earthworks',      meta: 'Excavation · embankment · subgrade' },
-      { roman: 'III',title: 'Superstructure',  meta: 'Track panel · surfacing · installation' },
+      { roman: 'II', title: 'Earthworks',      meta: 'Excavation · embankment · subgrade preparation' },
+      { roman: 'III',title: 'Superstructure',  meta: 'Track panel · surfacing & pavement · installation' },
       { roman: 'IV', title: 'Handover & start-up', meta: 'Commissioning · acceptance certificate' },
     ],
     footerLabel: 'CIW PROJECTS IN THE REGISTRY',

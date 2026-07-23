@@ -362,7 +362,7 @@ export default async function PrintBrochure({
             <div className={styles.aboutColTitle}><span className={styles.aboutColRule} />{c.about.industriesLabel}</div>
             <div className={styles.industryCards}>
               {c.about.industryChips.map((label, i) => (
-                <div key={label} className={styles.industryCard}>
+                <div key={i} className={styles.industryCard}>
                   <div className={styles.industryCardIcon}>{INDUSTRY_ICONS[i]}</div>
                   <div className={styles.industryCardLabel}>{label}</div>
                 </div>

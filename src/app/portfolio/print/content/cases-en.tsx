@@ -19,16 +19,18 @@ const QAZCEMENT_RAIL_CASES_EN: DesignProjectSheet[] = [
     lead: (
       <>
         Detail design of a category III-p external access railway from Kenzhaly station to the
-        cement plant site: R65 rails, four culvert structures, crossings of trunk fibre-optic and
-        hot-box-detector cables. Following State Expertise review the construction cost was
-        optimised from 2,288.7 down to 1,902.7 mln ₸. A separate project delivered the plant’s
-        external power supply — 24 MW, a 110/10 kV substation and a 110 kV overhead line.
+        cement plant site: R65 rails, culvert structures, subgrade drainage, crossings of trunk
+        fibre-optic and hot-box-detector cables. Several junction options for the external track
+        were developed, with the optimal one selected for delivery. The construction cost was
+        optimised from 2,288.7 down to 1,902.7 mln ₸. A separate
+        project delivered the plant’s external power supply — 24 MW, a 110/10 kV substation and
+        a 110 kV overhead line.
       </>
     ),
     metrics: [
       { value: '6,733', unit: 'm', label: 'Track length · category III-p' },
-      { value: '1,902.7', unit: 'mln ₸', label: 'Approved construction cost' },
-      { value: '6', unit: 'mo', label: 'Construction duration' },
+      { value: '350+', unit: 'mln ₸', label: 'Construction cost optimisation' },
+      { value: '4', unit: 'culverts', label: 'Culvert structures along the route' },
     ],
     scope: [
       'R65 track on crushed-stone ballast · earthworks and drainage',
@@ -79,22 +81,23 @@ const QAZCEMENT_RAIL_CASES_EN: DesignProjectSheet[] = [
     stage: 'Detail design 10/09-2025 · positive State Expertise conclusion No. 01-0106/26 of 01.04.2026',
     lead: (
       <>
-        Detail design of the plant’s internal railway development: receiving-departure, loading
-        and connecting tracks around the clinker store, an elevated unloading track and outdoor
-        lighting of the track layout. Construction cost recommended by State Expertise —
-        1,466.3 mln ₸.
+        Detail design of an optimal track layout on the plant site: receiving-departure, loading
+        and connecting tracks around the clinker store, an elevated track for unloading inert
+        materials, dynamic and static wagon scales, and lighting of the railway tracks.
+        The track layout was optimised against the customer’s initial proposal.
       </>
     ),
     metrics: [
       { value: '3,119', unit: 'm', label: 'Access and on-site tracks' },
-      { value: '1,466.3', unit: 'mln ₸', label: 'Approved construction cost' },
-      { value: '6', unit: 'mo', label: 'Construction duration' },
+      { value: 'R65', label: 'Heavy-type rails · 1/9 turnouts' },
+      { value: '2', unit: 'types', label: 'Wagon scales · dynamic and static' },
     ],
     scope: [
+      'Track layout optimised against the customer’s initial proposal',
       'R65 tracks · R65 1/9 turnouts',
-      'Elevated unloading track (reinforced concrete)',
-      'Outdoor lighting of the track development',
-      '5.8 m subgrade · crushed-stone ballast',
+      'Elevated track for unloading inert materials (reinforced concrete)',
+      'Dynamic and static wagon scales',
+      'Railway track lighting · subgrade works',
     ],
     drawing: '/portfolio/design/drawing-qc-internal.png',
     drawingCaption: 'Plant railway plan, 1:1000 · schedules of tracks, buildings and turnouts',
@@ -117,21 +120,23 @@ const QAZCEMENT_RAIL_CASES_EN: DesignProjectSheet[] = [
     stage: 'Detail design 1-30/06-2025 · positive State Expertise conclusion No. 01-1040/26 of 29.05.2026',
     lead: (
       <>
-        Extension of Kenzhaly station tracks to receive the cement plant’s trains: category IV
-        track on concrete sleepers with 10/0.4 kV power supply. The station was converted to
-        VOL-M electric interlocking — 10 turnouts and 14 signals brought into centralised and
-        dispatcher control. Approved cost — 1,729.5 mln ₸, including 570.8 mln of equipment.
+        Development of Kenzhaly station to receive the cement plant’s trains with optimised
+        costs: the track layout is designed for convenient shunting and day-to-day operation,
+        category IV track on concrete sleepers. The existing interlocking was replaced with an
+        upgraded UECM-type system: a new modular interlocking post with a backup power source
+        and category I reliability power supply, plus additional station lighting.
       </>
     ),
     metrics: [
       { value: '1,434', unit: 'm', label: 'Station tracks · category IV' },
-      { value: '1,729.5', unit: 'mln ₸', label: 'Approved construction cost' },
-      { value: '5', unit: 'mo', label: 'Construction duration' },
+      { value: '10', unit: 'turnouts', label: 'In UECM interlocking · 14 signals' },
+      { value: 'I', unit: 'category', label: 'Interlocking post power supply reliability' },
     ],
     scope: [
       'R65 track on concrete sleepers · crushed stone / gravel',
-      'VOL-M interlocking · 10 turnouts, 14 signals, 18 track circuits',
-      'Power supply: 10 kV, 0.4 kV, 10/0.4 package substation · communications',
+      'UECM-type interlocking · 10 turnouts, 14 signals, 18 track circuits',
+      'Modular interlocking post · backup power source',
+      'Category I power supply: 10/0.4 package substation · station lighting',
       'General plan · approved by all KTZ railway services',
     ],
     drawing: '/portfolio/design/drawing-qc-station.png',
@@ -156,11 +161,12 @@ const ASTEKLO_INFRA_CASES_EN: DesignProjectSheet[] = [
     stage: 'Detail designs · expertise conclusions 2025: rail 01-0505/25 · road ES-0194/25 · gas 04-0267/25 · sewerage ES-0193/25',
     lead: (
       <>
-        The full external infrastructure of the new Aktobe Steklo glass container plant: off-site
-        power supply — a 110/10 kV step-down substation and a double-circuit 110 kV line from the
-        Gorodskaya substation, an external railway access track joining the KTZ network at the
-        Alzhan siding, an access road, a high- and medium-pressure gas pipeline and external
-        sewerage networks. Every part received a positive expertise conclusion (2025).
+        The full external infrastructure of the new Aktobe Steklo glass container plant: a
+        110/10 kV step-down substation and a double-circuit 110 kV line from the Gorodskaya
+        substation, a railway access track joining the KTZ network at the Alzhan siding, an
+        access road, a supply gas pipeline, external sewerage networks and the relocation of
+        existing utilities at railway crossings. Several development options for the Alzhan
+        siding were designed, with the optimal track layout and construction cost selected.
       </>
     ),
     metrics: [
@@ -170,9 +176,11 @@ const ASTEKLO_INFRA_CASES_EN: DesignProjectSheet[] = [
     ],
     scope: [
       '110/10 kV substation and double-circuit 110 kV line from Gorodskaya',
-      'Category V railway track (1,442 m) and category IV access road (1,156 m)',
-      'High- and medium-pressure gas pipeline · 1,419 m, PE 100',
-      'External sewerage networks · 1,755 m · with a railway crossing',
+      'Category III-p railway track (1,442 m) · category IV access road (1,156 m)',
+      'Alzhan siding track development · shunting-neck track within the KTZ land plot',
+      'Modular siding technician-mechanic building · interlocking equipment replacement',
+      'HP & MP supply gas pipeline · 1,419 m, PE 100',
+      'Sewerage 1,755 m · crossing under the mainline tracks · drainage structures',
     ],
     drawing: '/portfolio/design/drawing-asteklo-power.png',
     drawingCaption: 'Power network plan, 1:1000 · double-circuit 110 kV line from the Gorodskaya substation',
@@ -193,7 +201,7 @@ const ASTEKLO_INFRA_CASES_EN: DesignProjectSheet[] = [
         },
         {
           drawing: '/portfolio/design/drawing-sewage.png',
-          caption: 'External pressure sewerage plan, 1:1000 · 1,755 m, railway crossing',
+          caption: 'External pressure sewerage plan, 1:1000 · 1,755 m, crossing under the mainline tracks',
           kind: 'Sewerage · No. ES-0193/25 · detail design',
         },
         {
@@ -221,7 +229,8 @@ const URAL_STEEL_CASES_EN: DesignProjectSheet[] = [
         Integrated design of the new wheel-rolling complex station: demolition of the existing
         Marten station and its relay-based interlocking, construction of the Kolesoprokatnaya
         station with conversion to computer-based interlocking (CBI) covering 68 turnouts of the
-        1/7 type, and turnout air-blowing. The same project delivered the station utilities —
+        1/7 type, turnout air-blowing and a combined two-storey modular interlocking post.
+        The same project delivered the station utilities —
         0.4 kV power, outdoor lighting (61 masts, 2,217 m of cable), water supply and drainage.
       </>
     ),
@@ -231,9 +240,11 @@ const URAL_STEEL_CASES_EN: DesignProjectSheet[] = [
       { value: '0.4', unit: 'kV', label: 'Station power networks and outdoor lighting' },
     ],
     scope: [
-      'Marten station demolition · Kolesoprokatnaya station construction',
+      'Demolition of Marten station and its relay interlocking · Kolesoprokatnaya station construction',
       'Computer-based interlocking · 68 turnouts of the 1/7 type',
-      'Two-storey combined interlocking post · category I power supply',
+      'Combined interlocking post · two-storey modular design · category I power supply',
+      'Interlocking post: CCTV, fire safety and staff welfare facilities',
+      'Turnout air-blowing system',
       '0.4 kV networks, outdoor lighting, water supply and drainage',
     ],
     drawing: '/portfolio/design/drawing-ural-station.png',
@@ -331,21 +342,24 @@ const HORGOS_CASES_EN: DesignProjectSheet[] = [
       <>
         Detail design for ten sorting railway tracks and an uncoupled wagon repair base at the
         Khorgos — Eastern Gates dry port, the largest dry port on the Kazakh-Chinese border.
-        Category II-p tracks on R65S rails with 1/9 turnouts, single-layer crushed-stone ballast
-        reinforced with Tensar geogrid. Designed to the technical conditions of the KTZ national
-        railway.
+        Category II-p tracks on R65S rails with 1/9 turnouts — 7,981 m of track development.
+        The project also covers an unloading ramp for self-propelled machinery, the relocation
+        of crossed utilities and 10/0.4 kV networks, and a yard public-address system. Designed
+        to the technical conditions of the KTZ national railway.
       </>
     ),
     metrics: [
       { value: '10', unit: 'tracks', label: 'Sorting railway tracks' },
       { value: 'WRB', unit: '', label: 'Uncoupled wagon repair base' },
-      { value: '9', unit: 'mo', label: 'Construction · category II-p, R65S rails' },
+      { value: '8', unit: 'km', label: 'Track development · 7,981 m in total' },
     ],
     scope: [
-      'Ten sorting railway tracks within the dry port',
-      'Wagon repair base with a working area and loading ramp',
-      'R65S rails, R65 1/9 turnouts, category II-p',
-      'Single-layer crushed-stone ballast reinforced with Tensar geogrid',
+      'Ten sorting tracks · R65S rails, R65 1/9 turnouts, category II-p',
+      'Repair base: 296 m track, unloading ramp, modular staff building and spare-parts warehouse',
+      'Protection of water, sewerage and storm mains: steel casings Ø426–1,020 mm',
+      '10/0.4 kV networks in concrete troughs · 23 m lighting masts · base power supply',
+      'Crushed-stone ballast with Tensar geogrid',
+      'On-site water supply and drainage networks · yard public-address system',
     ],
     drawing: '/portfolio/design/drawing-horgos-rail-1.png',
     drawingCaption: 'Track development plan, 1:1000 · turnout throats and sorting tracks',
@@ -354,6 +368,28 @@ const HORGOS_CASES_EN: DesignProjectSheet[] = [
       drawing: '/portfolio/design/drawing-horgos-rail-2.png',
       caption: 'Track development plan, continued · sorting tracks and buffer stops',
       kind: 'Railway track · 16/08-2021',
+    },
+    annex: {
+      eyebrow: '06 · KHORGOS DRY PORT · REPAIR BASE',
+      title: 'Uncoupled wagon repair base',
+      figures: [
+        {
+          drawing: '/portfolio/design/drawing-horgos-tor-site.png',
+          caption: 'Repair base site plan, 80×30 m · 5 t gantry crane with a 16 m span, crane runways, wheelset storage tracks · 21 types of monolithic foundations',
+          kind: 'Repair base site · 16/08-2021-2-AS',
+        },
+        {
+          drawing: '/portfolio/design/drawing-horgos-apparel.png',
+          caption: 'Unloading ramp for self-propelled machinery, 32.2 m long · FBS block layout, details and specification, monolithic slab with channel edging',
+          kind: 'Ramp · 16/08-2021-1-AS',
+        },
+        {
+          drawing: '/portfolio/design/drawing-horgos-04kv.png',
+          caption: '0.4 kV and outdoor lighting relocation plan, 1:1000 · cable lines in concrete troughs, 23 m lighting mast relocation',
+          kind: 'Power supply · 16/08-2021-0-ES',
+          side: true,
+        },
+      ],
     },
   },
 ];
@@ -365,26 +401,26 @@ const AMK_CASES_EN: DesignProjectSheet[] = [
     category: 'AKTOBE COPPER COMPANY · RUDNAYA STATION',
     title: 'Wagon stabling tracks and Rudnaya station reconstruction (AMK)',
     client: 'Aktobe Copper Company LLP · Kyzyl-Kain — Rudnaya section',
-    location: 'Koktau village, Khromtau district, Aktobe region · junction at Kimpersai station',
+    location: 'Koktau village, Khromtau district, Aktobe region · junction at Kempirsai station',
     stage: 'Detail design · general track development plan, 1:2000 · ref. 5-1',
     lead: (
       <>
         Detail design of railway stabling tracks on the connecting section between the Kyzyl-Kain
         industrial station and Rudnaya station, with on-site reconstruction of the Rudnaya station
-        tracks of the Aktobe Copper Company. The junction connects to Kimpersai station of the
+        tracks of the Aktobe Copper Company. The junction connects to Kempirsai station of the
         national network.
       </>
     ),
     metrics: [
       { value: '8.9', unit: 'km', label: 'Track development · new tracks and reconstruction' },
       { value: '9', unit: 'turnouts', label: 'R65 turnouts, 1/9 type' },
-      { value: '2', unit: 'stations', label: 'Kyzyl-Kain and Rudnaya · Kimpersai junction' },
+      { value: '2', unit: 'stations', label: 'Kyzyl-Kain and Rudnaya · Kempirsai junction' },
     ],
     scope: [
       'New access, connecting and elevated tracks · 4.2 km, R65',
       'Wagon stabling tracks and connecting-track rebuild · 4.8 km',
       'On-site reconstruction of Rudnaya station tracks',
-      'Nine R65 1/9 turnouts · junction at Kimpersai station',
+      'Nine R65 1/9 turnouts · junction at Kempirsai station',
     ],
     drawing: '/portfolio/design/drawing-amk-rail-2.png',
     drawingCaption: 'General track development plan, 1:2000 · stabling tracks, elevated tracks, track and turnout schedules',
@@ -401,37 +437,38 @@ const NSS_CASES_EN: DesignProjectSheet[] = [
   {
     index: '08',
     status: 'DELIVERED',
-    category: 'NEFTESTROYSERVICE GAS PIPELINE · NSS',
-    title: 'High-pressure gas pipeline for NefteStroyService LLP',
-    client: 'NefteStroyService LTD LLP (NSS)',
-    location: 'Aktobe region',
-    stage: 'Detail design · gas pipeline plan and longitudinal profile',
+    category: 'NEFTESTROYSERVIS ACCESS TRACK · TENDYK STATION',
+    title: 'Access track with an elevated unloading track for Neftestroyservis LTD',
+    client: 'Neftestroyservis LTD LLP (NSS) · junction at Tendyk station, KTZ',
+    location: 'Atyrau region, Atyrau city, Novokirpichny aul · KTZ Atyrau mainline division',
+    stage: 'Detail design · refs 13/04-2022-PZh and 13/04-2022-KZh · May 2022',
     lead: (
       <>
-        Design of a high-pressure gas pipeline for NefteStroyService: a Ø108 steel and
-        polyethylene pipeline for a working pressure of 3.8 MPa with a cabinet-type gas control
-        unit and a Ø63/57 low-pressure distribution pipeline at 0.2 MPa. The route crosses a
-        railway track and overhead power lines.
+        Detail design of the access track for Neftestroyservis LTD at Tendyk station of the
+        KTZ Atyrau division: a 181 m unloading track on R65S rails tied in 40 m from the
+        existing turnout, and a 2.2 m elevated track of FBS blocks on a monolithic slab.
+        The site lies at −22.13 m; groundwater with 27 g/l mineralisation is aggressive to
+        concrete and steel, so W8 concrete and bituminous protection are used.
       </>
     ),
     metrics: [
-      { value: 'Ø108', unit: 'mm', label: 'High-pressure pipeline · steel + PE' },
-      { value: '3.8', unit: 'MPa', label: 'Working pressure' },
-      { value: 'GCU', unit: '', label: 'Gas control unit · outlet at 0.2 MPa' },
+      { value: '181', unit: 'm', label: 'Unloading track · R65S rails' },
+      { value: '2.2', unit: 'm', label: 'Elevated track height · FBS blocks' },
+      { value: 'W8', unit: '', label: 'Concrete grade for aggressive groundwater' },
     ],
     scope: [
-      'High-pressure Ø108 pipeline (steel + polyethylene), 3.8 MPa',
-      'Cabinet-type gas control unit · reduction to 0.2 MPa',
-      'Ø63/57 low-pressure distribution pipeline (0.2 MPa)',
-      'Railway and overhead power line crossings',
+      '181 m unloading track · R65S · R65 1/9 turnout and derailer',
+      '2.2 m elevated track: FBS blocks on a monolithic slab · C16/20 W8 F200 concrete',
+      '6 m wide concreted unloading apron',
+      'Tie-in among live gas and power lines',
     ],
-    drawing: '/portfolio/design/drawing-nss-gas-plan.png',
-    drawingCaption: 'Gas pipeline plan · route, control unit, tie-in points and crossings',
-    drawingKind: 'Gas supply · pipeline plan',
+    drawing: '/portfolio/design/drawing-nss-rail-plan.png',
+    drawingCaption: 'Railway track plan, 1:1000 · track and turnout schedules, tie-in to the Tendyk station throat',
+    drawingKind: 'Railway track · 13/04-2022',
     extraDrawing: {
-      drawing: '/portfolio/design/drawing-nss-gas-profile.png',
-      caption: 'Longitudinal pipeline profile with design elevations and burial depth',
-      kind: 'Gas supply · longitudinal profile',
+      drawing: '/portfolio/design/drawing-nss-elevated-track.png',
+      caption: 'Elevated track block layout, sections and specification · FBS blocks, monolithic slabs Pm1–Pm3',
+      kind: 'Elevated track · 13/04-2022',
     },
   },
 ];
@@ -440,37 +477,38 @@ const SINTEZ_CASES_EN: DesignProjectSheet[] = [
   {
     index: '09',
     status: 'DELIVERED',
-    category: 'SINTEZ URAL ACCESS TRACKS · URALSK',
-    title: 'Power supply and lighting of the Sintez Ural access tracks',
+    category: 'SINTEZ URAL ACCESS TRACK · KARDON STATION',
+    title: 'Access track to the Sintez Ural blending plant',
     client: 'Sintez Ural LLP · 20,000 t/year blending plant',
     location: 'West Kazakhstan region, Uralsk, Kardon · Kardon station',
-    stage: 'Detail design · 0.4 kV power supply and outdoor lighting of the access tracks',
+    stage: 'Detail design · refs 03/08-2023 (track, culverts, power, winch) · October 2023',
     lead: (
       <>
-        Design of the 0.4 kV power supply and outdoor lighting for the access railway tracks,
-        dead-end and turnouts of Sintez Ural LLP. 380/220 V supply of the tracks and winch from
-        the power unit’s 0.4 kV switchgear, outdoor lighting with LED floodlights on SV-95
-        concrete masts, VBbShv-1 cable networks in trenches with mast earthing.
+        Integrated detail design of the access railway to the new blending plant: 0.8 km of
+        track on concrete sleepers — R65(S) rails with Vossloh fastenings, a Ø1.0 m culvert
+        under the existing road, a level crossing and a shunting winch. The project also
+        delivered the 0.4 kV power supply with outdoor track lighting; the crossed gas main,
+        water main and 10 kV cable were cased and inspected.
       </>
     ),
     metrics: [
-      { value: '0.4', unit: 'kV', label: 'Track and winch power supply · 380/220 V' },
-      { value: '150', unit: 'W', label: 'LED floodlights · SV-95 masts' },
-      { value: 'III', unit: 'cat.', label: 'Power supply reliability category' },
+      { value: '0.8', unit: 'km', label: 'Track development · R65(S), concrete sleepers' },
+      { value: 'Ø1.0', unit: 'm', label: 'Culvert under the existing road' },
+      { value: '3', unit: 'utilities', label: 'Cased at crossings: gas, water, 10 kV' },
     ],
     scope: [
-      '0.4 kV (380/220 V) supply of tracks, dead-end, turnouts and winch',
-      'Feed from the power unit’s 0.4 kV switchgear · control cabinets',
-      'Outdoor lighting: 150 W LED floodlights on SV-95 masts',
-      'VBbShv-1 cables in trenches · lighting mast earthing',
+      '0.8 km track development · concrete sleepers · R65(S) with Vossloh fastenings',
+      'Ø1.0 m culvert under the existing road · level crossing',
+      'Protection and inspection of utilities: gas main, water main, 10 kV cable',
+      '0.4 kV power supply and outdoor lighting · shunting winch',
     ],
     drawing: '/portfolio/design/drawing-sintez-plan.png',
-    drawingCaption: 'Access track power and lighting plan · cable routes, masts, crossings',
-    drawingKind: '0.4 kV power supply · plan',
+    drawingCaption: 'Access track plan with 0.4 kV power and lighting, 1:1000 · casings at crossings, schedule of structures',
+    drawingKind: 'Power supply and lighting · 03/08-2023',
     extraDrawing: {
-      drawing: '/portfolio/design/drawing-sintez-lighting.png',
-      caption: 'Track outdoor lighting plan · SV-95 masts, LED floodlights',
-      kind: 'Outdoor lighting · plan',
+      drawing: '/portfolio/design/drawing-sintez-culvert.png',
+      caption: 'Ø1.0 m reinforced-concrete culvert — section along the road axis · ZKP links, W10 monolithic concrete',
+      kind: 'Culvert structures · 03/08-2023',
     },
   },
 ];
@@ -479,38 +517,39 @@ const MIDAS_CASES_EN: DesignProjectSheet[] = [
   {
     index: '12',
     status: 'DELIVERED',
-    category: 'SINEMIDASSTROY LLP · ATYRAU REGION',
-    title: '10 kV switchgear for SineMidasStroy LLP',
-    client: 'SineMidasStroy LLP',
-    location: 'Atyrau region · railway line (Ganyushkino · Akkistau · Zaburunye)',
-    stage: 'Detail design · 10 kV switchgear plan · ref. 03-22',
+    category: 'SINE MIDAS STROY ACCESS TRACK · ISATAY STATION',
+    title: 'Access track with an elevated track for Sine Midas Stroy JV',
+    client: 'Sine Midas Stroy JV LLP · junction at Isatay station, KTZ',
+    location: 'Atyrau region, Isatay village · KTZ Atyrau mainline division',
+    stage: 'Detail design · refs 01/03-2022 (track, elevated track, power, communications) · KTZ TC No. 1009-I',
     lead: (
       <>
-        Design of a 10 kV distribution switchgear at a railway station: nine bays (including
-        reserves) feeding the automatic block signalling and the power supply points of
-        Ganyushkino and Akkistau, plus the Zaburunye feeder. The scope covers 10 kV overhead
-        lines, package cabinets and distribution boards arranged by the station building,
-        communications house and depot.
+        Detail design of the access track for the Sine Midas Stroy joint venture at Isatay
+        station of the KTZ Atyrau division: a 0.5 km unloading track on R65S rails with an
+        elevated track for unloading inert materials, and the extension of station tracks
+        No. 10 and No. 11 by a combined 0.3 km. The project also covers 0.4 kV power networks
+        with lighting, communications and signalling, and protection of the existing
+        communication line crossed by the track.
       </>
     ),
     metrics: [
-      { value: '10', unit: 'kV', label: 'Distribution switchgear' },
-      { value: '9', unit: 'bays', label: '10 kV bays · feeders and reserve' },
-      { value: 'ABS', unit: '', label: 'Feeds block signalling and line supply points' },
+      { value: '0.5', unit: 'km', label: 'Unloading track · R65S, 1/9 turnouts' },
+      { value: '0.3', unit: 'km', label: 'Extension of station tracks No. 10 and 11' },
+      { value: '0.4', unit: 'kV', label: 'Outdoor power and lighting networks' },
     ],
     scope: [
-      '10 kV switchgear with nine bays (feeders and reserve) · cabinets and boards',
-      'Supply of the Ganyushkino and Akkistau automatic block signalling',
-      'Supply of the Ganyushkino and Akkistau line power points',
-      '10 kV overhead lines (6 and 3 wires) · Zaburunye feeder',
+      '440 m unloading track · R65S · R65 1/9 turnout and derailer',
+      'Elevated track for unloading inert materials',
+      'Extension of station tracks No. 10 and 11 · dismantling of old R50/R43 tracks',
+      '0.4 kV power and lighting networks · protection of the existing communication line',
     ],
     drawing: '/portfolio/design/drawing-midas-plan-1.png',
-    drawingCaption: '10 kV switchgear plan · bays, block-signalling and power-point feeders',
-    drawingKind: 'Power supply · 10 kV switchgear · 03-22',
+    drawingCaption: 'Railway track plan, 1:1000 · unloading track with an elevated track for inert materials',
+    drawingKind: 'Railway track · 01/03-2022',
     extraDrawing: {
       drawing: '/portfolio/design/drawing-midas-plan-2.png',
-      caption: 'Plan, continued · 10 kV overhead lines, package cabinets, layout by the station and depot',
-      kind: 'Power supply · 10 kV switchgear · 03-22',
+      caption: 'Plan, continued · Isatay station throat, extension of station tracks No. 10 and 11',
+      kind: 'Railway track · 01/03-2022',
     },
   },
 ];
@@ -519,33 +558,34 @@ const ARBZ_CASES_EN: DesignProjectSheet[] = [
   {
     index: '13',
     status: 'DELIVERED',
-    category: 'ARBZ LLP INDUSTRIAL SITE',
-    title: 'External water supply and sewerage networks for ARBZ LLP',
-    client: 'ARBZ LLP · industrial site',
-    location: 'Aktobe region',
-    stage: 'Detail design · external water supply and sewerage network plan',
+    category: 'ARBZ RAIL-AND-BEAM MILL · AKTOBE',
+    title: 'Track into the rail mill’s cold finished-product warehouse',
+    client: 'ARBZ LLP · Aktobe rail-and-beam mill',
+    location: 'Aktobe city · ARBZ plant site',
+    stage: 'Detail design · ref. 4-05/22 · October 2022',
     lead: (
       <>
-        Design of the external water supply, sewerage and fire-fighting networks of the ARBZ
-        industrial site. The solution includes Ø400/450 steel pressure mains and a Ø110
-        polyethylene water line with manholes, outdoor fire hydrants, an industrial effluent
-        treatment facility and concrete drainage channels — tied to the plant’s general layout.
+        Detail design extending the plant’s existing track No. 6 into a new cold warehouse for
+        finished products — rails from 25 to 120 m long, with a storage capacity of 30–35
+        thousand tonnes. The 269 m R65 track runs through the warehouse gates: an in-building
+        rail way on a foundation slab, a combined span with concrete sleepers at the
+        slab-to-subgrade transition, and anti-creep anchoring.
       </>
     ),
     metrics: [
-      { value: 'Ø450', unit: 'mm', label: 'Steel pressure mains of the external networks' },
-      { value: 'PE 110', unit: '', label: 'Polyethylene water line · fire hydrants' },
-      { value: 'ETF', unit: '', label: 'Effluent treatment · plant drainage' },
+      { value: '269', unit: 'm', label: 'Extension of track No. 6 · R65 rails' },
+      { value: '25–120', unit: 'm', label: 'Finished rails stored in the warehouse' },
+      { value: '30–35', unit: 'k t', label: 'Cold warehouse capacity' },
     ],
     scope: [
-      'Ø400/450 steel pressure mains · water manholes',
-      'Ø110 polyethylene water line · connection points',
-      'Outdoor fire-fighting hydrants',
-      'Effluent treatment facility · concrete drainage channels',
+      'Extension of existing track No. 6 · 269 m, R65 rails, timber sleepers',
+      'Track led into the warehouse through the gates · rail way on a foundation slab',
+      'Combined span with concrete sleepers at the slab-to-subgrade transition',
+      'Anti-creep anchoring · buffer stop · drainage into concrete troughs',
     ],
     drawing: '/portfolio/design/drawing-arbz-plan.png',
-    drawingCaption: 'External water and sewerage network plan · mains, manholes, hydrants, treatment facility',
-    drawingKind: 'External networks · plan',
+    drawingCaption: 'Railway track plan, 1:1000 · track led into the cold warehouse, anti-creep anchoring schemes',
+    drawingKind: 'Railway track · 4-05/22',
   },
 ];
 

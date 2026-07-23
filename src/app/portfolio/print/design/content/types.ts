@@ -20,6 +20,7 @@ export type AnnexFigure = {
   caption: string;    // caption strip under the frame
   kind: string;       // small tag, e.g. «Наружный газопровод · лист 2»
   band?: boolean;     // ultra-wide strip sheet — rendered as a short full-width band
+  side?: boolean;     // narrow sheet — drawing left, caption column to its right
 };
 
 export type DesignProjectSheet = {

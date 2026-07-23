@@ -39,20 +39,21 @@ const COPY: Record<'ru' | 'en', PztmCopy> = {
       <>
         Строительно-монтажные работы по железнодорожной инфраструктуре
         рельсосварочного предприятия ТОО «ПЗТМ LTD» на станции Кызгалдакты в городе Актобе:
-        расширение подъездных путей, примыкание соединительного пути, искусственные сооружения
+        строительство железнодорожных путей, примыкание соединительного пути, искусственные сооружения
         и переустройство инженерных сетей связи и электроснабжения в зоне строительства.
       </>
     ),
     metrics: [
-      { value: '9,504', unit: 'км', label: 'Расширение подъездных железнодорожных путей' },
+      { value: '9,504', unit: 'км', label: 'Строительство железнодорожных путей' },
       { value: '0,527', unit: 'км', label: 'Примыкание соединительного пути к ст. Кызгалдакты' },
-      { value: '78,2', unit: 'млн ₸', label: 'Переустройство инженерных сетей' },
+      { value: '8,3', unit: 'км', label: 'Переустройство инженерных сетей' },
     ],
     worksLabel: 'ВЫПОЛНЕННЫЕ РАБОТЫ',
     works: [
-      'Расширение подъездных железнодорожных путей — 9,504 км',
+      'Строительство железнодорожных путей — 9,504 км',
       'Примыкание соединительного пути к станционному пути ст. Кызгалдакты — 0,527 км',
       'Устройство двух ж/б водопропускных труб Ø1,0 м длиной по 20 м (ПК 3+03 и ПК 3+35)',
+      'Устройство водоотвода от земляного полотна',
       'Реконструкция устройств электрической централизации (ЭЦ)',
       'Вынос кабельных линий СЦБ из зоны строительства',
       'Монтаж освещения стрелочных переводов №24 и №26 · электромонтаж',
@@ -66,12 +67,12 @@ const COPY: Record<'ru' | 'en', PztmCopy> = {
     eyebrow2: '01 · ПЗТМ LTD · СТРОИТЕЛЬНАЯ ПЛОЩАДКА',
     title2: 'Строительно-монтажные работы на площадке',
     portLabel: 'СЕТИ И ЭЛЕКТРОСНАБЖЕНИЕ',
-    netTitle: 'ПЕРЕУСТРОЙСТВО ИНЖЕНЕРНЫХ СЕТЕЙ · 78,2 МЛН ₸',
+    netTitle: 'ПЕРЕУСТРОЙСТВО ИНЖЕНЕРНЫХ СЕТЕЙ · 8,3 КМ',
     networks: [
-      { value: '1 612 м', label: 'Дальсвязь · оптокабель в ПЭ трубе (9,8 млн ₸)' },
-      { value: '1 738 м', label: 'ШЧ · сигнально-блокировочный кабель (16,8 млн ₸)' },
-      { value: 'ГНБ', label: 'Транстелеком · оптокабель, ж/б плиты (31,8 млн ₸)' },
-      { value: '4 925 м', label: 'ЭЧ · ВЛ-10 кВ, 28 опор, провод АС-50 (19,8 млн ₸)' },
+      { value: '1 612 м', label: 'Дальсвязь · оптокабель в ПЭ трубе' },
+      { value: '1 738 м', label: 'ШЧ · сигнально-блокировочный кабель' },
+      { value: 'ГНБ', label: 'Транстелеком · оптокабель, ж/б плиты' },
+      { value: '4 925 м', label: 'ЭЧ · ВЛ-10 кВ, 28 опор, провод АС-50' },
     ],
   },
   en: {
@@ -83,21 +84,22 @@ const COPY: Record<'ru' | 'en', PztmCopy> = {
     lead: (
       <>
         Construction and installation works on the railway infrastructure of the PZTM LTD rail
-        welding plant at Kyzgaldakty station in Aktobe: extension of the access tracks, a
+        welding plant at Kyzgaldakty station in Aktobe: construction of railway tracks, a
         connecting-track junction, culvert structures, and the relocation of communication and
         power networks within the construction zone.
       </>
     ),
     metrics: [
-      { value: '9.504', unit: 'km', label: 'Extension of the access railway tracks' },
+      { value: '9.504', unit: 'km', label: 'Construction of railway tracks' },
       { value: '0.527', unit: 'km', label: 'Connecting-track junction at Kyzgaldakty station' },
-      { value: '78.2', unit: 'mln ₸', label: 'Utility network relocations' },
+      { value: '8.3', unit: 'km', label: 'Utility network relocations' },
     ],
     worksLabel: 'COMPLETED WORKS',
     works: [
-      'Extension of the access railway tracks — 9.504 km',
+      'Construction of railway tracks — 9.504 km',
       'Junction of the connecting track to the Kyzgaldakty station track — 0.527 km',
       'Two Ø1.0 m reinforced-concrete culverts, 20 m each (stations 3+03 and 3+35)',
+      'Subgrade drainage works',
       'Reconstruction of the electric interlocking equipment',
       'Relocation of signalling cable lines out of the construction zone',
       'Lighting of turnouts No. 24 and No. 26 · electrical installation',
@@ -111,12 +113,12 @@ const COPY: Record<'ru' | 'en', PztmCopy> = {
     eyebrow2: '01 · PZTM LTD · CONSTRUCTION SITE',
     title2: 'Construction works on site',
     portLabel: 'NETWORKS AND POWER SUPPLY',
-    netTitle: 'UTILITY NETWORK RELOCATIONS · 78.2 MLN ₸',
+    netTitle: 'UTILITY NETWORK RELOCATIONS · 8.3 KM',
     networks: [
-      { value: '1,612 m', label: 'Dalsvyaz · fibre cable in PE duct (9.8 mln ₸)' },
-      { value: '1,738 m', label: 'Signalling division · signal cable (16.8 mln ₸)' },
-      { value: 'HDD', label: 'Transtelecom · fibre cable, concrete slabs (31.8 mln ₸)' },
-      { value: '4,925 m', label: 'Power division · 10 kV line, 28 poles, AC-50 wire (19.8 mln ₸)' },
+      { value: '1,612 m', label: 'Dalsvyaz · fibre cable in PE duct' },
+      { value: '1,738 m', label: 'Signalling division · signal cable' },
+      { value: 'HDD', label: 'Transtelecom · fibre cable, concrete slabs' },
+      { value: '4,925 m', label: 'Power division · 10 kV line, 28 poles, AC-50 wire' },
     ],
   },
 };

@@ -87,7 +87,7 @@ export interface PrintContent {
     statRegionsLabel: string;
     lead: ReactNode;
     industriesLabel: string;
-    industryChips: string[];
+    industryChips: ReactNode[];
     missionLabel: string;
     mission: ReactNode;
     approachLabel: string;

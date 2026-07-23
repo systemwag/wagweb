@@ -375,6 +375,22 @@
 .annexFigBand { flex: 0 0 auto; }
 .annexFigBand .annexFigFrame { flex: 0 0 auto; }
 .annexFigBand .annexFigFrame img { max-height: 42mm; }
+/* Narrow sheet in a wide slot: drawing left, caption column right —
+   avoids letterboxing a portrait-ish drawing in a full-width frame. */
+.annexFigSide { flex-direction: row; align-items: stretch; gap: 5mm; }
+.annexFigSide .annexFigFrame { flex: 0 0 60%; }
+.annexFigSide .figCap {
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 3mm;
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+  border-left: 0.2mm solid var(--line-cream);
+  padding-left: 5mm;
+}
 
 /* Second drawing band on a project sheet (e.g. план освещения) — the hero
    above it gets compacted so both fit alongside metrics + scope. The

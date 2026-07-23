@@ -132,7 +132,7 @@ export function CaseAnnexPage({
         <h2 className={d.sheetTitle}>{annex.title}</h2>
         <div className={d.annexFigs}>
           {annex.figures.map((f) => (
-            <div key={f.drawing} className={`${d.annexFig} ${f.band ? d.annexFigBand : ''}`}>
+            <div key={f.drawing} className={`${d.annexFig} ${f.band ? d.annexFigBand : ''} ${f.side ? d.annexFigSide : ''}`}>
               <div className={`${styles.licScanFrame} ${d.annexFigFrame}`}>
                 <img src={f.drawing} alt={f.caption} className={styles.licScanImg} />
               </div>
