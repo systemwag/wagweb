@@ -1,0 +1,686 @@
+/* ============================================================
+   GeoMap — карта географии работ (СМР · содержание · ПД)
+   ============================================================ */
+
+.root {
+  --c-build:       var(--gold);
+  --c-maintenance: var(--teal);
+  --c-design:      var(--blue);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* ── Панель фильтров ───────────────────────────────────────── */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.chips { display: flex; flex-wrap: wrap; gap: var(--space-sm); }
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px 9px 13px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-full);
+  background: var(--glass-bg);
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: color var(--t-base), border-color var(--t-base), background var(--t-base);
+}
+.chip:hover { background: var(--glass-bg-hover); color: var(--text-primary); }
+
+.chip[data-on='true'] { color: var(--text-primary); border-color: var(--chip-color); }
+.chip[data-on='true'] .chipDot { background: var(--chip-color); box-shadow: 0 0 10px var(--chip-color); }
+.chip[data-on='false'] { opacity: 0.45; }
+
+.chip[data-kind='build']       { --chip-color: var(--c-build); }
+.chip[data-kind='maintenance'] { --chip-color: var(--c-maintenance); }
+.chip[data-kind='design']      { --chip-color: var(--c-design); }
+
+.chipDot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: background var(--t-base), box-shadow var(--t-base);
+}
+
+.chipCount {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  padding-left: 9px;
+  margin-left: 2px;
+  border-left: 1px solid var(--glass-border);
+}
+.chip[data-on='true'] .chipCount { color: var(--chip-color); }
+
+.toolbarMeta {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.toolbarMeta strong { color: var(--text-secondary); font-weight: 500; }
+
+/* ── Карта ─────────────────────────────────────────────────── */
+.mapWrap {
+  position: relative;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(212, 168, 67, 0.05), transparent 60%),
+    var(--bg-secondary);
+  overflow: hidden;
+}
+
+.svg { display: block; width: 100%; height: auto; }
+
+/* Соседние регионы — фон, чтобы Новотроицк не висел в пустоте */
+.neighbors path {
+  fill: rgba(255, 255, 255, 0.022);
+  stroke: rgba(255, 255, 255, 0.075);
+  stroke-width: 1;
+}
+
+/* ── Контур страны ─────────────────────────────────────────── */
+.outline {
+  fill: none;
+  stroke: rgba(212, 168, 67, 0.5);
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+  pointer-events: none;
+  opacity: 0;
+}
+.outlineGlow {
+  fill: none;
+  stroke: rgba(212, 168, 67, 0.12);
+  stroke-width: 7;
+  stroke-linejoin: round;
+  pointer-events: none;
+  opacity: 0;
+}
+.root[data-ready='true'] .outline,
+.root[data-ready='true'] .outlineGlow {
+  animation: outlineIn 1.1s var(--ease-draw) 0.35s forwards;
+}
+@keyframes outlineIn { to { opacity: 1; } }
+
+/* ── Подписи областей ──────────────────────────────────────── */
+/* Белёсый с тёмным ореолом: одинаково читается и на золотой заливке
+   Актюбинской, и на почти чёрной Абайской. */
+.regionLabel {
+  fill: rgba(255, 255, 255, 0.22);
+  font-family: var(--font-body);
+  font-size: calc(8.5px * var(--m, 1));
+  letter-spacing: 0.14em;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: rgba(4, 6, 12, 0.55);
+  stroke-width: calc(2.5px * var(--m, 1));
+  stroke-linejoin: round;
+  pointer-events: none;
+  opacity: 0;
+}
+.root[data-ready='true'] .regionLabels { animation: labelIn 0.6s var(--ease-out) 0.9s forwards; opacity: 0; }
+.regionLabel[data-has='true'] { fill: rgba(255, 255, 255, 0.5); }
+.root[data-ready='true'] .regionLabel { opacity: 1; }
+
+/* ── Поводки раздвинутых узлов ─────────────────────────────── */
+.leaders line {
+  stroke: rgba(255, 255, 255, 0.22);
+  stroke-width: calc(0.8px * var(--m, 1));
+  stroke-dasharray: 2 2;
+}
+.leaders circle { fill: rgba(255, 255, 255, 0.5); }
+.root[data-ready='true'] .leaders { animation: labelIn 0.5s var(--ease-out) 1s forwards; opacity: 0; }
+
+/* ── Области ───────────────────────────────────────────────── */
+.region {
+  fill: var(--fill);
+  stroke: var(--stroke);
+  stroke-width: 1;
+  stroke-linejoin: round;
+  transition: fill var(--t-base), stroke var(--t-base), filter var(--t-base);
+  opacity: 0;
+}
+.root[data-ready='true'] .region {
+  animation: regionIn 0.5s var(--ease-out) forwards;
+  animation-delay: calc(var(--i) * 26ms);
+}
+.region[data-has='true'] { cursor: pointer; }
+.region[data-has='true']:hover {
+  fill: color-mix(in srgb, var(--fill) 100%, var(--gold) 12%);
+  stroke: var(--gold-light);
+}
+.region[data-active='true'] {
+  fill: color-mix(in srgb, var(--fill) 100%, var(--gold) 22%);
+  stroke: var(--gold-light);
+  stroke-width: 1.6;
+  filter: drop-shadow(0 0 12px rgba(212, 168, 67, 0.35));
+}
+
+@keyframes regionIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── Хабы ──────────────────────────────────────────────────── */
+.hub {
+  cursor: pointer;
+  opacity: 0;
+  transform-box: fill-box;
+  transition: opacity var(--t-base);
+}
+.root[data-ready='true'] .hub {
+  animation: hubIn 0.55s var(--ease-spring) forwards;
+  animation-delay: calc(600ms + var(--i) * 45ms);
+}
+.hub:focus-visible { outline: none; }
+.hub:focus-visible .hubHalo { stroke: var(--gold-light); stroke-width: 2; }
+
+@keyframes hubIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.hubHalo {
+  fill: rgba(4, 6, 12, 0.55);
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 1;
+  transition: stroke var(--t-base);
+}
+.hubCore  { fill: rgba(4, 6, 12, 0.92); }
+.hubSeg   { transition: stroke-width var(--t-fast); }
+
+.hubCount {
+  fill: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: calc(11px * var(--m, 1));
+  font-weight: 600;
+  text-anchor: middle;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.hubPulse {
+  stroke: rgba(212, 168, 67, 0.4);
+  stroke-width: 1;
+  /* transform-box не наследуется: без него transform-origin:center берёт центр
+     всего viewBox, и пульс улетает в середину карты. */
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: hubPulse var(--cycle) var(--ease-out) infinite;
+}
+@keyframes hubPulse {
+  0%   { transform: scale(1);   opacity: 0.5; }
+  70%  { transform: scale(1.9); opacity: 0; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+
+.hub:hover .hubSeg,
+.hub[data-active='true'] .hubSeg { stroke-width: 5.5; }
+.hub:hover .hubHalo { stroke: rgba(212, 168, 67, 0.55); }
+.hub[data-active='true'] .hubHalo {
+  stroke: var(--gold-light);
+  stroke-width: 2;
+  filter: drop-shadow(0 0 10px rgba(212, 168, 67, 0.5));
+}
+
+.hubHit { cursor: pointer; }
+
+/* ── Подписи ───────────────────────────────────────────────── */
+.hubLabel {
+  fill: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: calc(9.5px * var(--m, 1));
+  paint-order: stroke;
+  stroke: rgba(4, 6, 12, 0.85);
+  stroke-width: calc(3px * var(--m, 1));
+  stroke-linejoin: round;
+  pointer-events: none;
+  opacity: 0;
+}
+.hubLabel[data-strong='true'] { fill: var(--text-primary); font-size: calc(10.5px * var(--m, 1)); }
+.root[data-ready='true'] .hubLabel {
+  animation: labelIn 0.4s var(--ease-out) forwards;
+  animation-delay: calc(900ms + var(--i) * 45ms);
+}
+@keyframes labelIn { to { opacity: 1; } }
+
+/* ── Автопоказ: выноска и карточка ─────────────────────────── */
+.calloutLine path {
+  stroke: var(--gold);
+  stroke-width: calc(1.1px * var(--m, 1));
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  opacity: 0.75;
+  pathLength: 1;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: calloutDraw 0.5s var(--ease-draw) forwards;
+}
+.calloutLine circle { fill: var(--gold-light); }
+@keyframes calloutDraw { to { stroke-dashoffset: 0; } }
+
+.callout {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px 13px 13px;
+  border: 1px solid rgba(212, 168, 67, 0.34);
+  border-radius: var(--radius-md);
+  background: rgba(7, 11, 22, 0.93);
+  backdrop-filter: blur(var(--blur-sm));
+  box-shadow: 0 16px 46px rgba(0, 0, 0, 0.6);
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  z-index: 2;
+  animation: calloutIn 0.4s var(--ease-out) 0.3s backwards;
+}
+.callout:hover { border-color: var(--glass-border-hover); }
+
+@keyframes calloutIn { from { opacity: 0; transform: translateY(8px); } }
+
+.calloutHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+.calloutTitle {
+  font-family: var(--font-heading);
+  font-size: 0.88rem;
+  color: var(--text-primary);
+}
+.calloutTotal {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.calloutWork {
+  font-size: 0.73rem;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.calloutKinds { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+
+/* Полоса времени — видно, что показ сменится сам */
+.calloutBar {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold), var(--teal));
+  animation: calloutProgress 4.6s linear;
+}
+@keyframes calloutProgress { from { width: 0; } to { width: 100%; } }
+
+/* На узкой ширине карточка в углу нечитаема — уводим её под карту */
+@media (max-width: 760px) {
+  .callout {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 var(--space-md) var(--space-md);
+    border-radius: var(--radius-md);
+  }
+  .calloutLine { display: none; }
+}
+
+/* ── Тултип ────────────────────────────────────────────────── */
+.tip {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 22px));
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 13px;
+  min-width: 130px;
+  border: 1px solid var(--glass-border-hover);
+  border-radius: var(--radius-md);
+  background: rgba(7, 11, 22, 0.94);
+  backdrop-filter: blur(var(--blur-sm));
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+  z-index: 3;
+  animation: tipIn 0.18s var(--ease-out);
+}
+@keyframes tipIn { from { opacity: 0; transform: translate(-50%, calc(-100% - 14px)); } }
+
+.tipTitle { font-family: var(--font-heading); font-size: 0.85rem; color: var(--text-primary); white-space: nowrap; }
+.tipTotal { font-size: 0.72rem; color: var(--text-muted); }
+.tipBreak { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 3px; }
+.tipKind  { font-size: 0.68rem; white-space: nowrap; }
+.tipKind[data-kind='build']       { color: var(--c-build); }
+.tipKind[data-kind='maintenance'] { color: var(--c-maintenance); }
+.tipKind[data-kind='design']      { color: var(--c-design); }
+
+/* ── Легенда ───────────────────────────────────────────────── */
+.legend {
+  position: absolute;
+  left: var(--space-md);
+  bottom: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  list-style: none;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+.legend li { display: flex; align-items: center; gap: 7px; }
+
+.legendSwatch {
+  width: 16px; height: 9px;
+  border-radius: 2px;
+  border: 1px solid rgba(212, 168, 67, 0.3);
+}
+.legendSwatch[data-tier='core']   { background: rgba(212, 168, 67, 0.34); border-color: rgba(240, 200, 90, 0.70); }
+.legendSwatch[data-tier='strong'] { background: rgba(212, 168, 67, 0.15); border-color: rgba(212, 168, 67, 0.45); }
+.legendSwatch[data-tier='some']   { background: rgba(212, 168, 67, 0.05); border-color: rgba(212, 168, 67, 0.24); }
+
+/* ── Боковая панель ────────────────────────────────────────── */
+/* Накладная карточка объектов: появляется по клику и уходит по крестику,
+   а не занимает треть ширины постоянно. */
+.sheet {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  bottom: var(--space-md);
+  width: min(360px, 42%);
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-lg);
+  border: 1px solid var(--glass-border-hover);
+  border-radius: var(--radius-lg);
+  background: rgba(7, 11, 22, 0.94);
+  backdrop-filter: blur(var(--blur-md));
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  z-index: 4;
+  animation: sheetIn 0.32s var(--ease-out);
+}
+@keyframes sheetIn { from { opacity: 0; transform: translateX(16px); } }
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background var(--t-fast), color var(--t-fast);
+}
+.close:hover { background: var(--glass-bg-hover); color: var(--text-primary); }
+
+.panelHead { display: flex; flex-direction: column; gap: 4px; margin-bottom: var(--space-md); }
+
+.panelEyebrow {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.panelTitle { font-family: var(--font-heading); font-size: 1.05rem; color: var(--text-primary); font-weight: 500; }
+.panelSub   { font-size: 0.8rem; color: var(--text-muted); }
+
+.back {
+  align-self: flex-start;
+  padding: 0;
+  margin-bottom: 6px;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: color var(--t-fast);
+}
+.back:hover { color: var(--gold); }
+
+/* Рейтинг регионов */
+.regionList, .hubList, .workList { list-style: none; display: flex; flex-direction: column; }
+.regionList { gap: 2px; }
+
+.regionRow {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr) 26px;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 7px 8px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--t-fast);
+}
+.regionRow:hover { background: var(--glass-bg); }
+
+.regionName {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.foreignTag {
+  margin-left: 5px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.07);
+  font-size: 0.6rem;
+  color: var(--text-muted);
+}
+
+.bar {
+  display: flex;
+  gap: 2px;
+  height: 7px;
+  width: var(--w);
+  min-width: 7px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.barSeg { border-radius: 1px; }
+.barSeg[data-kind='build']       { background: var(--c-build); }
+.barSeg[data-kind='maintenance'] { background: var(--c-maintenance); }
+.barSeg[data-kind='design']      { background: var(--c-design); }
+
+.regionCount {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Список узлов */
+.hubList { gap: 2px; }
+.hubRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--t-fast);
+}
+.hubRow:hover { background: var(--glass-bg); }
+.hubRowName  { font-size: 0.82rem; color: var(--text-secondary); }
+.hubRow:hover .hubRowName { color: var(--text-primary); }
+.hubRowKinds { display: flex; gap: 4px; }
+
+.kindPill {
+  min-width: 20px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.kindPill[data-kind='build']       { background: rgba(212, 168, 67, 0.14); color: var(--c-build); }
+.kindPill[data-kind='maintenance'] { background: rgba(0, 196, 167, 0.14);  color: var(--c-maintenance); }
+.kindPill[data-kind='design']      { background: rgba(79, 132, 255, 0.14); color: var(--c-design); }
+
+/* Объекты внутри узла */
+.works { display: flex; flex-direction: column; gap: var(--space-md); }
+.group { display: flex; flex-direction: column; gap: 6px; }
+
+.groupTitle {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.precision {
+  font-size: 0.62rem;
+  color: rgba(212, 168, 67, 0.55);
+  text-transform: none;
+  letter-spacing: 0;
+  cursor: help;
+}
+
+.workList { gap: 4px; }
+
+.work {
+  display: flex;
+  gap: 9px;
+  padding: 8px 9px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.02);
+  text-decoration: none;
+  transition: background var(--t-fast), transform var(--t-fast);
+}
+.work:hover { background: var(--glass-bg-hover); transform: translateX(2px); }
+
+.workBar { width: 2px; border-radius: 1px; flex-shrink: 0; }
+.work[data-kind='build']       .workBar { background: var(--c-build); }
+.work[data-kind='maintenance'] .workBar { background: var(--c-maintenance); }
+.work[data-kind='design']      .workBar { background: var(--c-design); }
+
+.workBody  { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.workTitle {
+  font-size: 0.79rem;
+  line-height: 1.35;
+  color: var(--text-primary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.workMeta { font-size: 0.7rem; color: var(--text-muted); }
+
+/* Подсказка для тача: на телефоне ховера нет, а панель — основной интерфейс */
+.tapHint {
+  display: none;
+  padding: 0 var(--space-md) var(--space-md);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* ── Сноска и отладка ──────────────────────────────────────── */
+.footnote {
+  font-size: 0.74rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  max-width: 78ch;
+}
+
+.debug {
+  border: 1px dashed rgba(212, 168, 67, 0.25);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+.debug summary { cursor: pointer; color: var(--gold); font-family: var(--font-body); }
+.debugBody { margin-top: var(--space-sm); display: flex; flex-direction: column; gap: 6px; }
+.debugLine { color: var(--text-muted); }
+.debugList { list-style: none; display: flex; flex-direction: column; gap: 3px; padding-left: var(--space-sm); }
+.debugList li { color: var(--text-secondary); line-height: 1.5; }
+.debugList b { color: var(--gold); font-weight: 500; }
+
+/* ── Конец вступления ──────────────────────────────────────────
+   Как только карта «въехала», staggered-анимации снимаются: дальше состав
+   узлов меняют фильтры, и повторный проигрыш выглядел бы как мигание. */
+.root[data-entered='true'] .region,
+.root[data-entered='true'] .hub,
+.root[data-entered='true'] .hubLabel,
+.root[data-entered='true'] .regionLabels,
+.root[data-entered='true'] .leaders,
+.root[data-entered='true'] .outline,
+.root[data-entered='true'] .outlineGlow {
+  animation: none;
+  opacity: 1;
+}
+/* Приглушение выбором должно перебивать правило выше */
+.root .hub[data-dimmed='true'] { opacity: 0.28; }
+.root .hub[data-active='true'] { opacity: 1; }
+
+/* ── Адаптив ───────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  /* На узком экране карточка занимает всю карту — иначе список нечитаем */
+  .sheet { left: var(--space-md); width: auto; }
+}
+
+@media (hover: none) {
+  .tapHint { display: block; }
+}
+
+@media (max-width: 640px) {
+  .toolbar { flex-direction: column; align-items: stretch; }
+  .toolbarMeta { order: -1; }
+  .legend { position: static; flex-direction: row; flex-wrap: wrap; padding: 0 var(--space-md) var(--space-md); }
+  .regionRow { grid-template-columns: 84px minmax(0, 1fr) 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root[data-ready='true'] .region,
+  .root[data-ready='true'] .hub,
+  .root[data-ready='true'] .hubLabel,
+  .root[data-ready='true'] .regionLabels,
+  .root[data-ready='true'] .leaders,
+  .root[data-ready='true'] .outline,
+  .root[data-ready='true'] .outlineGlow { animation: none; opacity: 1; }
+  .hubPulse { animation: none; opacity: 0; }
+  .tip { animation: none; }
+}

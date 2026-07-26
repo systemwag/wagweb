@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import type { Project } from '@/lib/types';
 import styles from './admin.module.css';
+import { resolveGeo } from '@/lib/geo/works';
 import { SortableTh, useSortable } from './sortable';
 
 const STATUS_LABEL: Record<string, string> = {
@@ -53,37 +54,6 @@ export default function ProjectsTable({ projects: initial }: Props) {
       }
     } catch {
       setProjects(prev => prev.map(x => x.id === p.id ? { ...x, featured: p.featured } : x));
-    } finally {
-      setToggling(null);
-    }
-  };
-
-  /* ── Toggle map visibility (clear coords) inline ─────────────── */
-  const toggleMapVisibility = async (p: Project) => {
-    if (toggling === p.id) return;
-    if (p.x_map == null) {
-      // No coords set — open map calibrator
-      router.push('/admin/map');
-      return;
-    }
-    if (!confirm(`Убрать «${p.title}» с карты?\nКоординаты будут сброшены.`)) return;
-    setToggling(p.id);
-    // Optimistic update
-    setProjects(prev => prev.map(x => x.id === p.id ? { ...x, x_map: null, y_map: null } : x));
-    try {
-      const res = await fetch(`/api/admin/projects/${p.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ x_map: null, y_map: null }),
-      });
-      const json = await res.json();
-      if (!json.ok) {
-        setProjects(prev => prev.map(x => x.id === p.id ? { ...x, x_map: p.x_map, y_map: p.y_map } : x));
-      } else {
-        router.refresh();
-      }
-    } catch {
-      setProjects(prev => prev.map(x => x.id === p.id ? { ...x, x_map: p.x_map, y_map: p.y_map } : x));
     } finally {
       setToggling(null);
     }
@@ -149,34 +119,23 @@ export default function ProjectsTable({ projects: initial }: Props) {
                   </span>
                 </td>
 
-                {/* ── Map toggle ─────────────────────────────── */}
+                {/* ── На карте ──────────────────────────────────
+                    Координата больше не выставляется руками — показываем
+                    результат разбора адреса, а чинить его нужно в карточке. */}
                 <td>
-                  <button
-                    className={`${styles.inlineToggle} ${p.x_map != null ? styles.inlineToggleOn : styles.inlineToggleOff}`}
-                    onClick={() => toggleMapVisibility(p)}
-                    disabled={isBusy}
-                    title={p.x_map != null
-                      ? `На карте: x=${p.x_map}, y=${p.y_map}. Нажмите чтобы убрать`
-                      : 'Нет на карте. Нажмите чтобы открыть калибровку'}
-                  >
-                    <svg viewBox="0 0 16 16" fill="none" width="14" height="14">
-                      <path
-                        d="M8 1C5.79 1 4 2.79 4 5c0 3 4 9 4 9s4-6 4-9c0-2.21-1.79-4-4-4z"
-                        fill={p.x_map != null ? 'currentColor' : 'none'}
-                        stroke="currentColor"
-                        strokeWidth="1.4"
-                        strokeLinejoin="round"
-                      />
-                      <circle cx="8" cy="5" r="1.5"
-                        fill={p.x_map != null ? 'var(--bg, #050810)' : 'none'}
-                        stroke={p.x_map != null ? 'none' : 'currentColor'}
-                        strokeWidth="1.2"
-                      />
-                    </svg>
-                    <span className={styles.inlineToggleLabel}>
-                      {p.x_map != null ? 'На карте' : 'Нет'}
-                    </span>
-                  </button>
+                  {(() => {
+                    const place = resolveGeo(p, `build-${p.id}`, p.location || p.title);
+                    return (
+                      <span
+                        className={`${styles.mapState} ${place ? styles.mapStateOn : styles.mapStateOff}`}
+                        title={place
+                          ? `На карте: ${place.label}${place.source === 'pin' ? ' (точка вручную)' : ''}`
+                          : 'Адрес не распознан — объекта не будет на карте'}
+                      >
+                        {place ? place.label : 'нет на карте'}
+                      </span>
+                    );
+                  })()}
                 </td>
 
                 {/* ── Featured (star) toggle ─────────────────── */}

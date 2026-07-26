@@ -72,7 +72,7 @@ const NAV = [
   },
   {
     href: '/admin/map',
-    label: 'Калибровка карты',
+    label: 'Карта',
     icon: (
       <svg viewBox="0 0 16 16" fill="none" className={styles.navIcon}>
         <circle cx="8" cy="7" r="3" stroke="currentColor" strokeWidth="1.4"/>

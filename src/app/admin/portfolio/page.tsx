@@ -6,6 +6,7 @@
  * public/portfolio.pdf — the file the public Hero/services buttons download.
  * (The react-pdf "quick" engine was removed 2026-06-11.)
  */
+import { buildGeoIndex } from '@/lib/geo/works';
 import { existsSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { getProjects, getDesignProjects, getMaintenanceProjects } from '@/lib/data';
@@ -39,7 +40,7 @@ export default async function AdminPortfolioPage() {
     realCompleted:   projects.filter((p) => p.status === 'completed').length,
     realInProgress:  projects.filter((p) => p.status === 'in-progress').length,
     realPlanned:     projects.filter((p) => p.status === 'planned').length,
-    realMapMarkers:  projects.filter((p) => p.x_map != null && p.y_map != null).length,
+    realMapMarkers:  buildGeoIndex(projects, [], []).works.length,
     displaySmr:      DISPLAY.smr,
     displayPd:       DISPLAY.pd,
     displayRegistry: DISPLAY.registry,

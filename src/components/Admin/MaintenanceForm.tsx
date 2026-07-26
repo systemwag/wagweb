@@ -8,6 +8,7 @@ import ImageUploader from './ImageUploader';
 import { slugify } from './form-utils';
 import styles from './ProjectForm.module.css';
 import adminStyles from './admin.module.css';
+import LocationField from './LocationField';
 
 const WORK_TYPES: WorkType[] = [
   'current_maintenance',
@@ -26,6 +27,7 @@ function blank(): FormState {
     period: String(new Date().getFullYear()),
     work_type: 'current_maintenance',
     tags: [], image_url: null, images: null, status: 'completed', featured: false,
+    lat: null, lon: null,
   };
 }
 
@@ -42,6 +44,7 @@ export default function MaintenanceForm({ project }: Props) {
           work_type: project.work_type, tags: project.tags ?? [],
           image_url: project.image_url, images: project.images ?? [],
           status: project.status, featured: project.featured,
+          lat: project.lat ?? null, lon: project.lon ?? null,
         }
       : blank()
   );
@@ -144,8 +147,13 @@ export default function MaintenanceForm({ project }: Props) {
         </div>
         <div className={styles.field}>
           <label className={styles.label}>Местоположение</label>
-          <input className={styles.input} value={form.location}
-            onChange={e => set('location', e.target.value)} />
+          <LocationField
+            value={form.location}
+            onChange={v => set('location', v)}
+            lat={form.lat ?? null}
+            lon={form.lon ?? null}
+            onPoint={(lat, lon) => setForm(f => ({ ...f, lat, lon }))}
+          />
         </div>
       </div>
 

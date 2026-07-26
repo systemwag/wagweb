@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import Footer from '@/components/Footer/Footer';
 import BreadcrumbJsonLd from '@/components/ui/BreadcrumbJsonLd';
 import { getDesignProjectById } from '@/lib/data';
@@ -123,6 +124,43 @@ export default async function DesignDetailPage({ params }: { params: Promise<{ i
                 ))}
               </ul>
             </div>
+
+            {/* Чертежи проекта. Листы широкие (планы М1:1000 и продольные
+                профили), поэтому вписываем целиком через object-fit: contain —
+                кадрировать их нельзя, теряется содержание. */}
+            {project.images.length > 0 && (
+              <div className={styles.drawingsCard}>
+                <h2 className={`heading-3 ${styles.worksTitle}`}>
+                  Чертежи проекта
+                  <span className={styles.drawingsCount}>{project.images.length}</span>
+                </h2>
+                <div className={styles.drawingsGrid}>
+                  {project.images.map((src, i) => (
+                    <a
+                      key={src}
+                      href={src}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.drawingFrame}
+                    >
+                      <Image
+                        src={src}
+                        alt={`${project.client} — чертёж ${i + 1} из ${project.images.length}`}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        className={styles.drawingImg}
+                      />
+                      <span className={styles.drawingZoom} aria-hidden>
+                        <svg viewBox="0 0 16 16" fill="none" width="13" height="13">
+                          <circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.3" />
+                          <path d="M10.5 10.5L14 14M7 5v4M5 7h4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+                        </svg>
+                      </span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className={styles.backRow}>
               <Link href="/design" className="btn btn-outline">

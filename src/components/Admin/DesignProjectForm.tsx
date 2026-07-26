@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { DesignProject, DesignCategory } from '@/lib/types';
+import ImageUploader from './ImageUploader';
 import styles from './DesignProjectForm.module.css';
 import adminStyles from './admin.module.css';
+import LocationField from './LocationField';
 
 interface Props {
   project?: DesignProject;
@@ -21,9 +23,24 @@ export default function DesignProjectForm({ project }: Props) {
   const router = useRouter();
   const isEdit = !!project;
 
-  const [saving, setSaving]   = useState(false);
-  const [error, setError]     = useState('');
-  const [works, setWorks]     = useState<string[]>(project?.works ?? ['']);
+  const [saving, setSaving]     = useState(false);
+  const [error, setError]       = useState('');
+  const [works, setWorks]       = useState<string[]>(project?.works ?? ['']);
+  const [images, setImages]     = useState<string[]>(project?.images ?? []);
+  const [location, setLocation] = useState<string>(project?.location ?? '');
+  const [geo, setGeo] = useState<{ lat: number | null; lon: number | null }>({
+    lat: project?.lat ?? null,
+    lon: project?.lon ?? null,
+  });
+  const [uploading, setUploading] = useState(false);
+
+  /* У проектных работ нет отдельной колонки под главное изображение:
+     первым на карточке показывается первый чертёж массива. Поэтому выбор
+     «главного» в загрузчике = перестановка этого листа в начало. */
+  const promoteToFirst = (url: string | null) => {
+    if (!url) return;
+    setImages(prev => [url, ...prev.filter(u => u !== url)]);
+  };
 
   const addWork  = () => setWorks(prev => [...prev, '']);
   const removeWork = (i: number) => setWorks(prev => prev.filter((_, idx) => idx !== i));
@@ -42,11 +59,14 @@ export default function DesignProjectForm({ project }: Props) {
       client:      get('client'),
       works:       works.filter(w => w.trim()),
       category:    get('category'),
-      location:    get('location')     || null,
+      location:    location.trim()     || null,
+      lat:         geo.lat,
+      lon:         geo.lon,
       year:        Number(get('year')) || null,
       status:      get('status'),
       slug:        get('slug'),
       description: get('description') || null,
+      images,
       featured:    (form.elements.namedItem('featured') as HTMLInputElement)?.checked ?? false,
     };
 
@@ -113,7 +133,14 @@ export default function DesignProjectForm({ project }: Props) {
       <div className={adminStyles.formRow}>
         <div className={adminStyles.field}>
           <label className={adminStyles.label}>Местоположение</label>
-          <input name="location" className={adminStyles.input} defaultValue={project?.location ?? ''} placeholder="Актобе, Актюбинская область" />
+          <LocationField
+            name="location"
+            value={location}
+            onChange={setLocation}
+            lat={geo.lat}
+            lon={geo.lon}
+            onPoint={(lat, lon) => setGeo({ lat, lon })}
+          />
         </div>
         <div className={adminStyles.field}>
           <label className={adminStyles.label}>Год</label>
@@ -150,6 +177,18 @@ export default function DesignProjectForm({ project }: Props) {
         </div>
       </div>
 
+      {/* Чертежи проекта */}
+      <ImageUploader
+        label="Чертежи проекта"
+        images={images}
+        mainImage={images[0] ?? null}
+        projectId={project?.id}
+        onImagesChange={setImages}
+        onMainChange={promoteToFirst}
+        onUploadingChange={setUploading}
+        onError={setError}
+      />
+
       {/* Featured */}
       <label className={adminStyles.checkLabel}>
         <input name="featured" type="checkbox" defaultChecked={project?.featured ?? false} className={adminStyles.checkbox} />
@@ -159,8 +198,8 @@ export default function DesignProjectForm({ project }: Props) {
       {error && <div className={adminStyles.error}>{error}</div>}
 
       <div className={adminStyles.formActions}>
-        <button type="submit" className={adminStyles.btnPrimary} disabled={saving}>
-          {saving ? 'Сохранение...' : isEdit ? 'Сохранить изменения' : 'Создать проект'}
+        <button type="submit" className={adminStyles.btnPrimary} disabled={saving || uploading}>
+          {saving ? 'Сохранение...' : uploading ? 'Загрузка файлов...' : isEdit ? 'Сохранить изменения' : 'Создать проект'}
         </button>
         <button type="button" className={adminStyles.btnSecondary} onClick={() => router.back()}>
           Отмена

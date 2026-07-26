@@ -439,6 +439,205 @@
   vertical-align: middle;
 }
 
+/* ══ Витрина работ с чертежами ═════════════════════════════
+   Работы, у которых есть листы, идут карточками над таблицей —
+   по образцу сетки СМР на /projects. Остальной реестр остаётся
+   таблицей: сотню строк карточками не показать. */
+
+.showcase {
+  margin-bottom: var(--space-2xl);
+}
+
+.showcaseHead {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.showcaseTitle {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-primary);
+}
+
+.showcaseCount {
+  font-family: monospace;
+  font-size: 0.72rem;
+  color: var(--gold);
+  background: rgba(212,168,67,0.08);
+  border: 1px solid rgba(212,168,67,0.22);
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+
+.restCount {
+  font-family: monospace;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+
+.showcaseGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-lg);
+}
+
+.dCard {
+  display: flex;
+  flex-direction: column;
+  background: rgba(13,18,34,0.45);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  text-decoration: none;
+  transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  animation: dCardIn 0.5s ease both;
+}
+
+@keyframes dCardIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.dCard:hover {
+  border-color: var(--card-accent, var(--gold));
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+}
+
+.dCard_full-cycle   { --card-accent: var(--gold); }
+.dCard_design       { --card-accent: var(--teal); }
+.dCard_documentation{ --card-accent: var(--blue); }
+.dCard_feasibility  { --card-accent: var(--gold-light); }
+
+/* Чертёж вписывается целиком на светлой подложке — так читаются линии
+   плана; кадрирование под «обложку» уничтожает содержание листа. */
+.dCardImage {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: #f4f1ea;
+  border-bottom: 1px solid var(--glass-border);
+  overflow: hidden;
+}
+
+.dCardImageReal {
+  object-fit: contain;
+  padding: 6px;
+  transition: transform 0.4s ease;
+}
+
+.dCard:hover .dCardImageReal { transform: scale(1.03); }
+
+.dCardNum {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-family: monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--bg-primary);
+  background: rgba(255,255,255,0.85);
+  border-radius: 4px;
+  padding: 2px 7px;
+}
+
+.dCardSheets {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: monospace;
+  font-size: 0.68rem;
+  color: var(--gold-light);
+  background: rgba(4,6,12,0.78);
+  border: 1px solid rgba(212,168,67,0.3);
+  border-radius: 999px;
+  padding: 3px 9px;
+}
+
+.dCardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: var(--space-md);
+  flex: 1;
+}
+
+.dCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.dCardYear {
+  font-family: monospace;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.dCardTitle {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--text-primary);
+}
+
+.dCardDesc {
+  font-size: 0.83rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.dCardMeta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.dCardArrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: auto;
+  padding-top: 10px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--card-accent, var(--gold));
+}
+
+.dCard:hover .dCardArrow svg { transform: translateX(3px); }
+.dCardArrow svg { transition: transform 0.3s ease; }
+
+@media (max-width: 600px) {
+  .showcaseGrid { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dCard,
+  .dCardImageReal,
+  .dCardArrow svg { transition: none; animation: none; }
+  .dCard:hover { transform: none; }
+  .dCard:hover .dCardImageReal { transform: none; }
+}
+
 /* ── Category badge ────────────────────────────────────── */
 .badge {
   display: inline-flex;

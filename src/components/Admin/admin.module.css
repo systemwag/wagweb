@@ -554,3 +554,32 @@
   font-size: 0.74rem;
   color: rgba(221, 228, 240, 0.5);
 }
+
+/* Свёрнутый блок устаревшей калибровки карты (см. /admin/map) */
+.legacy {
+  margin-top: var(--space-xl);
+  border: 1px dashed var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+}
+.legacySummary {
+  cursor: pointer;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+}
+.legacySummary:hover { color: var(--text-secondary); }
+
+/* Состояние «на карте» в таблице СМР — результат разбора адреса, не кнопка */
+.mapState {
+  display: inline-block;
+  max-width: 180px;
+  padding: 3px 9px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mapStateOn  { background: rgba(0, 196, 167, 0.12); color: var(--teal); }
+.mapStateOff { background: rgba(255, 80, 80, 0.12); color: var(--error); }

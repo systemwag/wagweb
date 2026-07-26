@@ -13,6 +13,10 @@ const nullableStr = z.string().max(2000).nullable().optional();
 const imageList = z.array(z.string().max(2000)).max(100).nullable().optional();
 const tagList = z.array(z.string().max(200)).max(50).nullable().optional();
 const mapCoord = z.number().min(-2000).max(3000).nullable().optional();
+/* Ручная точка на карте — диапазон совпадает с CHECK-constraint в БД
+   (миграция 20260726150000_add_geo_override). */
+const geoLat = z.number().min(35).max(60).nullable().optional();
+const geoLon = z.number().min(40).max(95).nullable().optional();
 
 export const ProjectSchema = z.object({
   title: z.string().min(1).max(500),
@@ -29,6 +33,8 @@ export const ProjectSchema = z.object({
   x_map: mapCoord,
   y_map: mapCoord,
   coords_label: nullableStr,
+  lat: geoLat,
+  lon: geoLon,
   featured: z.boolean().optional(),
 });
 export const ProjectUpdateSchema = ProjectSchema.partial();
@@ -43,6 +49,9 @@ export const DesignProjectSchema = z.object({
   status: z.enum(['completed', 'in-progress']).optional(),
   slug: z.string().min(1).max(200),
   description: z.string().max(10000).nullable().optional(),
+  images: imageList,
+  lat: geoLat,
+  lon: geoLon,
   featured: z.boolean().optional(),
 });
 export const DesignProjectUpdateSchema = DesignProjectSchema.partial();
@@ -66,6 +75,8 @@ export const MaintenanceProjectSchema = z.object({
   images: imageList,
   status: z.enum(['completed', 'ongoing']).optional(),
   tags: tagList,
+  lat: geoLat,
+  lon: geoLon,
   featured: z.boolean().optional(),
 });
 export const MaintenanceProjectUpdateSchema = MaintenanceProjectSchema.partial();

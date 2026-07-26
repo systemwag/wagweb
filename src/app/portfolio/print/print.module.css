@@ -912,8 +912,27 @@
   color: rgba(240,242,248,0.4);
   z-index: 2;
 }
-.mapImg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
 .mapSvg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* Легенда по типам работ под картой разворота */
+.mapLegend {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  gap: 8mm;
+  font-family: 'Onest', sans-serif;
+  font-size: 7.5pt;
+  color: rgba(240,242,248,0.55);
+  z-index: 2;
+}
+.mapLegendItem { display: inline-flex; align-items: center; gap: 2mm; }
+.mapLegendItem i {
+  width: 2.4mm;
+  height: 2.4mm;
+  border-radius: 50%;
+  display: inline-block;
+}
 
 /* «Люди, которые строят» — team composition under the map. */
 .peopleTitle {

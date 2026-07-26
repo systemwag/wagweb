@@ -15,14 +15,22 @@ import { useFrame } from '@react-three/fiber';
 import { Edges } from '@react-three/drei';
 import * as THREE from 'three';
 import {
-  ProgressRef, TimeRef, phaseProgress, sub, subAbs, lerp, clamp01, ease, cutaway,
+  ProgressRef, TimeRef, phaseProgress, roadQ, railQ, sub, lin, travel, lerp, clamp01, ease, cutaway, damp,
   ROAD_LEN, ROAD_W, ROAD_EMB_H, ASPHALT_TOP,
   RAIL_X, RAIL_LEN, GAUGE, RAIL_EMB_H, SLEEPER_TOP, RAIL_H, RAIL_TOP,
-  SPUR_Z, LEP_Z, CINE, ALIVE_FROM,
+  DECK_TOP, DECK_HALF, RAMP_RUN, RAMP_ANGLE,
+  SPUR_Z, SPUR_BASE, LEP_Z, EXC_X, SPOIL_X, SPOIL_Z, FILL_X, TRUCK_Z,
+  WH, WH_PURLIN, WH_ROOF_Y, WH_ROOF_TOP,
+  CINE, cine, ALIVE_FROM, sceneRefs, TRAIN_NOSE, TRAIN_TAIL,
   GOLD, GOLD_LIGHT, GOLD_DARK, TEAL, BLUE, RED, STEEL, CONCRETE,
 } from './phases';
 import { GlowSprite } from './fx';
-import { asphaltProgress, trainZ } from './Vehicles';
+import { asphaltProgress } from './Vehicles';
+
+/** Сталь конструкций АПС и опор: на чёрном фоне бетонный тон не читался —
+    мачты выглядели как парящие в воздухе знаки. Оттенок тёплый, иначе
+    бирюзовый ключевой свет красит все стойки в цвет морской волны. */
+const MAST = '#828693';
 
 const S = (v: number) => Math.max(0.001, v);
 
@@ -52,7 +60,7 @@ function DrawnLine({
   useFrame(() => {
     const l = lineRef.current;
     if (!l) return;
-    const q = progress(sharedRefs.p.current, sharedRefs.t.current);
+    const q = progress(sceneRefs.p.current, sceneRefs.t.current);
     const n = Math.max(0, Math.floor(points.length * clamp01(q)));
     l.geometry.setDrawRange(0, n);
     l.visible = q > 0.005 && n > 1;
@@ -60,12 +68,6 @@ function DrawnLine({
 
   return <primitive object={line} ref={lineRef} />;
 }
-
-/* Общие refs, инициализируются из SceneRoot до первого кадра */
-export const sharedRefs: { p: ProgressRef; t: TimeRef } = {
-  p: { current: 0 },
-  t: { current: 0 },
-};
 
 /* ══════════════════════════════════════════════════════════════════════
    ФАЗА 0 — ИЗЫСКАНИЯ: сканирующие кольца, тахеометр, реперы, горизонтали
@@ -101,8 +103,8 @@ export function Survey({ progressRef, timeRef }: { progressRef: ProgressRef; tim
   useFrame(() => {
     const p = progressRef.current;
     const t = timeRef.current;
-    const q = phaseProgress(p, 0);
-    const fade = 1 - phaseProgress(p, 3); // держим до земляных работ
+    const q = phaseProgress(p, 'survey');
+    const fade = 1 - sub(phaseProgress(p, 'earth'), 0, 0.3); // гаснет с выходом техники
 
     const pulse = (m: THREE.Mesh | null, off: number) => {
       if (!m) return;
@@ -151,7 +153,7 @@ export function Survey({ progressRef, timeRef }: { progressRef: ProgressRef; tim
           points={pts}
           color={i === 1 ? GOLD_DARK : '#274058'}
           opacity={0.75}
-          progress={p => sub(phaseProgress(p, 0), 0.15 + i * 0.1, 0.65 + i * 0.1) * (1 - phaseProgress(p, 3))}
+          progress={p => sub(phaseProgress(p, 'survey'), 0.15 + i * 0.1, 0.65 + i * 0.1) * (1 - sub(phaseProgress(p, 'earth'), 0, 0.3))}
         />
       ))}
 
@@ -217,21 +219,24 @@ export function DesignGhosts({ progressRef }: { progressRef: ProgressRef }) {
     return pts;
   }, []);
 
+  /* Габариты берутся из тех же констант, по которым потом строятся
+     реальные объекты — построенное обязано сесть в свою голограмму. */
   const GHOSTS: { pos: [number, number, number]; size: [number, number, number] }[] = useMemo(
     () => [
       { pos: [0, ROAD_EMB_H / 2 + 0.15, 0], size: [ROAD_LEN, ROAD_EMB_H + 0.3, ROAD_W + 1.2] },      // дорога
       { pos: [RAIL_X, 0.55, 0], size: [4.4, 1.1, RAIL_LEN] },                                        // ж/д призма
-      { pos: [11.5, 1.6, -11], size: [6, 3.2, 5] },                                                  // цех
-      { pos: [15, 1.4, -4.5], size: [3.2, 2.8, 3.2] },                                               // резервуар
+      { pos: [WH.x, WH_ROOF_TOP / 2, WH.z], size: [WH.w + 0.4, WH_ROOF_TOP, WH.d + 0.4] },           // цех
+      { pos: [15.2, 1.66, -4.6], size: [3.2, 3.32, 3.2] },                                           // РВС
     ],
     [],
   );
 
   useFrame(() => {
     const p = progressRef.current;
-    const q = phaseProgress(p, 1);
-    // голограммы живут через фазу ГосЭкспертизы (штамп ставится «над чертежом»)
-    const fade = 1 - phaseProgress(p, 3);
+    const q = phaseProgress(p, 'design');
+    // голограммы живут через фазу ГосЭкспертизы, но гаснут в первой трети
+    // земляных работ — иначе техника тонет в проволочной каше
+    const fade = 1 - sub(phaseProgress(p, 'earth'), 0, 0.3);
     if (!ghosts.current) return;
     ghosts.current.visible = q > 0.15 && fade > 0.02;
     ghosts.current.children.forEach((c, i) => {
@@ -245,7 +250,7 @@ export function DesignGhosts({ progressRef }: { progressRef: ProgressRef }) {
   });
 
   const axisDraw = (delay: number) => (p: number) =>
-    sub(phaseProgress(p, 1), delay, delay + 0.35) * (1 - phaseProgress(p, 3));
+    sub(phaseProgress(p, 'design'), delay, delay + 0.35) * (1 - sub(phaseProgress(p, 'earth'), 0, 0.3));
 
   return (
     <>
@@ -282,6 +287,10 @@ export function Earthworks({ progressRef }: { progressRef: ProgressRef }) {
   const railEmb = useRef<THREE.Mesh>(null);
   const roadEmbMat = useRef<THREE.MeshStandardMaterial>(null);
   const railEmbMat = useRef<THREE.MeshStandardMaterial>(null);
+  const trough = useRef<THREE.Mesh>(null);
+  const troughMat = useRef<THREE.MeshStandardMaterial>(null);
+  const spoil = useRef<THREE.Mesh>(null);
+  const fill = useRef<THREE.Mesh>(null);
 
   // якорь у начала: насыпь растёт по длине, как её реально отсыпают
   const roadEmbGeo = useMemo(() => {
@@ -294,28 +303,79 @@ export function Earthworks({ progressRef }: { progressRef: ProgressRef }) {
     g.translate(0, RAIL_EMB_H / 2, RAIL_LEN / 2);
     return g;
   }, []);
+  // Корыто: снятый слой растёт ЗА экскаватором. Врезаться в площадку
+  // геометрически дорого (пришлось бы резать и плиту, и ландшафт),
+  // поэтому корыто читается как тёмная выемка с подсвеченной кромкой.
+  const troughGeo = useMemo(() => {
+    const g = new THREE.BoxGeometry(ROAD_LEN, 0.09, ROAD_W + 0.6);
+    g.translate(ROAD_LEN / 2, -0.045, 0);
+    return g;
+  }, []);
 
   useFrame(() => {
     const p = progressRef.current;
-    const q = phaseProgress(p, 3);
+    const q = phaseProgress(p, 'earth');
     const cut = cutaway(p);
 
     if (gate.current) gate.current.visible = q > 0.01;
     if (slabMat.current) {
       slabMat.current.opacity = clamp01(sub(q, 0, 0.3)) * (1 - cut * 0.92);
     }
-    if (roadEmb.current) roadEmb.current.scale.x = S(sub(q, 0.15, 0.7));
-    if (railEmb.current) railEmb.current.scale.z = S(sub(q, 0.45, 0.95));
+    if (trough.current) {
+      // корыто идёт от места работы экскаватора вправо, вслед за ним,
+      // и должно быть готово к моменту, когда пойдёт насыпь
+      const grow = clamp01((q - 0.14) / 0.36);
+      trough.current.visible = grow > 0.01;
+      trough.current.scale.x = S(grow);
+      if (troughMat.current) troughMat.current.opacity = (1 - sub(q, 0.58, 0.86)) * (1 - cut);
+    }
+    // насыпь трогается ПОСЛЕ того, как самосвал высыпал первую отсыпку,
+    // и после ухода экскаватора — иначе фронт отсыпки догонял его забой
+    // и машина «копала» уже уложенное полотно
+    if (roadEmb.current) roadEmb.current.scale.x = S(sub(q, 0.50, 0.95));
+    if (railEmb.current) railEmb.current.scale.z = S(sub(q, 0.58, 0.97));
+    if (spoil.current) {
+      // отвал вынутого грунта у экскаватора — растёт, пока он копает
+      const v = sub(q, 0.22, 0.56);
+      spoil.current.visible = v > 0.02;
+      spoil.current.scale.set(S(0.4 + v * 0.6), S(v), S(0.4 + v * 0.6));
+    }
+    if (fill.current) {
+      // привезённая отсыпка: ложится под кузовом и растворяется, когда
+      // фронт насыпи до неё доходит
+      const v = sub(q, 0.32, 0.44) * (1 - sub(q, 0.60, 0.72));
+      fill.current.visible = v > 0.02;
+      fill.current.scale.set(S(0.5 + v * 0.5), S(v), S(0.5 + v * 0.5));
+    }
     if (roadEmbMat.current) roadEmbMat.current.opacity = 1 - cut * 0.95;
     if (railEmbMat.current) railEmbMat.current.opacity = 1 - cut * 0.75;
   });
 
   return (
     <group ref={gate} visible={false}>
-      {/* Спланированная площадка */}
+      {/* Спланированная площадка — крупнее, чтобы её кромка уходила
+          за начало тумана, а не читалась висящим прямоугольником */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.005, 0]}>
-        <planeGeometry args={[48, 46]} />
+        <planeGeometry args={[94, 88]} />
         <meshStandardMaterial ref={slabMat} color="#0C1120" roughness={1} transparent opacity={0} />
+      </mesh>
+
+      {/* Корыто — растёт от точки, где работает экскаватор */}
+      <mesh ref={trough} geometry={troughGeo} position={[EXC_X - 1.5, 0.012, 0]} visible={false}>
+        <meshStandardMaterial ref={troughMat} color="#070B14" roughness={1} transparent />
+        <Edges color={GOLD_DARK} threshold={20} />
+      </mesh>
+
+      {/* Отвал вынутого из корыта грунта — то, куда сваливает ковш */}
+      <mesh ref={spoil} position={[SPOIL_X, 0, SPOIL_Z]} visible={false}>
+        <coneGeometry args={[1.5, 1.1, 10]} />
+        <meshStandardMaterial color="#3A3226" roughness={1} />
+      </mesh>
+
+      {/* Привезённая самосвалом отсыпка — с неё начинается насыпь */}
+      <mesh ref={fill} position={[FILL_X, 0, TRUCK_Z]} visible={false}>
+        <coneGeometry args={[1.9, 0.95, 9]} />
+        <meshStandardMaterial color="#3A3226" roughness={1} />
       </mesh>
 
       <mesh ref={roadEmb} geometry={roadEmbGeo} position={[-ROAD_LEN / 2, 0, 0]}>
@@ -341,6 +401,8 @@ export function RoadWorks({ progressRef }: { progressRef: ProgressRef }) {
   const asphaltMat = useRef<THREE.MeshStandardMaterial>(null);
   const edgeL = useRef<THREE.Mesh>(null);
   const edgeR = useRef<THREE.Mesh>(null);
+  const tailA = useRef<THREE.Mesh>(null);
+  const tailB = useRef<THREE.Mesh>(null);
   const dashes = useRef<THREE.InstancedMesh>(null!);
   const dummy = useMemo(() => new THREE.Object3D(), []);
 
@@ -375,7 +437,7 @@ export function RoadWorks({ progressRef }: { progressRef: ProgressRef }) {
 
   useFrame(() => {
     const p = progressRef.current;
-    const q = phaseProgress(p, 4);
+    const q = roadQ(p);
     const cut = cutaway(p);
 
     if (gate.current) gate.current.visible = q > 0.01;
@@ -387,6 +449,11 @@ export function RoadWorks({ progressRef }: { progressRef: ProgressRef }) {
     const eo = sub(q, 0.82, 0.92);
     if (edgeL.current) (edgeL.current.material as THREE.MeshBasicMaterial).opacity = eo;
     if (edgeR.current) (edgeR.current.material as THREE.MeshBasicMaterial).opacity = eo;
+
+    // хвосты появляются вместе с готовым полотном и гаснут в «рентгене»
+    const to = sub(q, 0.9, 1) * (1 - cut * 0.95);
+    if (tailA.current) (tailA.current.material as THREE.MeshStandardMaterial).opacity = to;
+    if (tailB.current) (tailB.current.material as THREE.MeshStandardMaterial).opacity = to;
 
     const m = sub(q, 0.86, 1);
     for (let i = 0; i < DASH_X.length; i++) {
@@ -418,6 +485,15 @@ export function RoadWorks({ progressRef }: { progressRef: ProgressRef }) {
         <meshBasicMaterial color="#E8EAF0" transparent opacity={0} toneMapped={false} />
       </mesh>
 
+      {/* Продолжение трассы за кадр: полотно не должно обрываться торцом
+          в пустоте — оба конца уходят в туман (fog начинается на 26 м) */}
+      {[-1, 1].map(side => (
+        <mesh key={side} ref={side < 0 ? tailA : tailB} position={[side * (ROAD_LEN / 2 + 11), ROAD_EMB_H + 0.15, 0]}>
+          <boxGeometry args={[22, 0.1, ROAD_W]} />
+          <meshStandardMaterial color="#232833" roughness={0.98} transparent opacity={0} />
+        </mesh>
+      ))}
+
       <instancedMesh ref={dashes} args={[undefined, undefined, DASH_X.length]} frustumCulled={false}>
         <boxGeometry args={[1.25, 0.012, 0.15]} />
         <meshBasicMaterial color={GOLD_LIGHT} toneMapped={false} />
@@ -436,6 +512,7 @@ export function RailwayWorks({ progressRef }: { progressRef: ProgressRef }) {
   const sleepers = useRef<THREE.InstancedMesh>(null!);
   const railL = useRef<THREE.Mesh>(null);
   const railR = useRef<THREE.Mesh>(null);
+  const tails = useRef<THREE.Group>(null);
   const tip = useRef<THREE.Sprite>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
 
@@ -463,7 +540,7 @@ export function RailwayWorks({ progressRef }: { progressRef: ProgressRef }) {
   useFrame(() => {
     const p = progressRef.current;
     // фаза 5 «Ж/д путь и переезд»: путь строится в первой половине окна
-    const q = phaseProgress(p, 5);
+    const q = railQ(p);
 
     if (gate.current) gate.current.visible = q > 0.01;
     if (ballast.current) ballast.current.scale.z = S(sub(q, 0, 0.22));
@@ -483,6 +560,7 @@ export function RailwayWorks({ progressRef }: { progressRef: ProgressRef }) {
     const rq = sub(q, 0.32, 0.58);
     if (railL.current) railL.current.scale.z = S(rq);
     if (railR.current) railR.current.scale.z = S(rq);
+    if (tails.current) tails.current.visible = rq > 0.995;
     if (tip.current) {
       tip.current.visible = rq > 0.01 && rq < 0.995;
       tip.current.position.set(RAIL_X, SLEEPER_TOP + RAIL_H, -RAIL_LEN / 2 + RAIL_LEN * rq);
@@ -507,6 +585,29 @@ export function RailwayWorks({ progressRef }: { progressRef: ProgressRef }) {
       <mesh ref={railR} geometry={railGeo} position={[RAIL_X + GAUGE, SLEEPER_TOP + RAIL_H / 2, -RAIL_LEN / 2]}>
         <meshStandardMaterial color={STEEL} metalness={0.9} roughness={0.3} />
       </mesh>
+
+      {/* Продолжение пути за кадр — путь уходит в туман, а не обрывается */}
+      <group ref={tails} visible={false}>
+        {[-1, 1].map(side => (
+          <group key={side} position={[RAIL_X, 0, side * (RAIL_LEN / 2 + 9)]}>
+            <mesh position={[0, RAIL_EMB_H / 2, 0]}>
+              <boxGeometry args={[4.4, RAIL_EMB_H, 18]} />
+              <meshStandardMaterial color="#282D38" roughness={0.95} />
+            </mesh>
+            <mesh position={[0, RAIL_EMB_H + 0.1, 0]}>
+              <boxGeometry args={[3.4, 0.2, 18]} />
+              <meshStandardMaterial color="#2E3340" roughness={1} />
+            </mesh>
+            {[-GAUGE, GAUGE].map(ox => (
+              <mesh key={ox} position={[ox, SLEEPER_TOP + RAIL_H / 2, 0]}>
+                <boxGeometry args={[0.07, RAIL_H, 18]} />
+                <meshStandardMaterial color={STEEL} metalness={0.9} roughness={0.3} />
+              </mesh>
+            ))}
+          </group>
+        ))}
+      </group>
+
       <GlowSprite spriteRef={tip} color={GOLD_LIGHT} size={1.6} opacity={0.9} />
     </group>
   );
@@ -516,12 +617,18 @@ export function RailwayWorks({ progressRef }: { progressRef: ProgressRef }) {
    ФАЗА 5 — ПЕРЕЕЗД: настил + АПС. Шлагбаумы и светофоры реагируют
    на поезд; в финале — автоматика по фактической позиции состава.
    ══════════════════════════════════════════════════════════════════════ */
-function barrierClosedAmount(p: number, current: number): number {
+/** Зона извещения: за сколько метров до настила автоматика срабатывает */
+const APPROACH = 8;
+
+function barrierClosedAmount(p: number, current: number, dt: number): number {
   if (p >= ALIVE_FROM) {
-    const target = Math.abs(trainZ.current) < 9.5 ? 1 : 0;
-    return lerp(current, target, 0.06); // плавный сервопривод
+    // Держим закрытым, пока ХВОСТ состава не покинет зону: раньше условие
+    // было по голове, и переезд открывался под последним полувагоном.
+    const z = sceneRefs.trainZ.current;
+    const target = z + TRAIN_NOSE > -APPROACH && z + TRAIN_TAIL < APPROACH ? 1 : 0;
+    return lerp(current, target, damp(3.2, dt)); // сервопривод, независим от FPS
   }
-  return subAbs(p, CINE.barriersDown[0], CINE.barriersDown[1]) * (1 - subAbs(p, CINE.barriersUp[0], CINE.barriersUp[1]));
+  return cine(p, CINE.barriersDown) * (1 - cine(p, CINE.barriersUp));
 }
 
 /* Шлагбаум стоит на обочине СПРАВА от своей полосы движения ПЕРЕД
@@ -542,11 +649,11 @@ function CrossingBarrier({
   const closedRef = useRef(0);
   const openAngle = armSign * -1.45; // стрела задирается вверх над своей стойкой
 
-  useFrame(() => {
+  useFrame((_, dt) => {
     const p = progressRef.current;
-    const q = phaseProgress(p, 5);
+    const q = railQ(p);
     if (root.current) root.current.scale.setScalar(S(sub(q, 0.56, 0.66)));
-    closedRef.current = clamp01(barrierClosedAmount(p, closedRef.current));
+    closedRef.current = clamp01(barrierClosedAmount(p, closedRef.current, Math.min(dt, 0.05)));
     if (arm.current) arm.current.rotation.x = lerp(openAngle, 0, ease(closedRef.current));
   });
 
@@ -554,7 +661,7 @@ function CrossingBarrier({
     <group position={position} ref={root}>
       <mesh position={[0, 0.55, 0]}>
         <boxGeometry args={[0.22, 1.1, 0.22]} />
-        <meshStandardMaterial color={CONCRETE} roughness={0.7} />
+        <meshStandardMaterial color={MAST} roughness={0.7} />
       </mesh>
       <mesh position={[0, 1.12, 0]}>
         <boxGeometry args={[0.3, 0.14, 0.3]} />
@@ -594,12 +701,12 @@ function CrossingSignal({
   const lampB = useRef<THREE.Sprite>(null);
   const closedRef = useRef(0);
 
-  useFrame(() => {
+  useFrame((_, dt) => {
     const p = progressRef.current;
     const t = timeRef.current;
-    const q = phaseProgress(p, 5);
+    const q = railQ(p);
     if (root.current) root.current.scale.setScalar(S(sub(q, 0.6, 0.7)));
-    closedRef.current = clamp01(barrierClosedAmount(p, closedRef.current));
+    closedRef.current = clamp01(barrierClosedAmount(p, closedRef.current, Math.min(dt, 0.05)));
     const active = closedRef.current > 0.4 ? 1 : 0;
     const blink = Math.sin(t * 6 + blinkPhase) > 0 ? 1 : 0.06;
     if (lampA.current) lampA.current.material.opacity = 0.06 + active * blink * 0.9;
@@ -609,8 +716,13 @@ function CrossingSignal({
   return (
     <group position={position} rotation={[0, rotationY, 0]} ref={root}>
       <mesh position={[0, 1.3, 0]}>
-        <cylinderGeometry args={[0.05, 0.065, 2.6, 8]} />
-        <meshStandardMaterial color={CONCRETE} roughness={0.7} />
+        <cylinderGeometry args={[0.06, 0.08, 2.6, 8]} />
+        <meshStandardMaterial color={MAST} roughness={0.7} />
+      </mesh>
+      {/* Фундамент — мачта не должна «висеть» над полотном */}
+      <mesh position={[0, 0.09, 0]}>
+        <cylinderGeometry args={[0.2, 0.24, 0.18, 10]} />
+        <meshStandardMaterial color={CONCRETE} roughness={0.9} />
       </mesh>
       <mesh position={[0, 2.48, 0.08]}>
         <boxGeometry args={[0.56, 0.34, 0.16]} />
@@ -646,17 +758,19 @@ export function CrossingWorks({ progressRef, timeRef }: { progressRef: ProgressR
   const rampA = useRef<THREE.Mesh>(null);
   const rampB = useRef<THREE.Mesh>(null);
   const stopLine = useRef<THREE.Mesh>(null);
+  const stopLineB = useRef<THREE.Mesh>(null);
 
   /* Настил — единое целое с путём: плиты лежат МЕЖДУ рельсами и снаружи
      от них, верх на 3 см ниже головки рельса. Рельсы остаются видимыми
-     и непрерывными, дорога поднимается к настилу пандусами. */
-  const PANEL_TOP = RAIL_TOP - 0.03;
+     и непрерывными, дорога поднимается к настилу пандусами.
+     Отметки берём из phases.ts — по ним же едет автомобиль (roadY). */
+  const PANEL_TOP = DECK_TOP;
   const PANEL_H = 0.12;
-  const rampAngle = Math.atan((PANEL_TOP - ASPHALT_TOP) / 2.4);
+  const rampLen = RAMP_RUN / Math.cos(RAMP_ANGLE);
 
   useFrame(() => {
     const p = progressRef.current;
-    const q = phaseProgress(p, 5);
+    const q = railQ(p);
     if (gate.current) gate.current.visible = q > 0.5;
     if (deckBase.current) deckBase.current.scale.y = S(sub(q, 0.5, 0.58));
     if (panels.current) {
@@ -671,7 +785,9 @@ export function CrossingWorks({ progressRef, timeRef }: { progressRef: ProgressR
     const ro = sub(q, 0.62, 0.7);
     if (rampA.current) (rampA.current.material as THREE.MeshStandardMaterial).opacity = ro;
     if (rampB.current) (rampB.current.material as THREE.MeshStandardMaterial).opacity = ro;
-    if (stopLine.current) (stopLine.current.material as THREE.MeshBasicMaterial).opacity = sub(q, 0.66, 0.74);
+    const slo = sub(q, 0.66, 0.74);
+    if (stopLine.current) (stopLine.current.material as THREE.MeshBasicMaterial).opacity = slo;
+    if (stopLineB.current) (stopLineB.current.material as THREE.MeshBasicMaterial).opacity = slo;
   });
 
   return (
@@ -689,33 +805,42 @@ export function CrossingWorks({ progressRef, timeRef }: { progressRef: ProgressR
           <meshStandardMaterial color="#2A2F3A" roughness={0.9} />
           <Edges color={GOLD_DARK} threshold={20} />
         </mesh>
-        <mesh position={[RAIL_X - GAUGE - 0.52, PANEL_TOP - PANEL_H / 2, 0]} visible={false}>
-          <boxGeometry args={[0.9, PANEL_H, ROAD_W]} />
+        <mesh position={[RAIL_X - (DECK_HALF + GAUGE) / 2 - 0.06, PANEL_TOP - PANEL_H / 2, 0]} visible={false}>
+          <boxGeometry args={[DECK_HALF - GAUGE - 0.12, PANEL_H, ROAD_W]} />
           <meshStandardMaterial color="#2A2F3A" roughness={0.9} />
           <Edges color={GOLD_DARK} threshold={20} />
         </mesh>
-        <mesh position={[RAIL_X + GAUGE + 0.52, PANEL_TOP - PANEL_H / 2, 0]} visible={false}>
-          <boxGeometry args={[0.9, PANEL_H, ROAD_W]} />
+        <mesh position={[RAIL_X + (DECK_HALF + GAUGE) / 2 + 0.06, PANEL_TOP - PANEL_H / 2, 0]} visible={false}>
+          <boxGeometry args={[DECK_HALF - GAUGE - 0.12, PANEL_H, ROAD_W]} />
           <meshStandardMaterial color="#2A2F3A" roughness={0.9} />
           <Edges color={GOLD_DARK} threshold={20} />
         </mesh>
       </group>
 
-      {/* Пандусы: дорога поднимается к настилу */}
+      {/* Пандусы: дорога поднимается к настилу (тот же профиль, что roadY) */}
       {[-1, 1].map(side => (
         <mesh
           key={side}
           ref={side < 0 ? rampA : rampB}
-          position={[RAIL_X + side * (GAUGE + 0.97 + 1.2), ASPHALT_TOP + (PANEL_TOP - ASPHALT_TOP) / 2, 0]}
-          rotation={[0, 0, side * rampAngle]}
+          position={[
+            RAIL_X + side * (DECK_HALF + RAMP_RUN / 2),
+            (ASPHALT_TOP + PANEL_TOP) / 2,
+            0,
+          ]}
+          rotation={[0, 0, side * RAMP_ANGLE]}
         >
-          <boxGeometry args={[2.55, 0.07, ROAD_W]} />
+          <boxGeometry args={[rampLen, 0.07, ROAD_W]} />
           <meshStandardMaterial color="#232833" roughness={0.95} transparent opacity={0} />
         </mesh>
       ))}
 
-      {/* Стоп-линия на полосе движения перед шлагбаумом */}
-      <mesh ref={stopLine} position={[RAIL_X - 5.4, ASPHALT_TOP + 0.008, 1.85]}>
+      {/* Стоп-линии на обеих полосах: автомобиль встаёт носом ДО линии,
+          до стрелы шлагбаума от неё остаётся ещё 2,3 м */}
+      <mesh ref={stopLine} position={[RAIL_X - 6.9, ASPHALT_TOP + 0.008, 1.85]}>
+        <boxGeometry args={[0.35, 0.012, ROAD_W / 2 - 0.4]} />
+        <meshBasicMaterial color="#E8EAF0" transparent opacity={0} toneMapped={false} />
+      </mesh>
+      <mesh ref={stopLineB} position={[RAIL_X + 6.9, ASPHALT_TOP + 0.008, -1.85]}>
         <boxGeometry args={[0.35, 0.012, ROAD_W / 2 - 0.4]} />
         <meshBasicMaterial color="#E8EAF0" transparent opacity={0} toneMapped={false} />
       </mesh>
@@ -725,9 +850,9 @@ export function CrossingWorks({ progressRef, timeRef }: { progressRef: ProgressR
       <CrossingBarrier position={[RAIL_X - 4.6, ASPHALT_TOP, 3.3]} armSign={-1} progressRef={progressRef} />
       <CrossingBarrier position={[RAIL_X + 4.6, ASPHALT_TOP, -3.3]} armSign={1} progressRef={progressRef} />
 
-      {/* Светофоры АПС лицом к своему потоку */}
-      <CrossingSignal position={[RAIL_X - 5.3, ASPHALT_TOP, 4.0]} rotationY={-Math.PI / 2} blinkPhase={0} progressRef={progressRef} timeRef={timeRef} />
-      <CrossingSignal position={[RAIL_X + 5.3, ASPHALT_TOP, -4.0]} rotationY={Math.PI / 2} blinkPhase={Math.PI} progressRef={progressRef} timeRef={timeRef} />
+      {/* Светофоры АПС лицом к своему потоку, в створе стоп-линии */}
+      <CrossingSignal position={[RAIL_X - 8.6, ASPHALT_TOP, 4.0]} rotationY={-Math.PI / 2} blinkPhase={0} progressRef={progressRef} timeRef={timeRef} />
+      <CrossingSignal position={[RAIL_X + 8.6, ASPHALT_TOP, -4.0]} rotationY={Math.PI / 2} blinkPhase={Math.PI} progressRef={progressRef} timeRef={timeRef} />
     </group>
   );
 }
@@ -744,7 +869,7 @@ function FlowPulse({
   const ref = useRef<THREE.Mesh>(null);
   useFrame(() => {
     const p = progressRef.current;
-    const vis = sub(phaseProgress(p, 6), 0.35, 0.55) * (p >= ALIVE_FROM ? 1 : 1 - phaseProgress(p, 7) * 0.7);
+    const vis = sub(phaseProgress(p, 'networks'), 0.35, 0.55) * (p >= ALIVE_FROM ? 1 : 1 - phaseProgress(p, 'industrial') * 0.7);
     const t = (timeRef.current * 0.2 + offset) % 1;
     if (ref.current) {
       ref.current.visible = vis > 0.02;
@@ -767,9 +892,11 @@ export function NetworkWorks({ progressRef, timeRef }: { progressRef: ProgressRe
 
   const PIPES = useMemo(
     () => [
-      { y: -0.85, z: -1.7, r: 0.3, color: '#0B3D36', em: TEAL, emI: 1.6 },  // водовод
-      { y: -1.1, z: -2.7, r: 0.22, color: '#3D2F0B', em: GOLD, emI: 1.4 }, // теплосеть
-      { y: -0.55, z: 2.3, r: 0.07, color: '#0B1E3D', em: BLUE, emI: 2.2 }, // ВОЛС
+      // Баланс свечения: слишком ярко — трубы читаются лежащими НА дороге,
+      // слишком тускло — теряются на финальном общем плане под полотном
+      { y: -0.85, z: -1.7, r: 0.3, color: '#0B3D36', em: TEAL, emI: 1.3 },  // водовод
+      { y: -1.1, z: -2.7, r: 0.22, color: '#3D2F0B', em: GOLD, emI: 1.15 }, // теплосеть
+      { y: -0.55, z: 2.3, r: 0.07, color: '#0B1E3D', em: BLUE, emI: 1.9 },  // ВОЛС
     ],
     [],
   );
@@ -785,26 +912,46 @@ export function NetworkWorks({ progressRef, timeRef }: { progressRef: ProgressRe
     [PIPES],
   );
 
-  const POLE_X = useMemo(() => [-11, -6.5, -2, 2.5, 7, 11.5], []);
+  /* Опоры ВЛ 10 кВ. Ось пути — RAIL_X = 3.0, насыпь занимает x 0.8…5.2,
+     поэтому пересечение выполнено АНКЕРНЫМ ПРОЛЁТОМ: две усиленные опоры
+     по обе стороны от пути (0.0 и 6.0), между ними опор нет и провод
+     поднят. Раньше опора стояла на x = 2.5 — состав шёл сквозь стойку. */
+  const POLES = useMemo(
+    () => [
+      { x: -12.5, h: 4.2 },
+      { x: -6.2, h: 4.2 },
+      { x: 0.0, h: 5.5 },   // анкерная перед путём
+      { x: 6.0, h: 5.5 },   // анкерная за путём
+      { x: 12.2, h: 4.2 },
+    ],
+    [],
+  );
+  /** Точка подвеса провода на опоре: чуть ниже вершины стойки */
+  const wireY = (h: number, top: boolean) => (top ? h + 0.05 : h - 0.2);
+
   const wirePts = useMemo(() => {
-    const mk = (yTop: number, zOff: number) => {
+    const mk = (top: boolean, zOff: number) => {
       const pts: THREE.Vector3[] = [];
-      for (let i = 0; i < POLE_X.length - 1; i++) {
-        for (let s = 0; s <= 8; s++) {
-          const t = s / 8;
-          const x = lerp(POLE_X[i], POLE_X[i + 1], t);
-          const sag = Math.sin(t * Math.PI) * 0.16;
-          pts.push(new THREE.Vector3(x, yTop - sag, LEP_Z + zOff));
+      for (let i = 0; i < POLES.length - 1; i++) {
+        const a = POLES[i];
+        const b = POLES[i + 1];
+        const span = b.x - a.x;
+        for (let s = 0; s <= 10; s++) {
+          const t = s / 10;
+          const x = lerp(a.x, b.x, t);
+          const y = lerp(wireY(a.h, top), wireY(b.h, top), t);
+          const sag = Math.sin(t * Math.PI) * span * 0.026;
+          pts.push(new THREE.Vector3(x, y - sag, LEP_Z + zOff));
         }
       }
       return pts;
     };
-    return [mk(4.0, -0.55), mk(4.0, 0.55), mk(4.25, 0)];
-  }, [POLE_X]);
+    return [mk(false, -0.55), mk(false, 0.55), mk(true, 0)];
+  }, [POLES]);
 
   useFrame(() => {
     const p = progressRef.current;
-    const q = phaseProgress(p, 6);
+    const q = phaseProgress(p, 'networks');
 
     if (gate.current) gate.current.visible = q > 0.005;
     if (pipes.current) {
@@ -846,24 +993,30 @@ export function NetworkWorks({ progressRef, timeRef }: { progressRef: ProgressRe
         <FlowPulse key={`c${o}`} y={-0.55} z={2.3} color="#9BBBFF" offset={o} progressRef={progressRef} timeRef={timeRef} />
       ))}
 
-      {/* Опоры ЛЭП */}
+      {/* Опоры ЛЭП: анкерные (у пути) выше и с подкосом */}
       <group ref={poles}>
-        {POLE_X.map(x => (
-          <group key={x} position={[x, 0, LEP_Z]}>
-            <mesh position={[0, 2.1, 0]}>
-              <cylinderGeometry args={[0.08, 0.12, 4.2, 8]} />
-              <meshStandardMaterial color={CONCRETE} roughness={0.8} />
+        {POLES.map(pole => (
+          <group key={pole.x} position={[pole.x, 0, LEP_Z]}>
+            <mesh position={[0, pole.h / 2, 0]}>
+              <cylinderGeometry args={[0.09, 0.14, pole.h, 8]} />
+              <meshStandardMaterial color={MAST} roughness={0.85} />
             </mesh>
-            <mesh position={[0, 3.95, 0]}>
+            <mesh position={[0, pole.h - 0.25, 0]}>
               <boxGeometry args={[0.12, 0.12, 1.5]} />
-              <meshStandardMaterial color={CONCRETE} roughness={0.8} />
+              <meshStandardMaterial color={MAST} roughness={0.85} />
             </mesh>
             {[-0.55, 0.55].map(oz => (
-              <mesh key={oz} position={[0, 4.03, oz]}>
+              <mesh key={oz} position={[0, pole.h - 0.17, oz]}>
                 <cylinderGeometry args={[0.035, 0.05, 0.14, 6]} />
                 <meshStandardMaterial color="#8AB8B0" roughness={0.4} />
               </mesh>
             ))}
+            {pole.h > 5 && (
+              <mesh position={[0, pole.h * 0.42, 0.62]} rotation={[0.42, 0, 0]}>
+                <cylinderGeometry args={[0.05, 0.07, pole.h * 0.95, 6]} />
+                <meshStandardMaterial color={MAST} roughness={0.85} />
+              </mesh>
+            )}
           </group>
         ))}
       </group>
@@ -875,7 +1028,7 @@ export function NetworkWorks({ progressRef, timeRef }: { progressRef: ProgressRe
           points={pts}
           color="#8A93A8"
           opacity={0.8}
-          progress={p => sub(phaseProgress(p, 6), 0.62 + i * 0.05, 0.9 + i * 0.05)}
+          progress={p => sub(phaseProgress(p, 'networks'), 0.62 + i * 0.05, 0.9 + i * 0.05)}
         />
       ))}
 
@@ -888,7 +1041,7 @@ export function NetworkWorks({ progressRef, timeRef }: { progressRef: ProgressRe
 function ManHole({ x, delay, progressRef }: { x: number; delay: number; progressRef: ProgressRef }) {
   const root = useRef<THREE.Group>(null);
   useFrame(() => {
-    const q = phaseProgress(progressRef.current, 6);
+    const q = phaseProgress(progressRef.current, 'networks');
     if (root.current) {
       const local = sub(q, 0.3 + delay * 0.06, 0.48 + delay * 0.06);
       root.current.visible = local > 0.01;
@@ -914,7 +1067,7 @@ function Transformer({ progressRef, timeRef }: { progressRef: ProgressRef; timeR
   const lamp = useRef<THREE.Sprite>(null);
   useFrame(() => {
     const p = progressRef.current;
-    const q = phaseProgress(p, 6);
+    const q = phaseProgress(p, 'networks');
     if (root.current) root.current.scale.y = S(sub(q, 0.55, 0.75));
     if (lamp.current) lamp.current.material.opacity = sub(q, 0.8, 0.95) * (0.5 + 0.5 * Math.abs(Math.sin(timeRef.current * 2)));
   });
@@ -935,6 +1088,96 @@ function Transformer({ progressRef, timeRef }: { progressRef: ProgressRef; timeR
 }
 
 /* ══════════════════════════════════════════════════════════════════════
+   СТРЕЛКА ПРИМЫКАНИЯ — съезд с главного пути на подъездной тупик.
+   Обе нитки строятся как трубы по осевой кривой, шпалы разворачиваются
+   по касательной. Отметка головки рельса одна с главным путём.
+   ══════════════════════════════════════════════════════════════════════ */
+function Turnout({ progressRef }: { progressRef: ProgressRef }) {
+  const root = useRef<THREE.Group>(null);
+
+  const { railGeos, ties } = useMemo(() => {
+    // Начало съезда вынесено за габарит переезда (дорога занимает z ±3.7)
+    const curve = new THREE.CatmullRomCurve3(
+      [
+        new THREE.Vector3(RAIL_X, 0, -4.8),
+        new THREE.Vector3(RAIL_X + 0.05, 0, -6.1),
+        new THREE.Vector3(RAIL_X + 0.6, 0, -7.5),
+        new THREE.Vector3(RAIL_X + 2.0, 0, -8.4),
+        new THREE.Vector3(RAIL_X + 3.8, 0, SPUR_Z),
+        new THREE.Vector3(RAIL_X + 5.6, 0, SPUR_Z),
+      ],
+      false,
+      'catmullrom',
+      0.5,
+    );
+    const N = 48;
+    const centre: THREE.Vector3[] = [];
+    const normals: THREE.Vector3[] = [];
+    for (let i = 0; i <= N; i++) {
+      const t = i / N;
+      centre.push(curve.getPoint(t));
+      const tan = curve.getTangent(t);
+      normals.push(new THREE.Vector3(-tan.z, 0, tan.x).normalize());
+    }
+    const mkRail = (side: number) =>
+      new THREE.TubeGeometry(
+        new THREE.CatmullRomCurve3(
+          centre.map((c, i) => c.clone().addScaledVector(normals[i], side * GAUGE).setY(RAIL_TOP - 0.045)),
+        ),
+        60,
+        0.045,
+        4,
+        false,
+      );
+    // Шпала разворачивается так, чтобы её длинная ось (локальный +Z) легла
+    // по нормали к оси пути
+    const tieList: { pos: [number, number, number]; rot: number }[] = [];
+    for (let i = 1; i < N; i += 3) {
+      const c = centre[i];
+      const n = normals[i];
+      tieList.push({ pos: [c.x, SLEEPER_TOP - 0.075, c.z], rot: Math.atan2(n.x, n.z) });
+    }
+    return { railGeos: [mkRail(-1), mkRail(1)], ties: tieList };
+  }, []);
+
+  useFrame(() => {
+    const q = phaseProgress(progressRef.current, 'industrial');
+    if (root.current) {
+      const v = sub(q, 0.04, 0.24);
+      root.current.visible = v > 0.02;
+      // ТОЛЬКО по высоте. setScalar сжимал группу к началу координат
+      // сцены (0,0,0), а геометрия съезда задана в мировых координатах —
+      // стрелка «прилетала» из центра площадки вместо того, чтобы
+      // подняться на своём месте.
+      root.current.scale.set(1, S(v), 1);
+    }
+  });
+
+  return (
+    <group ref={root} visible={false}>
+      {/* Балластная призма съезда */}
+      {ties.map((t, i) => (
+        <mesh key={`b${i}`} position={[t.pos[0], RAIL_EMB_H + 0.1, t.pos[2]]} rotation={[0, t.rot, 0]}>
+          <boxGeometry args={[1.2, 0.2, 3.2]} />
+          <meshStandardMaterial color="#2A2F3B" roughness={1} />
+        </mesh>
+      ))}
+      {ties.map((t, i) => (
+        <mesh key={`t${i}`} position={t.pos} rotation={[0, t.rot, 0]}>
+          <boxGeometry args={[0.22, 0.15, 2.5]} />
+          <meshStandardMaterial color="#494235" roughness={0.9} />
+        </mesh>
+      ))}
+      {railGeos.map((g, i) => (
+        <mesh key={i} geometry={g}>
+          <meshStandardMaterial color={STEEL} metalness={0.9} roughness={0.3} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════
    ФАЗА 7 — ПРОМПЛОЩАДКА: тупик, цех (каркас→панели→кровля), РВС,
    козловой кран грузит контейнер на платформу
    ══════════════════════════════════════════════════════════════════════ */
@@ -948,14 +1191,23 @@ export function IndustrialWorks({ progressRef, timeRef }: { progressRef: Progres
   const tank = useRef<THREE.Group>(null);
   const silos = useRef<THREE.Group>(null);
   const crane = useRef<THREE.Group>(null);
+  const trolley = useRef<THREE.Group>(null);
   const container = useRef<THREE.Group>(null);
+  const rope = useRef<THREE.Mesh>(null);
   const flatcar = useRef<THREE.Group>(null);
 
-  const WH = { x: 11.5, z: -11.6, w: 6, d: 4.6, h: 3.1 };
+  /* Отметки погрузки. Тупик поднят на SPUR_BASE, поэтому платформа,
+     контейнер и посадка груза считаются от него, а не от нуля. */
+  const CRANE_BEAM_Y = 4.7;
+  const HOOK_Y = CRANE_BEAM_Y - 0.18;
+  const FLATCAR_Y = SPUR_BASE + 0.46;      // тележки садятся на головку рельса
+  const CARGO_GROUND = SPUR_BASE + 0.05;   // контейнер на земле у крана
+  const CARGO_TOP = SPUR_BASE + 2.7;       // верхняя точка подъёма
+  const CARGO_LAND = SPUR_BASE + 0.95;     // на платформе
 
   useFrame(() => {
     const p = progressRef.current;
-    const q = phaseProgress(p, 7);
+    const q = phaseProgress(p, 'industrial');
     const t = timeRef.current;
 
     if (gate.current) gate.current.visible = q > 0.005;
@@ -970,11 +1222,25 @@ export function IndustrialWorks({ progressRef, timeRef }: { progressRef: Progres
     rise(spur, 0, 0.2);
     rise(frame, 0.12, 0.35);
     rise(panels, 0.32, 0.55);
-    rise(roof, 0.52, 0.66);
     rise(tank, 0.45, 0.68);
     rise(silos, 0.58, 0.74);
     rise(crane, 0.3, 0.55);
-    rise(flatcar, 0.15, 0.3);
+
+    // Платформу НЕ растягиваем: её группа поднята на высоту рельса, и
+    // масштаб по Y заставлял её раздуваться из воздуха. Она подаётся
+    // по тупику — как её и подают на самом деле.
+    if (flatcar.current) {
+      const v = travel(lin(q, 0.16, 0.32), 0.3);
+      flatcar.current.visible = v > 0.005;
+      flatcar.current.position.x = lerp(8.3 + 15, 8.3, v);
+    }
+    // Кровлю опускают на прогоны, а не «надувают» на месте
+    if (roof.current) {
+      const v = sub(q, 0.52, 0.68);
+      roof.current.visible = v > 0.01;
+      roof.current.position.y = WH_ROOF_Y + 0.11 + (1 - v) * 2.2;
+      (roof.current.material as THREE.MeshStandardMaterial).opacity = v;
+    }
 
     if (windowsMat.current) windowsMat.current.opacity = sub(q, 0.62, 0.8);
 
@@ -982,47 +1248,86 @@ export function IndustrialWorks({ progressRef, timeRef }: { progressRef: Progres
       // цикл крана: подъём → перенос → опускание на платформу
       const lift = sub(q, 0.62, 0.78);
       const drop = sub(q, 0.8, 0.95);
-      const y = lerp(0.45, 2.5, lift) - lerp(0, 1.62, drop);
-      const z = lerp(-10.1, SPUR_Z, lift);
-      const sway = (lift > 0.05 && drop < 0.9 ? 1 : 0) * Math.sin(t * 1.8) * 0.05 * (1 - drop);
-      container.current.visible = q > 0.05;
+      const y = lerp(CARGO_GROUND, CARGO_TOP, lift) - (CARGO_TOP - CARGO_LAND) * drop;
+      const z = lerp(-10.4, SPUR_Z, lift);
+      const hoisted = lift > 0.03 && drop < 0.99;
+      const sway = (hoisted ? 1 : 0) * Math.sin(t * 1.8) * 0.05 * (1 - drop);
+      // груз появляется вместе с краном, плавным масштабом, а не щелчком
+      const appear = sub(q, 0.50, 0.58);
+      container.current.visible = appear > 0.02;
+      container.current.scale.setScalar(S(appear));
       container.current.position.set(8.3, y, z);
       container.current.rotation.z = sway;
+
+      // Трос тянется от верха контейнера до крюка тележки, а не висит
+      // обрубком фиксированной длины.
+      if (rope.current) {
+        const len = Math.max(0.05, HOOK_Y - (y + 0.8));
+        rope.current.visible = hoisted && container.current.visible;
+        rope.current.position.y = 0.8 + len / 2;
+        rope.current.scale.y = len;
+      }
+      // Тележка едет над грузом (координаты крана: origin 8.3 / SPUR_Z)
+      if (trolley.current) trolley.current.position.z = z - SPUR_Z;
     }
   });
 
   return (
     <group ref={gate} visible={false}>
-      {/* Подъездной тупик вдоль X */}
+      {/* Подъездной тупик вдоль X — на собственной насыпи, чтобы головка
+          его рельса совпала с главным путём и примыкание было возможным.
+          Группа стоит на НУЛЕВОЙ отметке, а подъём заложен в координаты
+          детей: rise() масштабирует по Y относительно начала группы, и
+          при position.y = SPUR_BASE путь с рельсами вырастал из воздуха
+          на высоте 0,65 м. */}
       <group ref={spur} position={[10.2, 0, SPUR_Z]}>
-        <mesh position={[0, 0.08, 0]}>
+        <mesh position={[0, SPUR_BASE / 2, 0]}>
+          <boxGeometry args={[12.4, SPUR_BASE, 3.6]} />
+          <meshStandardMaterial color="#272C37" roughness={1} />
+          <Edges color={GOLD_DARK} threshold={20} />
+        </mesh>
+        <mesh position={[0, SPUR_BASE + 0.08, 0]}>
           <boxGeometry args={[12, 0.16, 2.6]} />
           <meshStandardMaterial color="#2E3340" roughness={1} />
         </mesh>
         {Array.from({ length: 14 }).map((_, i) => (
-          <mesh key={i} position={[-5.4 + i * 0.83, 0.2, 0]}>
+          <mesh key={i} position={[-5.4 + i * 0.83, SPUR_BASE + 0.2, 0]}>
             <boxGeometry args={[0.22, 0.12, 2.1]} />
             <meshStandardMaterial color="#494235" roughness={0.9} />
           </mesh>
         ))}
         {[-GAUGE, GAUGE].map(oz => (
-          <mesh key={oz} position={[0, 0.32, oz]}>
+          <mesh key={oz} position={[0, SPUR_BASE + 0.32, oz]}>
             <boxGeometry args={[12, 0.14, 0.07]} />
             <meshStandardMaterial color={STEEL} metalness={0.9} roughness={0.3} />
           </mesh>
         ))}
       </group>
 
-      {/* Платформа под погрузку */}
-      <group ref={flatcar} position={[8.3, 0.4, SPUR_Z]}>
+      {/* Стрелка примыкания: тупик выходит на главный путь, а не обрывается
+          в полутора метрах от него */}
+      <Turnout progressRef={progressRef} />
+
+      {/* Платформа под погрузку. Прежний #20242E сливался с тёмным
+          тупиком, и контейнер выглядел поставленным в пустоту —
+          поэтому настил осветлён и обведён. */}
+      <group ref={flatcar} position={[8.3, FLATCAR_Y, SPUR_Z]}>
         <mesh position={[0, 0.28, 0]}>
           <boxGeometry args={[3.6, 0.22, 1.5]} />
-          <meshStandardMaterial color="#20242E" roughness={0.8} />
+          <meshStandardMaterial color="#414C5E" roughness={0.75} metalness={0.2} />
+          <Edges color={GOLD_DARK} threshold={20} />
         </mesh>
+        {/* Борта — по ним читается, что груз стоит именно на платформе */}
+        {[-0.82, 0.82].map(oz => (
+          <mesh key={oz} position={[0, 0.44, oz]}>
+            <boxGeometry args={[3.6, 0.14, 0.09]} />
+            <meshStandardMaterial color="#55617A" roughness={0.7} metalness={0.3} />
+          </mesh>
+        ))}
         {[-1.2, 1.2].map(ox => (
           <mesh key={ox} position={[ox, 0.05, 0]}>
             <boxGeometry args={[0.9, 0.24, 1.4]} />
-            <meshStandardMaterial color="#12151C" roughness={0.9} />
+            <meshStandardMaterial color="#1E2430" roughness={0.9} />
           </mesh>
         ))}
       </group>
@@ -1037,22 +1342,32 @@ export function IndustrialWorks({ progressRef, timeRef }: { progressRef: Progres
             </mesh>
           )),
         )}
+        {/* Прогоны: связывают стены с кровлей — без них кровля читалась
+            оторванной плитой, висящей над цехом */}
         {[-WH.w / 2, 0, WH.w / 2].map(ox => (
-          <mesh key={ox} position={[ox, WH.h + 0.25, 0]} rotation={[0, 0, 0]}>
-            <boxGeometry args={[0.12, 0.5, WH.d + 0.3]} />
-            <meshStandardMaterial color={GOLD_DARK} roughness={0.7} />
+          <mesh key={ox} position={[ox, WH.h + WH_PURLIN / 2, 0]}>
+            <boxGeometry args={[0.2, WH_PURLIN, WH.d + 0.3]} />
+            <meshStandardMaterial color={GOLD} emissive={GOLD} emissiveIntensity={0.14} roughness={0.7} />
+          </mesh>
+        ))}
+        {[-WH.d / 2 - 0.1, WH.d / 2 + 0.1].map(oz => (
+          <mesh key={oz} position={[0, WH.h + WH_PURLIN / 2, oz]}>
+            <boxGeometry args={[WH.w + 0.2, WH_PURLIN * 0.7, 0.16]} />
+            <meshStandardMaterial color={GOLD_DARK} roughness={0.8} />
           </mesh>
         ))}
       </group>
       <group ref={panels} position={[WH.x, 0, WH.z]}>
         <mesh position={[0, WH.h / 2, 0]}>
           <boxGeometry args={[WH.w - 0.1, WH.h - 0.15, WH.d - 0.1]} />
-          {/* Сэндвич-панели: светлее фона, с рёбрами — здание не должно сливаться с ночью */}
-          <meshStandardMaterial color="#2E3846" roughness={0.8} />
+          {/* Сэндвич-панели. Прежний #2E3846 сливался с ночным фоном, и
+              цех читался «столом»: кровля на ножках без стен. */}
+          <meshStandardMaterial color="#3E4B5E" roughness={0.8} />
+          <Edges color={GOLD_DARK} threshold={20} />
         </mesh>
         <mesh position={[0, WH.h / 2, 0]}>
           <boxGeometry args={[WH.w - 0.08, WH.h - 0.13, WH.d - 0.08]} />
-          <meshBasicMaterial color={GOLD_DARK} wireframe transparent opacity={0.22} toneMapped={false} />
+          <meshBasicMaterial color={GOLD_DARK} wireframe transparent opacity={0.3} toneMapped={false} />
         </mesh>
         {/* Ленточное остекление со стороны пути */}
         <mesh position={[0, 1.9, WH.d / 2 + 0.01]}>
@@ -1060,9 +1375,9 @@ export function IndustrialWorks({ progressRef, timeRef }: { progressRef: Progres
           <meshBasicMaterial ref={windowsMat} color={TEAL} transparent opacity={0} toneMapped={false} />
         </mesh>
       </group>
-      <mesh ref={roof} position={[WH.x, WH.h + 0.5, WH.z]}>
+      <mesh ref={roof} position={[WH.x, WH_ROOF_Y + 0.11, WH.z]} visible={false}>
         <boxGeometry args={[WH.w + 0.4, 0.22, WH.d + 0.4]} />
-        <meshStandardMaterial color="#252D3B" roughness={0.9} />
+        <meshStandardMaterial color="#252D3B" roughness={0.9} transparent opacity={0} />
         <Edges color={GOLD_DARK} threshold={20} />
       </mesh>
 
@@ -1070,12 +1385,12 @@ export function IndustrialWorks({ progressRef, timeRef }: { progressRef: Progres
       <group ref={tank} position={[15.2, 0, -4.6]}>
         <mesh position={[0, 1.3, 0]}>
           <cylinderGeometry args={[1.5, 1.5, 2.6, 22]} />
-          <meshStandardMaterial color="#202A3A" roughness={0.65} metalness={0.3} />
+          <meshStandardMaterial color="#2E3849" roughness={0.65} metalness={0.3} />
           <Edges color={GOLD_DARK} threshold={30} />
         </mesh>
         <mesh position={[0, 2.72, 0]} scale={[1, 0.4, 1]}>
           <sphereGeometry args={[1.5, 22, 10, 0, Math.PI * 2, 0, Math.PI / 2]} />
-          <meshStandardMaterial color="#1E2632" roughness={0.7} metalness={0.3} />
+          <meshStandardMaterial color="#28323F" roughness={0.7} metalness={0.3} />
         </mesh>
         <mesh position={[-1.6, 1.3, 0]} rotation={[0, 0, 0.5]}>
           <boxGeometry args={[0.1, 3.1, 0.5]} />
@@ -1088,7 +1403,7 @@ export function IndustrialWorks({ progressRef, timeRef }: { progressRef: Progres
         {[[13.2, -14.2], [14.6, -15]].map(([x, z], i) => (
           <mesh key={i} position={[x, 1.1, z]}>
             <cylinderGeometry args={[0.7, 0.7, 2.2, 14]} />
-            <meshStandardMaterial color="#202A3A" roughness={0.7} metalness={0.3} />
+            <meshStandardMaterial color="#2E3849" roughness={0.7} metalness={0.3} />
           </mesh>
         ))}
       </group>
@@ -1101,14 +1416,17 @@ export function IndustrialWorks({ progressRef, timeRef }: { progressRef: Progres
             <meshStandardMaterial color={GOLD} emissive={GOLD} emissiveIntensity={0.25} roughness={0.6} />
           </mesh>
         ))}
-        <mesh position={[0, 4.7, 0]}>
+        <mesh position={[0, CRANE_BEAM_Y, 0]}>
           <boxGeometry args={[0.4, 0.36, 5.6]} />
           <meshStandardMaterial color={GOLD} emissive={GOLD} emissiveIntensity={0.25} roughness={0.6} />
         </mesh>
-        <mesh position={[0, 4.35, -1.2]}>
-          <boxGeometry args={[0.5, 0.4, 0.55]} />
-          <meshStandardMaterial color={CONCRETE} roughness={0.6} />
-        </mesh>
+        {/* Грузовая тележка — едет по балке над контейнером */}
+        <group ref={trolley} position={[0, 0, -1.9]}>
+          <mesh position={[0, CRANE_BEAM_Y - 0.35, 0]}>
+            <boxGeometry args={[0.5, 0.4, 0.55]} />
+            <meshStandardMaterial color={MAST} roughness={0.6} />
+          </mesh>
+        </group>
         <GlowSprite color={TEAL} size={0.6} position={[0, 4.95, 2.6]} opacity={0.7} />
       </group>
 
@@ -1119,10 +1437,10 @@ export function IndustrialWorks({ progressRef, timeRef }: { progressRef: Progres
           <meshStandardMaterial color="#7A3B2E" roughness={0.8} />
           <Edges color="#A85B48" threshold={20} />
         </mesh>
-        {/* Трос */}
-        <mesh position={[0, 1.6, 0]}>
-          <cylinderGeometry args={[0.015, 0.015, 1.6, 4]} />
-          <meshStandardMaterial color="#8A93A8" roughness={0.6} />
+        {/* Трос: длина считается до крюка тележки каждый кадр */}
+        <mesh ref={rope} position={[0, 1.3, 0]} visible={false}>
+          <cylinderGeometry args={[0.02, 0.02, 1, 5]} />
+          <meshStandardMaterial color="#8A93A8" roughness={0.6} metalness={0.4} />
         </mesh>
       </group>
     </group>
@@ -1175,12 +1493,13 @@ export function ExpertiseDocs({ progressRef, timeRef }: { progressRef: ProgressR
   useFrame(() => {
     const p = progressRef.current;
     // фаза 2: экспертиза идёт сразу после проектирования
-    const q = phaseProgress(p, 2);
+    const q = phaseProgress(p, 'expertise');
     const t = timeRef.current;
     if (!root.current) return;
 
     const vis = sub(q, 0.02, 0.2);
-    const out = subAbs(p, 0.262, 0.284); // растворяется перед выходом техники
+    // растворяется на входе в земляные работы (было прибито к абсолютному p)
+    const out = sub(phaseProgress(p, 'earth'), 0, 0.1);
     root.current.visible = vis > 0.01 && out < 0.99;
 
     const bob = Math.sin(t * 1.1) * 0.05;

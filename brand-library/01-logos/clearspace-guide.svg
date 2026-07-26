@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- WAG logo clearspace & minimum sizes guide -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" font-family="Onest, Arial, sans-serif">
+  <rect width="1200" height="760" fill="#04060C"/>
+  <text x="60" y="70" fill="#F0F2F8" font-size="28" font-weight="700" letter-spacing="2">ОХРАННОЕ ПОЛЕ / CLEARSPACE</text>
+  <text x="60" y="100" fill="#8892A4" font-size="15">X = ¼ высоты знака. Внутри поля — никаких элементов, текста и краёв макета.</text>
+
+  <!-- clearspace box -->
+  <g transform="translate(280,160)">
+    <!-- outer dashed = clearspace -->
+    <rect x="0" y="0" width="640" height="400" fill="none" stroke="#00C4A7" stroke-width="1.5" stroke-dasharray="8 6"/>
+    <!-- inner logo area -->
+    <rect x="80" y="50" width="480" height="300" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+    <!-- logo -->
+    <g transform="translate(80,50) scale(0.66808)">
+      <defs>
+        <linearGradient id="gg" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#D4A843"/><stop offset="50%" stop-color="#F0C85A"/><stop offset="100%" stop-color="#C49A30"/>
+        </linearGradient>
+      </defs>
+      <path fill="url(#gg)" d="M613.8,437.27c-62.3-103.58-132.83-240.95-201.5-355.51L367.22,0h-16.51c-5.26,19.77-26.22,45.86-33.35,61.03-12.21,25.99-1.91,26.43,18.72,64.07l206.32,360.76,30.4,59.77-106.51.95c-9.82-18.63-13.04-29.8-27.52-49.02l-155.86-274.97c-10.29-18.78-10.26-28.99-25.78-40.4-19.27,12.94-14.27,13.44-25.87,34.79-8.93,16.45-15.27,26.27-23.65,42.54l-143.13,248.42c-77.1,142.82-94.44,127.54-.02,127,86.18-.49,172.52-.02,258.72-.02-2-24.09-9.24-28.93-19.64-46.55-33.15-56.19-11.28-41.79-156.49-41.79,3.5-13.11,16.34-33.82,24.36-47.34l91.22-145.89c4.18,18,25.71,50.9,36.21,68.58,8.16,13.76,11.9,23.61,19.08,36.06,7.25,12.59,11.91,19.4,19.91,35.23l78.91,141.69h302.74c-2.68-32.14-85.4-163.93-105.69-197.65Z"/>
+    </g>
+    <!-- X measures -->
+    <g fill="#00C4A7" font-size="16" font-weight="600">
+      <text x="34" y="205">X</text>
+      <text x="596" y="205">X</text>
+      <text x="316" y="32">X</text>
+      <text x="316" y="382">X</text>
+    </g>
+  </g>
+
+  <!-- min sizes -->
+  <text x="60" y="640" fill="#F0F2F8" font-size="22" font-weight="700" letter-spacing="1.5">МИНИМАЛЬНЫЕ РАЗМЕРЫ</text>
+  <g fill="#8892A4" font-size="15">
+    <text x="60" y="675">Печать: знак ≥ 8 мм в высоту · wordmark ≥ 22 мм в ширину</text>
+    <text x="60" y="700">Экран: знак ≥ 24 px · wordmark ≥ 80 px</text>
+    <text x="60" y="725">Меньше минимума — использовать только треугольный знак без букв.</text>
+  </g>
+</svg>

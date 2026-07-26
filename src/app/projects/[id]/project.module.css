@@ -183,18 +183,51 @@
   margin-top: var(--space-sm);
 }
 
+/* Миниатюра — настоящая кнопка: сбрасываем браузерные отступы и фон,
+   чтобы она выглядела как плитка, но оставалась доступной с клавиатуры. */
 .imageThumbWrap {
   position: relative; /* anchor for next/image fill */
+  display: block;
+  width: 100%;
+  padding: 0;
   aspect-ratio: 4 / 3;
   border-radius: var(--radius-md);
   overflow: hidden;
   border: 1px solid var(--glass-border);
+  background: var(--bg-secondary);
   cursor: pointer;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, opacity 0.2s;
+  opacity: 0.62;
 }
 
 .imageThumbWrap:hover {
   border-color: rgba(212,168,67,0.3);
+  opacity: 1;
+}
+
+.imageThumbWrap:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.imageThumbWrapActive {
+  border-color: var(--gold);
+  opacity: 1;
+}
+
+/* Счётчик кадров поверх главного фото — сразу видно, что фотографий больше. */
+.imageCounter {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  font-family: monospace;
+  font-size: 0.72rem;
+  color: var(--text-primary);
+  background: rgba(4,6,12,0.72);
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  padding: 3px 10px;
+  pointer-events: none;
 }
 
 .imageThumbImg {

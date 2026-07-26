@@ -11,6 +11,17 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
+/* Русское склонение по числу: 1 цикл, 2–4 цикла, 5+ циклов.
+   Раньше формы были зашиты жёстко и врали на любом количестве, кроме 2–4. */
+function plural(n: number, one: string, few: string, many: string) {
+  const mod100 = n % 100;
+  if (mod100 >= 11 && mod100 <= 14) return many;
+  const mod10 = n % 10;
+  if (mod10 === 1) return one;
+  if (mod10 >= 2 && mod10 <= 4) return few;
+  return many;
+}
+
 export default async function DesignPage() {
   const projects = await getDesignProjects();
 
@@ -32,10 +43,10 @@ export default async function DesignPage() {
               <span className="text-gradient-gold">проектные работы</span>
             </h1>
             <p className={`${styles.heroDesc} hero-reveal-3`}>
-              {projects.length} объектов в реестре —{' '}
-              {fullCycle} полных цикла,{' '}
-              {design} рабочих проектов,{' '}
-              {docs} технических документаций,{' '}
+              {projects.length} {plural(projects.length, 'объект', 'объекта', 'объектов')} в реестре —{' '}
+              {fullCycle} {plural(fullCycle, 'полный цикл', 'полных цикла', 'полных циклов')},{' '}
+              {design} {plural(design, 'рабочий проект', 'рабочих проекта', 'рабочих проектов')},{' '}
+              {docs} {plural(docs, 'техническая документация', 'технические документации', 'технических документаций')},{' '}
               {feasibility} ТЭО.
             </p>
           </div>

@@ -174,7 +174,93 @@
   flex-wrap: wrap;
 }
 
+/* ─── Чертежи проекта ──────────────────────────────────────────────── */
+
+.drawingsCard {
+  composes: worksCard;
+}
+
+/* Золотая линия сверху — отличает блок чертежей от бирюзового блока работ. */
+.drawingsCard::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212,168,67,0.45), transparent);
+}
+
+.drawingsCount {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 2px 9px;
+  border: 1px solid rgba(212,168,67,0.35);
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--gold);
+  vertical-align: middle;
+}
+
+.drawingsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-md);
+}
+
+/* Листы приходят с разным соотношением сторон (от планов 5:1 до узлов 1:1),
+   поэтому кадр фиксированный, а изображение вписывается целиком. */
+.drawingFrame {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 10;
+  /* Чертежи выполнены под белый лист — на тёмной подложке тонкие линии
+     плана теряются. Держим бумажный фон, как на карточках в списке. */
+  background: #f4f1ea;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+
+.drawingFrame:hover {
+  border-color: rgba(212,168,67,0.45);
+  transform: translateY(-2px);
+}
+
+.drawingImg {
+  object-fit: contain;
+  padding: 10px;
+}
+
+.drawingZoom {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(4,6,12,0.72);
+  border: 1px solid var(--glass-border);
+  color: var(--gold);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.drawingFrame:hover .drawingZoom { opacity: 1; }
+
 @media (max-width: 600px) {
   .heroTitle { font-size: clamp(1.6rem, 5vw, 2.5rem); }
   .breadNav span:last-child { max-width: 200px; }
+  .drawingsGrid { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawingFrame,
+  .drawingZoom { transition: none; }
+  .drawingFrame:hover { transform: none; }
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Направление «Проектирование» — чертёж/график с компасом. Источник: src/components/icons/ServiceIcons.tsx.
+     currentColor: задайте fill/stroke цветом текста или замените на #D4A843 / #C9941F. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" width="64" height="64" color="#D4A843">
+  <rect x="10" y="8" width="40" height="48" rx="3" stroke="currentColor" stroke-width="1.5"/>
+  <path d="M16 16h28M16 22h20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M18 46V32M18 46h22" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M18 42 L22 38 L26 40 L30 34 L34 36 L38 30" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="22" cy="38" r="1.2" fill="currentColor"/>
+  <circle cx="26" cy="40" r="1.2" fill="currentColor"/>
+  <circle cx="30" cy="34" r="1.2" fill="currentColor"/>
+  <circle cx="34" cy="36" r="1.2" fill="currentColor"/>
+  <circle cx="38" cy="30" r="1.2" fill="currentColor"/>
+  <circle cx="46" cy="36" r="6" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <path d="M46 32v8M42 36h8" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+</svg>

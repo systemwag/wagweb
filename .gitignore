@@ -71,3 +71,12 @@ public/_originals/
 
 # Source PNG originals moved out of public (100+ MB, not for deploy)
 ../_site-originals/
+
+# Кэш исходной геометрии OSM для scripts/build-kz-geo.mjs
+.cache/
+
+# Скриншоты визуальных проверок — отладочный вывод, десятки МБ за прогон
+/screenshots_*/
+
+# Разовые скрипты визуальных проверок и отладки (префикс _), не тулинг проекта
+scripts/_*.mjs

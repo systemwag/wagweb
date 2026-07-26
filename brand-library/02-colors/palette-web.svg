@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="210mm" height="297mm" viewBox="0 0 794 1123" font-family="Onest, Arial, sans-serif">
+  <rect width="794" height="1123" fill="#04060C"/>
+  <text x="64" y="72" fill="#F0F2F8" font-size="30" font-weight="700" letter-spacing="3">WAG · WEB PALETTE</text>
+  <text x="64" y="100" fill="#8892A4" font-size="14">Экранная палитра сайта (RGB). Квадраты — под инструмент «Пипетка».</text>
+  <line x1="64" y1="118" x2="730" y2="118" stroke="#D4A843" stroke-width="1.5" opacity="0.6"/>
+  
+  <g>
+    <rect x="64" y="150" width="190" height="130" fill="#04060C" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+    <text x="64" y="302" fill="#F0F2F8" font-size="14" font-weight="700" letter-spacing="0.5">bg-primary</text>
+    <text x="64" y="321" fill="#D4A843" font-size="13" font-family="Courier New, monospace">#04060C</text>
+    <text x="64" y="338" fill="#8892A4" font-size="11">RGB 4 6 12 · CMYK 67 50 0 95</text>
+    <text x="64" y="354" fill="#8892A4" font-size="11">основной тёмный фон</text>
+  </g>
+  <g>
+    <rect x="296" y="150" width="190" height="130" fill="#070B16" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+    <text x="296" y="302" fill="#F0F2F8" font-size="14" font-weight="700" letter-spacing="0.5">bg-secondary</text>
+    <text x="296" y="321" fill="#D4A843" font-size="13" font-family="Courier New, monospace">#070B16</text>
+    <text x="296" y="338" fill="#8892A4" font-size="11">RGB 7 11 22 · CMYK 68 50 0 91</text>
+    <text x="296" y="354" fill="#8892A4" font-size="11">вторичный фон секций</text>
+  </g>
+  <g>
+    <rect x="528" y="150" width="190" height="130" fill="#D4A843" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+    <text x="528" y="302" fill="#F0F2F8" font-size="14" font-weight="700" letter-spacing="0.5">gold</text>
+    <text x="528" y="321" fill="#D4A843" font-size="13" font-family="Courier New, monospace">#D4A843</text>
+    <text x="528" y="338" fill="#8892A4" font-size="11">RGB 212 168 67 · CMYK 0 21 68 17</text>
+    <text x="528" y="354" fill="#8892A4" font-size="11">основной золотой</text>
+  </g>
+  <g>
+    <rect x="64" y="372" width="190" height="130" fill="#F0C85A" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+    <text x="64" y="524" fill="#F0F2F8" font-size="14" font-weight="700" letter-spacing="0.5">gold-light</text>
+    <text x="64" y="543" fill="#D4A843" font-size="13" font-family="Courier New, monospace">#F0C85A</text>
+    <text x="64" y="560" fill="#8892A4" font-size="11">RGB 240 200 90 · CMYK 0 17 62 6</text>
+    <text x="64" y="576" fill="#8892A4" font-size="11">светлый золотой</text>
+  </g>
+  <g>
+    <rect x="296" y="372" width="190" height="130" fill="#C49A30" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+    <text x="296" y="524" fill="#F0F2F8" font-size="14" font-weight="700" letter-spacing="0.5">gold-dark</text>
+    <text x="296" y="543" fill="#D4A843" font-size="13" font-family="Courier New, monospace">#C49A30</text>
+    <text x="296" y="560" fill="#8892A4" font-size="11">RGB 196 154 48 · CMYK 0 21 76 23</text>
+    <text x="296" y="576" fill="#8892A4" font-size="11">тёмный стоп градиента</text>
+  </g>
+  <g>
+    <rect x="528" y="372" width="190" height="130" fill="#00C4A7" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+    <text x="528" y="524" fill="#F0F2F8" font-size="14" font-weight="700" letter-spacing="0.5">teal</text>
+    <text x="528" y="543" fill="#D4A843" font-size="13" font-family="Courier New, monospace">#00C4A7</text>
+    <text x="528" y="560" fill="#8892A4" font-size="11">RGB 0 196 167 · CMYK 100 0 15 23</text>
+    <text x="528" y="576" fill="#8892A4" font-size="11">вторичный акцент</text>
+  </g>
+  <g>
+    <rect x="64" y="594" width="190" height="130" fill="#00DDB8" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+    <text x="64" y="746" fill="#F0F2F8" font-size="14" font-weight="700" letter-spacing="0.5">teal-light</text>
+    <text x="64" y="765" fill="#D4A843" font-size="13" font-family="Courier New, monospace">#00DDB8</text>
+    <text x="64" y="782" fill="#8892A4" font-size="11">RGB 0 221 184 · CMYK 100 0 17 13</text>
+    <text x="64" y="798" fill="#8892A4" font-size="11">светлый teal</text>
+  </g>
+  <g>
+    <rect x="296" y="594" width="190" height="130" fill="#4F84FF" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+    <text x="296" y="746" fill="#F0F2F8" font-size="14" font-weight="700" letter-spacing="0.5">blue</text>
+    <text x="296" y="765" fill="#D4A843" font-size="13" font-family="Courier New, monospace">#4F84FF</text>
+    <text x="296" y="782" fill="#8892A4" font-size="11">RGB 79 132 255 · CMYK 69 48 0 0</text>
+    <text x="296" y="798" fill="#8892A4" font-size="11">третичный акцент</text>
+  </g>
+  <g>
+    <rect x="528" y="594" width="190" height="130" fill="#FF5050" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+    <text x="528" y="746" fill="#F0F2F8" font-size="14" font-weight="700" letter-spacing="0.5">error</text>
+    <text x="528" y="765" fill="#D4A843" font-size="13" font-family="Courier New, monospace">#FF5050</text>
+    <text x="528" y="782" fill="#8892A4" font-size="11">RGB 255 80 80 · CMYK 0 69 69 0</text>
+    <text x="528" y="798" fill="#8892A4" font-size="11">ошибки/предупреждения</text>
+  </g>
+  <g>
+    <rect x="64" y="816" width="190" height="130" fill="#F0F2F8" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+    <text x="64" y="968" fill="#F0F2F8" font-size="14" font-weight="700" letter-spacing="0.5">text-primary</text>
+    <text x="64" y="987" fill="#D4A843" font-size="13" font-family="Courier New, monospace">#F0F2F8</text>
+    <text x="64" y="1004" fill="#8892A4" font-size="11">RGB 240 242 248 · CMYK 3 2 0 3</text>
+    <text x="64" y="1020" fill="#8892A4" font-size="11">основной текст</text>
+  </g>
+  <g>
+    <rect x="296" y="816" width="190" height="130" fill="#8892A4" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+    <text x="296" y="968" fill="#F0F2F8" font-size="14" font-weight="700" letter-spacing="0.5">text-secondary</text>
+    <text x="296" y="987" fill="#D4A843" font-size="13" font-family="Courier New, monospace">#8892A4</text>
+    <text x="296" y="1004" fill="#8892A4" font-size="11">RGB 136 146 164 · CMYK 17 11 0 36</text>
+    <text x="296" y="1020" fill="#8892A4" font-size="11">вторичный текст</text>
+  </g>
+  <g>
+    <rect x="528" y="816" width="190" height="130" fill="#4A5568" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+    <text x="528" y="968" fill="#F0F2F8" font-size="14" font-weight="700" letter-spacing="0.5">text-muted</text>
+    <text x="528" y="987" fill="#D4A843" font-size="13" font-family="Courier New, monospace">#4A5568</text>
+    <text x="528" y="1004" fill="#8892A4" font-size="11">RGB 74 85 104 · CMYK 29 18 0 59</text>
+    <text x="528" y="1020" fill="#8892A4" font-size="11">приглушённый текст</text>
+  </g>
+  <text x="64" y="1083" fill="#8892A4" font-size="11">West Arlan Group · Brand Library · CMYK — ориентир (уточнить по профилю типографии)</text>
+</svg>

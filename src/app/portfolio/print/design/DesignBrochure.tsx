@@ -233,8 +233,9 @@ export default async function DesignBrochure({ content: c, buttons }: { content:
     getMaintenanceProjects(),
     getDesignProjects(),
   ]);
-  const COUNT_PD = design.length || 87;
-  const COUNT_REGISTRY = (projects.length || 29) + (maintenance.length || 20) + COUNT_PD;
+  // Фоллбэки сверены с прод-БД 26.07.2026 — держать в согласии с PrintBrochure.tsx.
+  const COUNT_PD = design.length || 100;
+  const COUNT_REGISTRY = (projects.length || 32) + (maintenance.length || 20) + COUNT_PD;
 
   // The merged «Отзывы + Партнёры» page shows a curated subset: 3 letters
   // with quality-focused (not rail-specific) quotes and 12 of the 16 partner

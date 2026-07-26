@@ -1,0 +1,98 @@
+.wrap { position: relative; }
+
+/* Поле повторяет .input из admin.module.css — держим стили рядом, чтобы
+   компонент можно было вставить в любую из трёх форм без обвязки. */
+.input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  transition: border-color var(--t-fast);
+}
+.input:focus { outline: none; border-color: var(--gold); }
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 0.78rem;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--status-color);
+  box-shadow: 0 0 8px var(--status-color);
+}
+
+.text { color: var(--status-color); }
+
+.status[data-kind='ok']    { --status-color: var(--teal); }
+.status[data-kind='pin']   { --status-color: var(--gold); }
+.status[data-kind='bad']   { --status-color: var(--error); }
+.status[data-kind='empty'] { --status-color: var(--text-muted); }
+.status[data-kind='empty'] .dot { box-shadow: none; }
+
+.toggle {
+  margin-left: auto;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color var(--t-fast);
+}
+.toggle:hover { color: var(--gold); }
+
+.help {
+  margin-top: 6px;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+/* Всплывающая панель: в колонке формы карта получалась ~250 px шириной —
+   ткнуть в нужное место невозможно. */
+.picker {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  left: 0;
+  width: min(620px, 88vw);
+  padding: var(--space-md);
+  border: 1px solid var(--glass-border-hover);
+  border-radius: var(--radius-md);
+  background: rgba(7, 11, 22, 0.97);
+  backdrop-filter: blur(var(--blur-md));
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.7);
+}
+
+@media (max-width: 700px) {
+  .picker { position: static; width: auto; margin-top: var(--space-sm); }
+}
+
+.done {
+  margin-top: var(--space-sm);
+  padding: 7px 18px;
+  border: 1px solid var(--gold);
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--gold);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background var(--t-fast);
+}
+.done:hover { background: var(--gold-dim); }

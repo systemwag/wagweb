@@ -6,6 +6,9 @@ import CaseSheet, { CaseAnnexPage } from './CaseSheet';
 import PztmShowcase from './PztmShowcase';
 import PROJECT_CASES from './content/cases-ru';
 import PROJECT_CASES_EN from './content/cases-en';
+import { KZ_REGIONS, KZ_OUTLINE, VIEWBOX } from '@/lib/geo/kz-geo.generated';
+import { buildGeoIndex, KIND_META, KIND_ORDER } from '@/lib/geo/works';
+import { hubRadius, layoutHubLabels, layoutRegionLabels, relaxHubs, tierFor } from '@/lib/geo/layout';
 
 /* ─────────────────────────────────────────────────────────────────
    Shared print-brochure layout. All locale-specific copy comes in
@@ -36,10 +39,9 @@ function WagMark({ className, gradientId = 'wagGold' }: { className?: string; gr
   );
 }
 
-/* The KZ map is no longer inlined as SVG path data — it's pre-baked to
-   public/portfolio/kz-map.png by scripts/bake-kz-map.mjs. Saves ~50 KB
-   from the rendered PDF and avoids Chromium re-parsing the path on every
-   build. */
+/* Карта разворота «масштаб» рисуется вектором из src/lib/geo — той же
+   геометрией и той же раскладкой узлов, что и карта на сайте. Растровый
+   public/portfolio/kz-map.png больше не используется. */
 
 /* ─────────────────────────────────────────────────────────────────
    Locale-invariant assets — icons & scan images, zipped by index
@@ -248,11 +250,21 @@ export default async function PrintBrochure({
     getDesignProjects(),
   ]);
 
-  const COUNT_SMR_BUILD = projects.length || 29;       // new construction объекты
+  // Фоллбэки сверены с прод-БД 26.07.2026 (миграции supabase/migrations/2026072605*).
+  // Если правишь реестр — обнови и эти числа, иначе без Supabase брошюра соврёт.
+  const COUNT_SMR_BUILD = projects.length || 32;       // new construction объекты
   const COUNT_MAINTENANCE = maintenance.length || 20;  // maintenance / обслуживание объекты
   const COUNT_SMR = COUNT_SMR_BUILD + COUNT_MAINTENANCE; // total СМР, used elsewhere
-  const COUNT_PD = design.length || 87;
+  const COUNT_PD = design.length || 100;
   const COUNT_REGISTRY = COUNT_SMR + COUNT_PD;
+
+  /* Карта разворота «масштаб»: тот же geo-индекс и та же раскладка узлов,
+     что на сайте, — брошюра и сайт не должны показывать разную географию. */
+  const geo = buildGeoIndex(projects, maintenance, design);
+  const geoHubs = relaxHubs(geo.hubs);
+  const geoRegionCount = new Map(geo.regions.map((r) => [r.code, r.total]));
+  const geoRegionLabels = layoutRegionLabels(geo.regions, geoHubs);
+  const geoHubLabels = layoutHubLabels(geoHubs, null, geoRegionLabels.map((l) => l.box));
   // «16 регионов» не подтверждается реестром (аудит 2026-07-16) — вместо него
   // показываем документированный стаж: годы от первичной выдачи лицензий (2010).
   const COUNT_YEARS = new Date().getFullYear() - 2010;
@@ -444,19 +456,82 @@ export default async function PrintBrochure({
           <div className={styles.mapFrame}>
             <span className={styles.mapCornerCoord} style={{ top: '4mm', left: '4mm' }}>N 55° · E 045°</span>
             <span className={styles.mapCornerCoord} style={{ bottom: '4mm', right: '4mm' }}>N 040° · E 087°</span>
-            {/* Pre-baked KZ map background — produced by scripts/bake-kz-map.mjs. */}
-            <img src="/portfolio/kz-map.png" alt="" className={styles.mapImg} aria-hidden />
-            <svg viewBox="-100 30 1200 820" className={styles.mapSvg} xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-              {projects.filter((pr) => pr.x_map != null && pr.y_map != null).slice(0, 40).map((pr) => {
-                const color = pr.status === 'completed' ? '#D4A843' : pr.status === 'in-progress' ? '#00C4A7' : '#4F84FF';
+            {/* Векторная карта — та же геометрия и та же раскладка узлов, что на
+                сайте (src/lib/geo). Раньше здесь лежал растровый kz-map.png с
+                точками по x_map/y_map: 21 объект из 152 и другая проекция. */}
+            <svg
+              viewBox={`0 0 ${VIEWBOX.w} ${VIEWBOX.h}`}
+              className={styles.mapSvg}
+              xmlns="http://www.w3.org/2000/svg"
+              preserveAspectRatio="xMidYMid meet"
+            >
+              {KZ_REGIONS.map((r) => {
+                const n = geoRegionCount.get(r.code) ?? 0;
+                const tier = tierFor(n, geo.works.length);
                 return (
-                  <g key={pr.id}>
-                    <circle cx={pr.x_map!} cy={pr.y_map!} r="12" fill={color} opacity="0.20" />
-                    <circle cx={pr.x_map!} cy={pr.y_map!} r="4.5" fill={color} />
+                  <path key={r.code} d={r.d} fillRule="evenodd"
+                    fill={tier.fill} stroke={tier.stroke} strokeWidth="1" strokeLinejoin="round" />
+                );
+              })}
+              <path d={KZ_OUTLINE} fillRule="evenodd" fill="none"
+                stroke="rgba(212,168,67,0.55)" strokeWidth="1.6" strokeLinejoin="round" />
+
+              {geoHubs.map((h) => {
+                const r = hubRadius(h.total);
+                const ring = r - 2.6;
+                const circ = 2 * Math.PI * ring;
+                const present = KIND_ORDER.filter((k) => h.byKind[k] > 0);
+                const gap = present.length > 1 ? Math.min(6, circ * 0.03) : 0;
+                let acc = 0;
+                const segs = present.map((k) => {
+                  const len = (circ * h.byKind[k]) / h.total;
+                  const seg = { k, len: Math.max(len - gap, 0.6), off: -acc };
+                  acc += len;
+                  return seg;
+                });
+                return (
+                  <g key={h.id} transform={`translate(${h.px} ${h.py})`}>
+                    <circle r={r + 3} fill="rgba(4,6,12,0.6)" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+                    <circle r={ring - 2} fill="rgba(4,6,12,0.94)" />
+                    <g transform="rotate(-90)">
+                      {segs.map((s) => (
+                        <circle key={s.k} r={ring} fill="none" stroke={KIND_META[s.k].color}
+                          strokeWidth="4" strokeDasharray={`${s.len} ${circ - s.len}`} strokeDashoffset={s.off} />
+                      ))}
+                    </g>
+                    <text y="3.6" textAnchor="middle" fill="#F0F2F8"
+                      fontFamily="'Space Grotesk', sans-serif" fontSize="11" fontWeight="600">
+                      {h.total}
+                    </text>
                   </g>
                 );
               })}
+
+              {geoRegionLabels.map((l) => (
+                <text key={l.code} x={l.x} y={l.y} textAnchor="middle"
+                  fill={l.has ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.22)'}
+                  fontFamily="Onest, sans-serif" fontSize="8.5" letterSpacing="1.2"
+                  paintOrder="stroke" stroke="rgba(4,6,12,0.55)" strokeWidth="2.5" strokeLinejoin="round">
+                  {l.text}
+                </text>
+              ))}
+              {geoHubLabels.map((l) => (
+                <text key={l.id} x={l.x} y={l.y} textAnchor={l.anchor}
+                  fill={l.strong ? '#F0F2F8' : 'rgba(240,242,248,0.7)'}
+                  fontFamily="Onest, sans-serif" fontSize={l.strong ? 10.5 : 9.5}
+                  paintOrder="stroke" stroke="rgba(4,6,12,0.85)" strokeWidth="3" strokeLinejoin="round">
+                  {l.text}
+                </text>
+              ))}
             </svg>
+            <div className={styles.mapLegend}>
+              {KIND_ORDER.map((k) => (
+                <span key={k} className={styles.mapLegendItem}>
+                  <i style={{ background: KIND_META[k].color }} />
+                  {KIND_META[k].short} · {geo.totals[k]}
+                </span>
+              ))}
+            </div>
           </div>
 
           {/* People behind the work — team composition. */}

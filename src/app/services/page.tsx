@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { statSync } from 'node:fs';
+import { join } from 'node:path';
 import Link from 'next/link';
 import Footer from '@/components/Footer/Footer';
 import ServicesHeroAnim from '@/components/ServicesHeroAnim/ServicesHeroAnim';
@@ -59,6 +61,19 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   '📋': <ClipboardDocumentListIcon width={24} height={24} />,
 };
 
+/* Размер брошюры берём с диска, а не из константы: файл пересобирается
+   `npm run build:pdf`, и захардкоженное число устаревает молча (до 26.07.2026
+   в кнопке стояло «8 МБ» при реальных 24,7 МБ). Возвращаем null, если файла
+   нет, — тогда просто не показываем размер. */
+function portfolioSizeMb(): string | null {
+  try {
+    const bytes = statSync(join(process.cwd(), 'public', 'portfolio.pdf')).size;
+    return (bytes / (1024 * 1024)).toFixed(0);
+  } catch {
+    return null;
+  }
+}
+
 function ServiceIcon({ icon, color }: { icon: string; color: 'gold' | 'teal' | 'blue' }) {
   return (
     <div className={styles.serviceIconWrap} data-color={color}>
@@ -76,6 +91,7 @@ export default async function ServicesPage() {
   const construction = allServices.filter((s) => s.direction === 'construction');
   const control      = allServices.filter((s) => s.direction === 'control');
   const maintenanceCount = maintenanceProjects.length;
+  const pdfSizeMb        = portfolioSizeMb();
 
   const servicesJsonLd = {
     '@context': 'https://schema.org',
@@ -121,7 +137,11 @@ export default async function ServicesPage() {
                 href="/portfolio.pdf"
                 download="WAG-portfolio.pdf"
                 className="btn btn-primary"
-                aria-label="Скачать профиль компании в PDF (8 МБ)"
+                aria-label={
+                  pdfSizeMb
+                    ? `Скачать профиль компании в PDF (${pdfSizeMb} МБ)`
+                    : 'Скачать профиль компании в PDF'
+                }
               >
                 Скачать профиль компании
               </a>
@@ -209,8 +229,8 @@ export default async function ServicesPage() {
               </h2>
               <p className={styles.directionDesc}>
                 Осуществление полного цикла строительных работ в сфере транспортной и
-                инженерной инфраструктуры. Реализуем проекты любой сложности —
-                от подъездных путей до магистральных железнодорожных линий.
+                инженерной инфраструктуры: подъездные и станционные железнодорожные пути,
+                автомобильные дороги, инженерные сети и промышленные объекты.
               </p>
               <Link href="/projects" className={`btn btn-outline ${styles.directionBtn}`}>
                 Наши объекты
@@ -508,6 +528,13 @@ export default async function ServicesPage() {
                   title: 'Управление проектами',
                   description:
                     'Управление проектами в области архитектуры, градостроительства и строительства. Свидетельство № KZ29VWC00283701.',
+                },
+                {
+                  id: 'accr-supervision-gcp',
+                  icon: '✅',
+                  title: 'Технический надзор — Global Construction Project',
+                  description:
+                    'Инжиниринговые услуги по техническому надзору на технически и технологически сложных объектах I уровня ответственности. Держатель — ТОО «Global Construction Project», компания группы. Аккредитация № KZ02VWC00283702.',
                 },
               ].map((s) => (
                 <div key={s.id} className={`glass-card ${styles.serviceCard}`}>

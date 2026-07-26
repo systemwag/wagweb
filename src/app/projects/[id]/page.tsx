@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { notFound }         from 'next/navigation';
 import Link                  from 'next/link';
-import Image                 from 'next/image';
 import Footer                from '@/components/Footer/Footer';
 import BreadcrumbJsonLd      from '@/components/ui/BreadcrumbJsonLd';
+import ProjectGallery        from './ProjectGallery';
 import { getProjectBySlug, getProjectSlugs } from '@/lib/data';
 import styles                from './project.module.css';
 
@@ -99,47 +99,12 @@ export default async function ProjectPage({ params }: Props) {
               {/* Main text */}
               <div className={styles.contentMain}>
                 {/* Project images */}
-                {project.images && project.images.length > 0 ? (
-                  <div className={styles.imageGallery}>
-                    <div className={styles.imageMain}>
-                      <Image
-                        src={project.image_url ?? project.images[0]}
-                        alt={project.title}
-                        fill
-                        sizes="(max-width: 768px) 100vw, 66vw"
-                        priority
-                        className={styles.imageMainImg}
-                      />
-                    </div>
-                    {project.images.length > 1 && (
-                      <div className={styles.imageThumbs}>
-                        {project.images.map((img, idx) => (
-                          <div key={img} className={styles.imageThumbWrap}>
-                            <Image
-                              src={img}
-                              alt={`${project.title} — фото ${idx + 1}`}
-                              fill
-                              sizes="(max-width: 768px) 50vw, 220px"
-                              className={styles.imageThumbImg}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ) : project.image_url ? (
-                  <div className={styles.imageGallery}>
-                    <div className={styles.imageMain}>
-                      <Image
-                        src={project.image_url}
-                        alt={project.title}
-                        fill
-                        sizes="(max-width: 768px) 100vw, 66vw"
-                        priority
-                        className={styles.imageMainImg}
-                      />
-                    </div>
-                  </div>
+                {project.image_url || (project.images && project.images.length > 0) ? (
+                  <ProjectGallery
+                    mainImage={project.image_url}
+                    images={project.images}
+                    title={project.title}
+                  />
                 ) : (
                   <div className={styles.imageBlock} aria-hidden="true">
                     <div className={styles.imagePlaceholder}>

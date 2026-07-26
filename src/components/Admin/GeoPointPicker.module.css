@@ -1,0 +1,78 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  cursor: crosshair;
+}
+
+.neighbors path {
+  fill: rgba(255, 255, 255, 0.02);
+  stroke: rgba(255, 255, 255, 0.06);
+  stroke-width: 1;
+}
+
+.regions path {
+  fill: rgba(28, 38, 62, 0.6);
+  stroke: rgba(255, 255, 255, 0.09);
+  stroke-width: 1;
+  stroke-linejoin: round;
+  transition: fill var(--t-fast);
+}
+.regions path[data-active='true'] {
+  fill: rgba(212, 168, 67, 0.18);
+  stroke: rgba(212, 168, 67, 0.5);
+}
+
+.outline {
+  fill: none;
+  stroke: rgba(212, 168, 67, 0.45);
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.pin line {
+  stroke: var(--gold-light);
+  stroke-width: 1.2;
+}
+.pinHalo { fill: rgba(212, 168, 67, 0.18); }
+.pinCore { fill: var(--gold); stroke: rgba(255, 255, 255, 0.5); stroke-width: 1; }
+
+.readout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 0.8rem;
+}
+
+.coords {
+  font-family: var(--font-display);
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
+.region { color: var(--text-secondary); }
+.hint   { color: var(--text-muted); }
+
+.clear {
+  margin-left: auto;
+  padding: 4px 10px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: color var(--t-fast), border-color var(--t-fast);
+}
+.clear:hover { color: var(--error); border-color: rgba(255, 80, 80, 0.4); }

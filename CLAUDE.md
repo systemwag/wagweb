@@ -53,27 +53,40 @@ src/
       admin/upload        # Supabase Storage upload (magic-byte validated)
       admin/projects, admin/design, admin/maintenance   # CRUD (Zod-validated)
       admin/testimonials, admin/partners, admin/contacts # CRUD (Zod-validated)
-      admin/update-map-coords  # bulk write x_map/y_map from MapCalibrator
     robots.ts, sitemap.ts
   components/       # Feature components, each in own folder
     Header/, Hero/, Stats/, About/, Services/, Projects/, Partners/, Footer/
-    Map/            # Geography + KazakhstanMap + MapPopup
+    Map/            # Geography — секция главной, обёртка над GeoMap
+    GeoMap/         # Карта географии работ (СМР + содержание + ПД). Данные —
+                    # src/lib/geo; одна и та же карта на /, /projects и в брошюре
     ContactForm/    # POSTs to /api/contact (NOT direct Supabase)
     HeroCycler/, ServicesHeroAnim/       # ServicesHeroAnim = orchestrator + Motif*.tsx
     ProjectShowcase/
     Admin/          # AdminShell, *Form, *Table (+ ContactsTable, TestimonialsAdmin,
-                    # PartnersAdmin), MapCalibrator, MapPicker
+                    # PartnersAdmin), GeoDiagnostics, LocationField, GeoPointPicker
     ui/             # GlobalAnim, AnimatedCounter, PdfPreview, SmoothScroll, Tilt, CursorLogo
+  lib/geo/          # Геоданные карты: kz-geo.generated.ts (границы РК из OSM,
+                    # деление 2022), places.ts (справочник мест + разбор адреса),
+                    # works.ts (индекс работ), layout.ts (раскладка узлов и
+                    # подписей), projection.ts, regions.ts
   lib/              # data.ts (seed↔Supabase), supabase(.ts/-server.ts), types.ts,
                     # admin-session.ts (HMAC cookie), admin-auth.ts (requireAdmin),
                     # admin-schemas.ts (Zod), rate-limit.ts, notify.ts (Telegram),
                     # sql-projects.ts + sql-maintenance.ts (AUTO-GENERATED)
 supabase/
-  rls-policies.sql  # RLS + таблицы contacts/testimonials/partners + seed inserts.
-                    # ⚠️ Must be run once in Supabase SQL editor; admin mutations
-                    # use SUPABASE_SERVICE_ROLE_KEY (createServiceClient).
+  config.toml       # проект слинкован через Supabase CLI (ref crmfrphqgxglumezbgae)
+  migrations/       # ⚠️ Единственный способ менять схему и справочные данные.
+                    # `supabase db push` ходит прямо в прод и НЕ требует Docker
+                    # (Docker нужен только для db pull/db dump — их не используем).
+                    # Ad-hoc SQL — через Management API /database/query.
+  rls-policies.sql  # Исторический дамп RLS + таблицы contacts/testimonials/partners.
+                    # Уже выполнен; RLS включён на всех таблицах. Публичные
+                    # политики оставляют ТОЛЬКО чтение — записи идут
+                    # service-role'ом (createServiceClient).
 scripts/            # build-pdf.mjs (npm run build:pdf), optimize-pdf.py, sql-to-seed.mjs,
-                    # bake-kz-map.mjs + bake-qr-codes.mjs (brochure assets — load-bearing)
+                    # build-kz-geo.mjs (границы РК из OSM → src/lib/geo/kz-geo.generated.ts),
+                    # bake-qr-codes.mjs (QR брошюры — load-bearing).
+                    # bake-kz-map.mjs больше не нужен: карта брошюры теперь векторная
 ```
 
 ## Data Layer
@@ -82,7 +95,9 @@ scripts/            # build-pdf.mjs (npm run build:pdf), optimize-pdf.py, sql-to
 `if (!isSupabaseConfigured()) return SEED_*` → `try { supabase query } catch { return SEED_* }`
 (see `withSeedFallback`). The site runs without Supabase (seed = dev source of truth). The 48-project seed comes from `src/lib/sql-projects.ts` (**auto-generated** by `scripts/sql-to-seed.mjs` — do not hand-edit).
 
-Entities: projects, maintenance_projects, design_projects, testimonials, partners (DB-backed with seed fallback) + services (seed-only). Contacts (заявки) are write-only via `/api/contact` and read in `/admin/contacts` through the service-role client.
+Entities: projects, maintenance_projects, design_projects, testimonials, partners, services — all DB-backed with seed fallback (`services` has 14 rows and `getServices()` reads them; the "seed-only" note here was wrong until 2026-07-26). Contacts (заявки) are write-only via `/api/contact` and read in `/admin/contacts` through the service-role client.
+
+⚠️ Seed drift: `SEED_PROJECTS` = `SQL_PROJECTS` (48) minus `MAINTENANCE_LEGACY_IDS` (21) = 27 rows, while the DB holds 32. The seed is a third source of truth and is stale — regenerate before relying on it.
 
 Server fetchers are wrapped in `unstable_cache(..., { revalidate: 60 })`. Mutations from admin API routes must call `revalidatePath()` (all current routes do).
 
@@ -95,12 +110,14 @@ Server fetchers are wrapped in `unstable_cache(..., { revalidate: 60 })`. Mutati
   are thin wrappers. 15 page-sections; marketing constants (29/20/87 → 136) live in
   PrintBrochure.
 - `npm run build:pdf` (RU) / `npm run build:pdf:en` render via the running dev server →
-  **`public/portfolio.pdf`** / `public/portfolio/portfolio-en.pdf` (~8 MB, rasterized).
+  **`public/portfolio.pdf`** / `public/portfolio/portfolio-en.pdf` (~25 MB, rasterized).
   After editing print pages you MUST rebuild or the public file goes stale.
 - Consumed by: Hero button, /services button, Footer link, /admin/portfolio preview —
   all point to the static `/portfolio.pdf`.
-- `scripts/bake-kz-map.mjs` and `scripts/bake-qr-codes.mjs` produce PNGs under
-  `public/portfolio/` that the brochure reads. Don't delete.
+- `scripts/bake-qr-codes.mjs` produces QR PNGs under `public/portfolio/` that the
+  brochure reads. Don't delete. Карта разворота «масштаб» с 2026-07-26 рисуется
+  вектором из `src/lib/geo` — той же геометрией и раскладкой, что на сайте;
+  `kz-map.png` больше не используется.
 
 ## Admin Panel & Security
 

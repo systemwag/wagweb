@@ -24,9 +24,12 @@ const values = [
   { title: 'Экология',                                gold: 'Экология',                desc: 'Мы бережно относимся к природе и не оставляем после себя негативного следа. Работы в области охраны окружающей среды лицензированы.' },
 ];
 
-/* Юридические лица группы — только подтверждённые документами
-   (лицензии, аккредитации, письма заказчиков). */
-const groupCompanies = [
+/* Юридические лица группы — состав по печатной брошюре (content/ru.tsx,
+   блок about.legalCards). У первых трёх реквизиты подтверждены сканами
+   в public/licenses/; у West Altyn Kyran и West Logistics документов в
+   репозитории нет, поэтому их карточки идут без юридических реквизитов —
+   только роль в группе. */
+const groupCompanies: { badge: string; name: string; role: string; meta?: string }[] = [
   {
     badge: 'HQ',
     name: 'West Arlan Group',
@@ -36,7 +39,7 @@ const groupCompanies = [
   {
     badge: 'ПД',
     name: 'Global Construction Project',
-    role: 'Проектная деятельность в составе группы. Аккредитация на технический надзор I уровня ответственности.',
+    role: 'Проектная деятельность в составе группы. Аккредитация на технический надзор I уровня ответственности № KZ02VWC00283702.',
     meta: 'ТОО · Актобе',
   },
   {
@@ -44,6 +47,16 @@ const groupCompanies = [
     name: 'West Capital Construction',
     role: 'Строительно-монтажные работы в составе группы. Компания, которой адресованы благодарственные письма заказчиков.',
     meta: 'LLP · Актобе',
+  },
+  {
+    badge: 'СиО',
+    name: 'West Altyn Kyran',
+    role: 'Поставка материалов, оборудования и обслуживание в составе группы.',
+  },
+  {
+    badge: 'ЛОГ',
+    name: 'West Logistics',
+    role: 'Логистика группы: перевозка материалов, техники и путевого оборудования на объекты.',
   },
 ];
 
@@ -60,10 +73,13 @@ function goldTitle(title: string, gold: string) {
   );
 }
 
+/* Состав отделов — по брошюре (content/ru.tsx, блок scale.people).
+   Сметчики относятся к проектному отделу; раньше они дублировались
+   и в изыскательском. */
 const team = [
   { name: 'Генеральный директор и руководство', role: 'Топ-менеджмент', count: 4 },
-  { name: 'Инженеры-проектировщики и ГИП', role: 'Проектный отдел', count: 15 },
-  { name: 'Геодезисты, геологи, сметчики', role: 'Изыскательский отдел', count: 10 },
+  { name: 'Инженеры-проектировщики, ГИП, сметчики', role: 'Проектный отдел', count: 15 },
+  { name: 'Геодезисты, геологи', role: 'Изыскательский отдел', count: 10 },
   { name: 'Прорабы, мастера, инженеры СЦБ', role: 'Строительные бригады', count: 50 },
 ];
 
@@ -173,7 +189,7 @@ export default async function AboutPage() {
                   <div className={styles.groupBadge}>{c.badge}</div>
                   <div className={styles.groupName}>{c.name}</div>
                   <p className={styles.groupRole}>{c.role}</p>
-                  <div className={styles.groupMeta}>{c.meta}</div>
+                  {c.meta && <div className={styles.groupMeta}>{c.meta}</div>}
                 </div>
               ))}
             </div>
@@ -250,6 +266,8 @@ export default async function AboutPage() {
                 Icon: Construction,
                 items: [
                   { name: 'Автокран',                       count: '1 ед.'  },
+                  { name: 'Автокран 25 т',                  count: '1 ед.'  },
+                  { name: 'Кран-манипулятор',               count: '1 ед.'  },
                   { name: 'Экскаватор-погрузчик',           count: '1 ед.'  },
                   { name: 'Гидромолот на базе экскаватора', count: '1 ед.'  },
                   { name: 'Автогрейдер',                    count: '2 ед.'  },

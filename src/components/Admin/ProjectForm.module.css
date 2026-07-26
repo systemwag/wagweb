@@ -198,3 +198,13 @@
   gap: 12px;
   padding-top: 8px;
 }
+
+/* Свёрнутый блок старого пикера x_map/y_map */
+.legacySummary {
+  cursor: pointer;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  margin-bottom: var(--space-sm);
+}
+.legacySummary:hover { color: var(--text-secondary); }

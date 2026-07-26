@@ -1,14 +1,17 @@
-import { getProjects } from '@/lib/data';
-import KazakhstanMap from './KazakhstanMap';
+import { getProjects, getMaintenanceProjects, getDesignProjects } from '@/lib/data';
+import { buildGeoIndex } from '@/lib/geo/works';
+import GeoMap from '@/components/GeoMap/GeoMap';
 import styles from './Geography.module.css';
 
 export default async function Geography() {
-  /* Counters count ALL projects, while the map only shows ones with coords */
-  const allProjects = await getProjects();
-  const mapProjects = allProjects.filter(p => p.x_map != null && p.y_map != null);
-  const completed  = allProjects.filter(p => p.status === 'completed').length;
-  const inProgress = allProjects.filter(p => p.status === 'in-progress').length;
-  const planned    = allProjects.filter(p => p.status === 'planned').length;
+  const [projects, maintenance, design] = await Promise.all([
+    getProjects(),
+    getMaintenanceProjects(),
+    getDesignProjects(),
+  ]);
+
+  const index = buildGeoIndex(projects, maintenance, design);
+  const regions = index.regions.length;
 
   return (
     <section className={styles.section} id="geography">
@@ -24,17 +27,14 @@ export default async function Geography() {
           </div>
           <div className={styles.headerRight}>
             <p className={styles.desc}>
-              Объекты — во всех ключевых промышленных регионах страны:
-              от нефтегаза Прикаспия и металлургии Караганды
-              до энергетики и транспортной инфраструктуры Восточного Казахстана.
+              Объекты — в {regions} регионах: от нефтегаза Прикаспия и горнорудных
+              предприятий Актюбинской области до транспортных узлов на востоке
+              страны и площадок заказчиков в России.
             </p>
           </div>
         </div>
 
-        <KazakhstanMap
-          projects={mapProjects}
-          stats={{ completed, inProgress, planned }}
-        />
+        <GeoMap index={index} />
       </div>
     </section>
   );

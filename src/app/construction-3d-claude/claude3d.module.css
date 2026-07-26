@@ -14,22 +14,30 @@
   white-space: nowrap;
 }
 
-/* ── Скролл-дорожка и sticky-экран ─────────────────────── */
+/* ── Экран полигона ────────────────────────────────────── */
+/* Раньше здесь была дорожка 1200vh со sticky-канвасом: скролл играл роль
+   таймлайна. Теперь этапы переключаются кликом, поэтому длинная дорожка
+   не нужна — секция ровно в экран, под ней сразу финальный CTA. */
 .stage {
   position: relative;
-  height: 1000vh;
-}
-
-.sticky {
-  position: sticky;
-  top: 0;
   height: 100vh;
+  min-height: 560px;
   overflow: hidden;
 }
 
 .canvasWrap {
   position: absolute;
   inset: 0;
+}
+
+/* Затемнение на дальних и обратных переходах между этапами */
+.seekFade {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  opacity: 0;
+  pointer-events: none;
+  background: var(--bg-primary);
 }
 
 .canvasFallback {
@@ -110,23 +118,34 @@
 }
 
 /* ── Карточка этапа ────────────────────────────────────── */
+/* Все восемь карточек присутствуют в DOM (для индексации и чтобы не
+   перемонтировать блок на каждом переходе); видимой делается текущая. */
 .phaseCardWrap {
   position: absolute;
   left: clamp(24px, 4vw, 64px);
-  bottom: 88px;
-  max-width: 400px;
+  bottom: 112px;
+  width: min(400px, calc(100vw - 48px));
   pointer-events: none;
-  animation: cardIn var(--phrase) var(--ease-out) both;
-}
-
-@keyframes cardIn {
-  from { opacity: 0; transform: translateY(22px); }
-  to   { opacity: 1; transform: translateY(0); }
 }
 
 .phaseCard {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
   padding: 22px 26px;
   border-left: 2px solid var(--gold);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(18px);
+  transition: opacity 0.42s var(--ease-out), transform 0.42s var(--ease-out), visibility 0s linear 0.42s;
+}
+
+.phaseCardOn {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition: opacity 0.42s var(--ease-out) 0.12s, transform 0.42s var(--ease-out) 0.12s, visibility 0s;
 }
 
 .phaseKicker {
@@ -239,31 +258,123 @@
   color: var(--gold-light);
 }
 
-/* ── Подсказки ─────────────────────────────────────────── */
-.scrollHint {
+/* ── Пульт воспроизведения ─────────────────────────────── */
+.transport {
   position: absolute;
-  left: 50%;
-  bottom: 26px;
-  transform: translateX(-50%);
+  left: clamp(24px, 4vw, 64px);
+  bottom: 34px;
   display: flex;
   align-items: center;
   gap: 10px;
+  animation: fadeIn var(--phrase) var(--ease-out) calc(var(--beat) * 2) both;
+}
+
+.tButton {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
   color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--t-base);
+}
+
+.tButton:hover:not(:disabled) {
+  color: var(--text-primary);
+  border-color: rgba(212, 168, 67, 0.45);
+}
+
+.tButton:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* «Далее» с кольцевым индикатором прогресса этапа: кольцо замкнулось —
+   этап доигран, можно листать дальше. */
+.tNext {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 42px;
+  padding: 0 20px 0 6px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(212, 168, 67, 0.32);
+  background: rgba(212, 168, 67, 0.08);
+  color: var(--text-primary);
   font-family: var(--font-heading);
-  font-size: 0.72rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: var(--t-base);
+}
+
+.tNext:hover:not(:disabled) {
+  background: rgba(212, 168, 67, 0.15);
+  border-color: var(--gold);
+}
+
+.tNext:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.tNextReady {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 1px rgba(212, 168, 67, 0.25), 0 0 22px rgba(212, 168, 67, 0.22);
+}
+
+.tRing {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+}
+
+.tRing svg {
+  transform: rotate(-90deg);
+}
+
+.tRingTrack {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.12);
+  stroke-width: 2;
+}
+
+.tRingFill {
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 94.25;
+  stroke-dashoffset: 94.25;
+}
+
+.tToggle {
+  height: 28px;
+  padding: 0 12px;
+  margin-left: 4px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--glass-border);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-heading);
+  font-size: 0.64rem;
+  font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  transition: opacity var(--t-slow);
-  pointer-events: none;
-  animation: fadeIn var(--phrase) var(--ease-out) calc(var(--beat) * 4) both;
+  cursor: pointer;
+  transition: var(--t-base);
 }
 
-.scrollHint svg {
-  animation: float calc(var(--cycle) * 0.5) ease-in-out infinite;
-}
-
-.scrollHintHidden {
-  opacity: 0;
+.tToggleOn {
+  color: var(--gold-light);
+  border-color: rgba(212, 168, 67, 0.45);
+  background: rgba(212, 168, 67, 0.1);
 }
 
 .keysHint {
@@ -337,6 +448,21 @@
   will-change: opacity, transform;
 }
 
+/* Выноска привязана к 3D-точке и центрируется по ней: на узком экране
+   строка в одну линию вылезала за край вьюпорта. */
+@media (max-width: 700px) {
+  .anno {
+    max-width: 62vw;
+    padding: 6px 9px 7px;
+    white-space: normal;
+  }
+
+  .annoText {
+    font-size: 11px;
+    line-height: 1.35;
+  }
+}
+
 .annoKicker {
   font-family: var(--font-heading);
   font-size: 9px;
@@ -391,20 +517,54 @@
   }
 }
 
+/* На узких экранах карточка съедала треть кадра, а индикатор этапов
+   пропадал вместе с рельсой — возвращаем его компактной строкой. */
 @media (max-width: 700px) {
   .phaseCardWrap {
-    left: 16px;
-    right: 16px;
-    bottom: 64px;
-    max-width: none;
+    left: 12px;
+    bottom: 92px;
+    width: calc(100vw - 24px);
+  }
+
+  .transport {
+    left: 12px;
+    right: 12px;
+    bottom: 22px;
+    gap: 8px;
+  }
+
+  .tNext {
+    flex: 1;
+    justify-content: center;
+    padding-right: 14px;
+  }
+
+  .tToggle {
+    display: none;
   }
 
   .phaseCard {
-    padding: 16px 18px;
+    padding: 13px 15px;
+  }
+
+  .phaseTitle {
+    font-size: 1.25rem;
   }
 
   .phaseDesc {
-    font-size: 0.82rem;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    margin-bottom: 9px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .specChip {
+    font-size: 0.6rem;
+    padding: 3px 8px;
   }
 
   .overlayTop {
@@ -414,10 +574,15 @@
   .hudPct {
     display: none;
   }
+
+  .counter {
+    font-size: 1rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .scrollHint svg {
-    animation: none;
+  .phaseCard,
+  .phaseCardOn {
+    transition-duration: 0.01ms;
   }
 }

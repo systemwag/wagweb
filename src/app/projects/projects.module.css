@@ -199,18 +199,13 @@
   overflow: hidden;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  /* transform owned by global Tilt — no transition on it, otherwise rotation lags */
-  transition: border-color 0.3s, box-shadow 0.3s;
+  /* Карточка больше не участвует в глобальном Tilt: 3D-наклон следом за
+     курсором смещал её из-под указателя и мешал попадать по ней.
+     Вместо него — обычный подъём при наведении. */
+  transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s ease;
   text-decoration: none;
   color: inherit;
   animation: cardEnter 0.45s ease both;
-  /* 3D tilt via CSS variables updated by Tilt component on mousemove */
-  transform: perspective(1000px)
-             rotateX(var(--tilt-x, 0deg))
-             rotateY(var(--tilt-y, 0deg))
-             scale3d(var(--tilt-scale, 1), var(--tilt-scale, 1), 1);
-  transform-style: preserve-3d;
-  will-change: transform;
 }
 
 /* Animated top stripe */
@@ -240,9 +235,15 @@
 
 .card:hover {
   border-color: var(--card-accent, rgba(212,168,67,0.3));
+  transform: translateY(-4px);
   box-shadow:
     0 28px 72px rgba(0,0,0,0.55),
     0 0 0 1px rgba(255,255,255,0.04);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card { transition: border-color 0.3s, box-shadow 0.3s; }
+  .card:hover { transform: none; }
 }
 
 /* Featured first card: spans 2 columns */

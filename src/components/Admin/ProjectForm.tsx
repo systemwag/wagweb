@@ -3,10 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Project } from '@/lib/types';
-import MapPicker from './MapPicker';
 import ImageUploader from './ImageUploader';
 import { slugify } from './form-utils';
 import styles from './ProjectForm.module.css';
+import LocationField from './LocationField';
 import adminStyles from './admin.module.css';
 
 const CATEGORIES = [
@@ -26,6 +26,7 @@ function blank(): FormState {
     location: '', year: new Date().getFullYear(), length: '',
     tags: [], image_url: null, images: null, status: 'planned', featured: false,
     x_map: null, y_map: null, coords_label: '',
+    lat: null, lon: null,
   };
 }
 
@@ -44,6 +45,7 @@ export default function ProjectForm({ project }: Props) {
           length: project.length ?? '', tags: project.tags ?? [], image_url: project.image_url,
           images: project.images ?? [], status: project.status, featured: project.featured,
           x_map: project.x_map, y_map: project.y_map, coords_label: project.coords_label ?? '',
+          lat: project.lat ?? null, lon: project.lon ?? null,
         }
       : blank()
   );
@@ -148,8 +150,13 @@ export default function ProjectForm({ project }: Props) {
         {/* Location */}
         <div className={styles.field}>
           <label className={styles.label}>Местоположение</label>
-          <input className={styles.input} value={form.location}
-            onChange={e => set('location', e.target.value)} />
+          <LocationField
+            value={form.location}
+            onChange={v => set('location', v)}
+            lat={form.lat ?? null}
+            lon={form.lon ?? null}
+            onPoint={(lat, lon) => setForm(f => ({ ...f, lat, lon }))}
+          />
         </div>
         {/* Length */}
         <div className={styles.field}>
@@ -165,7 +172,7 @@ export default function ProjectForm({ project }: Props) {
           <label className={styles.label}>Теги (через запятую)</label>
           <input className={styles.input} value={tagsInput}
             onChange={e => setTagsInput(e.target.value)}
-            placeholder="Геодезия, BIM, Мониторинг" />
+            placeholder="Геодезия, Мониторинг, Подъездные пути" />
         </div>
         {/* Coords label */}
         <div className={styles.field}>
@@ -196,16 +203,6 @@ export default function ProjectForm({ project }: Props) {
         onUploadingChange={setUploading}
         onError={setError}
       />
-
-      {/* Map picker */}
-      <div className={styles.field}>
-        <label className={styles.label}>Позиция на карте</label>
-        <MapPicker
-          x={form.x_map}
-          y={form.y_map}
-          onChange={(x, y) => { set('x_map', x); set('y_map', y); }}
-        />
-      </div>
 
       {/* Actions */}
       <div className={styles.formActions}>

@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import Footer  from '@/components/Footer/Footer';
-import KazakhstanMap from '@/components/Map/KazakhstanMap';
-import { getProjects, getProjectCategories, getMapProjects } from '@/lib/data';
+import GeoMap from '@/components/GeoMap/GeoMap';
+import { getProjects, getProjectCategories, getMaintenanceProjects, getDesignProjects } from '@/lib/data';
+import { buildGeoIndex } from '@/lib/geo/works';
 import styles from './projects.module.css';
 import Link   from 'next/link';
 import Image  from 'next/image';
@@ -36,17 +37,20 @@ export default async function ProjectsPage({
   const params   = await searchParams;
   const category = params.category;
 
-  const [projects, allProjects, categories, mapProjects] = await Promise.all([
+  const [projects, allProjects, categories, maintenance, design] = await Promise.all([
     getProjects(category),
     getProjects(),
     Promise.resolve(getProjectCategories()),
-    getMapProjects(),
+    getMaintenanceProjects(),
+    getDesignProjects(),
   ]);
 
+  /* Карта одна на весь сайт; на странице СМР она открывается с включённым
+     только строительством, остальные типы работ пользователь включает сам. */
+  const geoIndex = buildGeoIndex(allProjects, maintenance, design);
+
   /* Stats count ALL projects; map shows only projects with coords */
-  const completed  = allProjects.filter(p => p.status === 'completed').length;
-  const inProgress = allProjects.filter(p => p.status === 'in-progress').length;
-  const planned    = allProjects.filter(p => p.status === 'planned').length;
+  const completed = allProjects.filter(p => p.status === 'completed').length;
 
   return (
     <>
@@ -96,10 +100,7 @@ export default async function ProjectsPage({
         {/* ── Map ────────────────────────────────────── */}
         <section className={styles.mapSection}>
           <div className="container">
-            <KazakhstanMap
-              projects={mapProjects}
-              stats={{ completed, inProgress, planned }}
-            />
+            <GeoMap index={geoIndex} initialKinds={['build']} />
           </div>
         </section>
 
@@ -112,7 +113,7 @@ export default async function ProjectsPage({
                 className={`${styles.filterBtn} ${!category ? styles.filterActive : ''}`}
               >
                 Все
-                <span className={styles.filterCount}>{mapProjects.length}</span>
+                <span className={styles.filterCount}>{allProjects.length}</span>
               </Link>
               {categories.map((cat) => (
                 <Link
@@ -147,10 +148,12 @@ export default async function ProjectsPage({
                   const hasImage = Boolean(project.image_url || (project.images && project.images.length > 0));
 
                   return (
+                    /* Без data-tilt: 3D-наклон следом за курсором смещал карточку
+                       под указателем и мешал попадать по элементам внутри неё.
+                       Наведение отрабатывается обычным hover в CSS. */
                     <Link
                       key={project.id}
                       href={`/projects/${project.slug}`}
-                      data-tilt
                       className={`${styles.card} ${index === 0 ? styles.cardFeatured : ''}`}
                       style={{
                         '--card-accent': accentColor,

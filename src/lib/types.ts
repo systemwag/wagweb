@@ -19,6 +19,11 @@ export interface Project {
   x_map: number | null;   // SVG coordinate 0–1024
   y_map: number | null;   // SVG coordinate 0–800
   coords_label: string | null; // e.g. "51.18° N, 71.44° E"
+  /* Ручная точка на карте. Пусто — координата выводится из `location`
+     справочником src/lib/geo/places.ts. Не путать с x_map/y_map: те —
+     пиксели старого обведённого контура. */
+  lat?: number | null;
+  lon?: number | null;
   // Homepage feature flag
   featured: boolean;
   created_at: string;
@@ -93,6 +98,9 @@ export interface MaintenanceProject {
   images:      string[] | null;
   status:      'completed' | 'ongoing';
   tags:        string[] | null;
+  /** Ручная точка на карте — см. Project.lat */
+  lat?:        number | null;
+  lon?:        number | null;
   featured:    boolean;
   created_at:  string;
 }
@@ -131,6 +139,12 @@ export interface DesignProject {
   status: 'completed' | 'in-progress';
   slug: string;
   description: string | null;
+  /* Чертежи проекта: локальные пути в /portfolio/design/ (запекаются для
+     брошюры) либо URL Supabase Storage. Пустой массив, если чертежей нет. */
+  images: string[];
+  /** Ручная точка на карте — см. Project.lat */
+  lat?: number | null;
+  lon?: number | null;
   featured: boolean;
   created_at: string;
 }
