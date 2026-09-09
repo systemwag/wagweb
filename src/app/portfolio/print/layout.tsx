@@ -19,6 +19,10 @@ export default function PrintLayout({ children }: { children: React.ReactNode })
         /* PRINT: page setup + hide globals, keep content. Do NOT hide body > *. */
         @media print {
           @page { size: A4 portrait; margin: 0; }
+          /* Глобальные свечения body::before (globals.css) — полупрозрачные
+             радиальные градиенты: в PDF превращаются в soft mask на каждой
+             странице, а превью WhatsApp/Telegram на них спотыкается. */
+          body::before { display: none !important; }
           html, body {
             background: #fff !important;
             margin: 0 !important;
