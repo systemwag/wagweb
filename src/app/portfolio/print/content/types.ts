@@ -26,7 +26,7 @@ export type ProcessStep = { roman: string; title: string; meta: string };
 
 export type PersonStat = { num: string; label: string; desc: string };
 
-export type TeamMember = { num: string; role: string; name: string; phone: string };
+export type TeamMember = { num: string; role: string; name: string; phone?: string };
 
 export type LicenseContent = {
   /* Section kicker at the very top, e.g. «ЛИЦЕНЗИЯ · СТРОИТЕЛЬСТВО» —

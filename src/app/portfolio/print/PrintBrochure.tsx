@@ -875,7 +875,7 @@ export default async function PrintBrochure({
                 <div className={styles.teamNum}>{t.num}</div>
                 <div className={styles.teamRole}>{t.role}</div>
                 <div className={styles.teamName}>{t.name}</div>
-                <div className={styles.teamPhone}>{t.phone}</div>
+                {t.phone ? <div className={styles.teamPhone}>{t.phone}</div> : null}
               </div>
             ))}
           </div>

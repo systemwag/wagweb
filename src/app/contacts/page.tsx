@@ -121,7 +121,7 @@ export default function ContactsPage() {
                   <h3 className={styles.reqTitle}>Руководство</h3>
                   <dl className={styles.reqList}>
                     <dt>Генеральный директор</dt>
-                    <dd><a href="tel:+77776699989">Аронов Аян Садиржанович — +7(777)669-99-89</a></dd>
+                    <dd>Аронов Аян Садиржанович</dd>
                     <dt>Директор по развитию</dt>
                     <dd><a href="tel:+77758808043">Ақдәулет Айдос Мейірханұлы — +7(775)880-80-43</a></dd>
                     <dt>Директор проектной группы</dt>
