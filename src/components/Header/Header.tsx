@@ -13,6 +13,7 @@ const navLinks = [
   { label: 'Обслуживание',   href: '/maintenance'  },
   { label: 'Лицензии',       href: '/licenses'     },
   { label: 'Отзывы',         href: '/testimonials' },
+  { label: 'Новости',        href: '/news'         },
   { label: 'Контакты',       href: '/contacts'     },
 ];
 

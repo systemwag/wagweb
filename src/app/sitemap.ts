@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { getProjectSlugs, getMaintenanceSlugs, getDesignProjects } from '@/lib/data';
+import { getNewsItems } from '@/lib/news';
 import { SITE_URL as BASE_URL } from '@/lib/site';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -20,6 +21,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/zakazchikam`,  lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.7 },
     { url: `${BASE_URL}/kz`,           lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.5 },
     { url: `${BASE_URL}/testimonials`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${BASE_URL}/news`,         lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
     { url: `${BASE_URL}/contacts`,     lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.7 },
     { url: `${BASE_URL}/privacy`,      lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3 },
     { url: `${BASE_URL}/terms`,        lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3 },
@@ -50,5 +52,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority:        0.6,
   }));
 
-  return [...staticRoutes, ...projectRoutes, ...maintenanceRoutes, ...designRoutes];
+  const newsRoutes: MetadataRoute.Sitemap = getNewsItems().map((item) => ({
+    url:             `${BASE_URL}/news/${item.slug}`,
+    lastModified:    new Date(item.date),
+    changeFrequency: 'yearly',
+    priority:        0.5,
+  }));
+
+  return [...staticRoutes, ...projectRoutes, ...maintenanceRoutes, ...designRoutes, ...newsRoutes];
 }

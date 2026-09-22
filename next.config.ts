@@ -2,16 +2,20 @@ import type { NextConfig } from "next";
 
 // CSP: 'unsafe-inline' scripts are required by Next's inline runtime + JSON-LD;
 // 'unsafe-eval' only in dev (React Refresh). Styles are inline-heavy (next/font,
-// styled JSX) so 'unsafe-inline' stays. Supabase is the only external origin.
+// styled JSX) so 'unsafe-inline' stays. External origins: Supabase (storage) and
+// youtube-nocookie.com (player iframe in /news — see VideoEmbed.tsx) вместе
+// с i.ytimg.com для превью внутри плеера. Наши собственные постеры лежат
+// локально в public/news/ — до клика по видео страница в YouTube не ходит.
 const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV !== 'production' ? " 'unsafe-eval'" : ''}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://*.supabase.co",
+  // i.ytimg.com — превью, которые сам плеер YouTube грузит в свой iframe
+  "img-src 'self' data: blob: https://*.supabase.co https://i.ytimg.com",
   "font-src 'self' data:",
   "connect-src 'self' https://*.supabase.co",
   "worker-src 'self' blob:",
-  "frame-src 'self'",
+  "frame-src 'self' https://www.youtube-nocookie.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

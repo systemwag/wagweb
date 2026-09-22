@@ -10,6 +10,7 @@ const navColumns = [
       { label: 'Лицензии и аккредитации',  href: '/licenses'   },
       { label: 'Заказчикам',               href: '/zakazchikam' },
       { label: 'Отзывы клиентов',          href: '/testimonials' },
+      { label: 'Новости',                  href: '/news'       },
       { label: 'Портфолио (PDF)',          href: '/portfolio.pdf' },
       { label: 'Контакты',                 href: '/contacts'   },
     ],

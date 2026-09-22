@@ -38,6 +38,11 @@ src/
     error.tsx, not-found.tsx, error-pages.module.css  # Root error boundaries
     opengraph-image.tsx  # Generated og:image (dark/gold, NotoSans for Cyrillic)
     about/ services/ projects/ design/ licenses/ contacts/ testimonials/ maintenance/
+    news/           # /news + /news/[slug] — новости компании. Контент в
+                    # src/lib/news.ts (локальный модуль, НЕ Supabase), фото в
+                    # public/news/<slug>/*.webp. Лайтбокс — NewsGallery.tsx,
+                    # видео — VideoEmbed.tsx (фасад YouTube: локальный постер,
+                    # iframe только по клику; домен прописан в CSP)
     portfolio/print # THE brochure source (single engine). PrintBrochure.tsx (shared
                     # layout) + content/{ru,en}.tsx (verbatim copy) + thin page.tsx
                     # wrappers (RU + /en). scripts/build-pdf.mjs renders →
@@ -69,7 +74,8 @@ src/
                     # деление 2022), places.ts (справочник мест + разбор адреса),
                     # works.ts (индекс работ), layout.ts (раскладка узлов и
                     # подписей), projection.ts, regions.ts
-  lib/              # data.ts (seed↔Supabase), supabase(.ts/-server.ts), types.ts,
+  lib/              # data.ts (seed↔Supabase), news.ts (новости — локально), types.ts,
+                    # supabase(.ts/-server.ts),
                     # admin-session.ts (HMAC cookie), admin-auth.ts (requireAdmin),
                     # admin-schemas.ts (Zod), rate-limit.ts, notify.ts (Telegram),
                     # sql-projects.ts + sql-maintenance.ts (AUTO-GENERATED)
@@ -94,6 +100,10 @@ scripts/            # build-pdf.mjs (npm run build:pdf), optimize-pdf.py, sql-to
 [src/lib/data.ts](src/lib/data.ts) is the single fetch boundary. Every function has the pattern:
 `if (!isSupabaseConfigured()) return SEED_*` → `try { supabase query } catch { return SEED_* }`
 (see `withSeedFallback`). The site runs without Supabase (seed = dev source of truth). The 48-project seed comes from `src/lib/sql-projects.ts` (**auto-generated** by `scripts/sql-to-seed.mjs` — do not hand-edit).
+
+Новости — исключение: `src/lib/news.ts` держит их прямо в коде (выпусков мало,
+меняются редко), админки у раздела нет. Интерфейс `getNewsItems()/getNewsItem()`
+специально такой же формы, чтобы при необходимости подменить его на фетчеры.
 
 Entities: projects, maintenance_projects, design_projects, testimonials, partners, services — all DB-backed with seed fallback (`services` has 14 rows and `getServices()` reads them; the "seed-only" note here was wrong until 2026-07-26). Contacts (заявки) are write-only via `/api/contact` and read in `/admin/contacts` through the service-role client.
 
@@ -158,8 +168,9 @@ viewed/processed in `/admin/contacts`.
 - **Section backgrounds:** Background images live in `public/images/` and are referenced as `/images/filename.webp` in CSS. All section bg images use a dark gradient overlay on top.
 - **External images:** Only Supabase Storage (`*.supabase.co`) in `next.config.ts` remotePatterns.
 - **Security headers / canonical:** nosniff, SAMEORIGIN, Referrer-Policy, Permissions-Policy,
-  HSTS **and CSP** set via `headers()` in `next.config.ts` (CSP allows inline scripts/styles +
-  Supabase; `unsafe-eval` dev-only — if a new external origin is added, extend CSP).
+  HSTS **and CSP** set via `headers()` in `next.config.ts` (CSP allows inline scripts/styles,
+  Supabase и YouTube — `frame-src youtube-nocookie.com` + `img-src i.ytimg.com` для видео
+  в новостях; `unsafe-eval` dev-only — if a new external origin is added, extend CSP).
   Canonical: `alternates: { canonical: './' }` in layout. Public origin from `src/lib/site.ts`
   (`NEXT_PUBLIC_SITE_URL`, fallback `https://west-arlan.kz`).
 - **Env vars:** documented in `.env.example`.
@@ -170,6 +181,8 @@ viewed/processed in `/admin/contacts`.
 public/
   images/        # Section background images (WebP) used in CSS url()
   partners/      # Partner company logos (PNG/JPG) — referenced by partners table/seed
+  news/          # Фото новостей по папкам-слагам (WebP ≤1600px; оригиналы —
+                 #   в z:\WAG\_site-originals, в репозиторий не кладём)
   portfolio/     # Brochure assets (kz-map.png, qr-*.png, previews) + portfolio-en.pdf
   portfolio.pdf  # RU brochure (built from /portfolio/print)
   licenses/      # license scans, ISO 9001 certs, original PDFs
