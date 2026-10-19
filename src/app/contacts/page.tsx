@@ -133,21 +133,6 @@ export default function ContactsPage() {
                   </dl>
                 </div>
 
-                {/* Key specialists */}
-                <div className={`glass-card ${styles.requisites}`} style={{ marginBottom: 'var(--space-lg)' }}>
-                  <h3 className={styles.reqTitle}>Специалисты</h3>
-                  <dl className={styles.reqList}>
-                    <dt>Главный технолог по линейным сооружениям</dt>
-                    <dd>Аргумбаев Болат Клбергенович</dd>
-                    <dt>Главный инженер СЦБ</dt>
-                    <dd>Абакумов Владимир</dd>
-                    <dt>Руководитель сметного отдела</dt>
-                    <dd>Николаева Ольга Юрьевна</dd>
-                    <dt>Специалист по БиОТ</dt>
-                    <dd>Айекешов Айбек Карлович</dd>
-                  </dl>
-                </div>
-
                 {/* Requisites */}
                 <div className={`glass-card ${styles.requisites}`}>
                   <h3 className={styles.reqTitle}>Реквизиты</h3>
