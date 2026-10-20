@@ -34,7 +34,6 @@ npm run build:pdf:design     # /portfolio/print/design → public/portfolio/port
 npm run build:pdf:card       # /portfolio/print/card → public/company-card.pdf (тёмная)
 npm run build:pdf:card:light # /portfolio/print/card/light → public/company-card-light.pdf (для печати)
 npm run build:pdf:memo       # /portfolio/print/memo → public/memo-canton-fair-2026.pdf
-npm run build:pdf:v2         # redesign candidate /portfolio/print/v2 → versions/portfolio-v2.pdf (+ :en)
 node scripts/build-card-emblem.mjs  # public/ЛОГОТИП.svg → public/portfolio/wag-emblem-gold.svg
 
 # One-shot scripts:
@@ -124,8 +123,7 @@ supabase/
                     # политики оставляют ТОЛЬКО чтение — записи идут
                     # service-role'ом (createServiceClient).
 scripts/            # build-pdf.mjs + optimize-pdf.py (PDF), sql-to-seed.mjs,
-                    # build-kz-geo.mjs, bake-qr-codes.mjs (QR брошюры — load-bearing).
-                    # bake-kz-map.mjs больше не нужен: карта брошюры теперь векторная
+                    # build-kz-geo.mjs, bake-qr-codes.mjs (QR брошюры — load-bearing)
 ```
 
 Root-level `supabase-schema.sql` / `supabase_migration_*.sql` / `fix_*.sql` are historical one-offs — new schema changes go only into `supabase/migrations/`. `SYNC_PLAN.md` is an early plan and partly outdated; `BUGS.md` is the live bug list (verified against code 2026-07-26).
@@ -163,11 +161,23 @@ A new project lands on the map automatically if its `location` text resolves; ot
 
 **Single engine: Puppeteer/Chromium** via `scripts/build-pdf.mjs`. (react-pdf `src/lib/pdf/` + `/api/portfolio.pdf` were removed 2026-06-11.)
 
-- Main brochure: shared layout `src/app/portfolio/print/PrintBrochure.tsx` (+ `CaseSheet.tsx`,
-  `PztmShowcase.tsx`) and verbatim locale copy in `print/content/{ru,en}.tsx` + `cases-{ru,en}.tsx`
-  (typed by `content/types.ts`). `page.tsx` / `en/page.tsx` are thin wrappers. RU content edits must
-  be mirrored in EN.
-- Other print documents under `portfolio/print/`: `design/` (design brochure), `card/` + `card/light/`
+- Main brochure (38 pages, redesigned 2026-10-19): shared layout
+  `src/app/portfolio/print/PrintBrochure.tsx` (+ `CaseSheet.tsx`, `PztmShowcase.tsx`; styles
+  `print.module.css` + `case.module.css`) and verbatim locale copy in `print/content/{ru,en}.tsx` +
+  `cases-{ru,en}.tsx` (typed by `content/types.ts`); the few strings the layout adds itself are in
+  `print/copy.ts`. `page.tsx` / `en/page.tsx` are thin wrappers. RU content edits must be mirrored
+  in EN. Type scale = 7 tokens `--t-*` in `.book`; `--gold`/`--teal` follow the page tone; colour
+  code gold = design, teal = construction, blue = maintenance. Case sheets: drawings toned to the
+  sheet by `print/img/route.ts` (`blueprint` on dark, `paper` on light; background = page colour, no
+  frame or plate) sharing the free height (no holes/overflow); satellite insets keep their colours
+  (`photoMask` — measured on all drawings, re-check after adding new ones). Header seal shows the
+  status only; the GE number stays in the stage line. Cases renumbered without gaps. Directions
+  spread (`DirectionPage`): registry count as headline, services with icons, stage timeline.
+  Testimonials: four letters in full + a QR card to `/testimonials`. Partner logos go through the
+  same route (`tone=mono-light`). Owner rejected (2026-10-19/20): contents page, section dividers,
+  site-photo spread, framed drawing plates, the list of the remaining letters.
+- Other print documents under `portfolio/print/`: `design/` (design brochure — outdated, its cases
+  were merged into the main one; keeps the pre-redesign stylesheet `design/brochure.module.css`), `card/` + `card/light/`
   (company card — `card/content.ts` is verbatim from the scanned card, don't "improve" it), `memo/`
   (Canton Fair 2026 memorandum).
 - **Output is a vector PDF** (text stays text: searchable, sharp at any zoom). Rasterizing every
@@ -176,7 +186,10 @@ A new project lands on the map automatically if its `location` text resolves; ot
 - `build-pdf.mjs` env: `PRINT_URL` (default `http://localhost:3000/portfolio/print`), `OUT_PDF`
   (relative or absolute; default `public/portfolio.pdf`), `PDF_TITLE`, `PAGE` (one page for review →
   `versions/v<PAGE>_preview.pdf`), `PDF_DPI` (300), `PDF_JPEG_Q` (90), `PDF_MAX_MB` (20),
-  `ALLOW_SEED=1`. Two passes: measure where each `<img>` lands, then reload serving every image
+  `ALLOW_SEED=1`, `PDF_OUTLINE=1` (on in `build:pdf(:en)`: bookmarks; build-pdf rewrites their
+  titles from the headings' innerText because Chromium drops spaces at line wraps). Two passes:
+  measure where each `<img>` lands, then reload in a fresh browser context (a plain reload keeps
+  pass-1 bitmaps of cacheable images) serving every image
   resized (sharp) to its placed size at 300 dpi — Chromium otherwise embeds source resolution
   (drawings were 400–1776 dpi, 42 of 45 MB). Then `scripts/optimize-pdf.py` (Python + `pymupdf`)
   packs the file and **rejects** it; the public file is replaced only if every check passes:
@@ -192,29 +205,14 @@ A new project lands on the map automatically if its `location` text resolves; ot
   Chromium PDFs — it breaks image patterns.
 - After editing print pages you MUST rebuild or the public file goes stale. Hero button, /services
   button, Footer link and /admin/portfolio preview all point to the static `/portfolio.pdf`.
-- **v2 redesign candidate** (2026-10-19, awaiting approval, then it replaces the v1 layout):
-  `print/v2/` — forked `BrochureV2.tsx`, `CaseSheet.tsx`, `PztmShowcase.tsx` and both CSS modules;
-  copy stays in `print/content/*` (v2-only strings in `v2/copy.ts`). Same 38 pages as v1. Type
-  scale = 7 tokens `--t-*` in `.book`; `--gold`/`--teal` follow the page tone; colour code gold =
-  design, teal = construction, blue = maintenance. Case sheets: drawings toned to the sheet by
-  `v2/img/route.ts` (`blueprint` on dark, `paper` on light; background = page colour, no frame or
-  plate) sharing the free height (no holes/overflow); satellite insets keep their colours
-  (`photoMask` — measured on all drawings, re-check after adding new ones). Header seal shows the
-  status only; the GE number stays in the stage line. Cases renumbered without gaps. Directions
-  spread (`DirectionPage`): registry count as headline, services with the v1 icons, stage timeline.
-  Partner logos go through the same route (`tone=mono-light`). Owner rejected (2026-10-19):
-  contents page, section dividers, site-photo spread, framed drawing plates (toning itself is
-  wanted). `PDF_OUTLINE=1` (on in the v2 scripts) adds bookmarks; build-pdf rewrites their
-  titles from the headings' innerText (Chromium drops spaces at line wraps). build-pdf pass 2 runs
-  in a fresh browser context: a reload would keep pass-1 bitmaps of cacheable images.
 - Branded QR (gold WAG triangle in the centre) = `print/BrandQr.tsx`: built inline from `qrcode`
   as vector paths, error correction H, same look as `scripts/build-brand-qr.mjs`. Used for the two
-  ПЗТМ construction videos on the PZTM photo page (`PztmShowcase.tsx`, `PZTM_VIDEOS`; the cards are
-  links in the PDF). Keep URLs short (`youtu.be/<id>`, no `?si=`). Verify scans with ZXing
-  (`zxing-cpp`), not OpenCV — OpenCV can't read rounded finder patterns at all.
+  ПЗТМ construction videos (`PztmShowcase.tsx`, `PZTM_VIDEOS`), the testimonials card and the site
+  link on the contacts page; the cards are links in the PDF. Keep URLs short (`youtu.be/<id>`, no
+  `?si=`). Verify scans with ZXing (`zxing-cpp`), not OpenCV — OpenCV can't read rounded finder
+  patterns at all.
 - `scripts/bake-qr-codes.mjs` produces QR PNGs under `public/portfolio/` that the brochure reads.
-  Don't delete. Карта разворота «масштаб» рисуется вектором из `src/lib/geo`; `kz-map.png` больше
-  не используется.
+  Don't delete. Карта разворота «масштаб» рисуется вектором из `src/lib/geo`.
 
 ## Admin Panel & Security
 

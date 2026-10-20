@@ -1,0 +1,20 @@
+/* Inline accents inside the verbatim copy (ru.tsx / en.tsx): key phrases in
+   titles and lead paragraphs, sub-lines of the industry cards. Colours read
+   --c-gold* / --c-teal*, which ../print.module.css points at the page-tone
+   tokens, so an accent is the right gold or teal on cream and on dark. */
+.titleAccent     { color: var(--c-gold);      font-weight: 700; }
+.titleAccentGold { color: var(--c-gold);      font-weight: 700; }
+.titleAccentTeal { color: var(--c-teal-soft); font-weight: 700; }
+
+.aboutColLede     { color: var(--c-gold-2); font-weight: 700; }
+.aboutColLedeTeal { color: var(--c-teal);   font-weight: 700; }
+
+.industryCardSub {
+  display: block;
+  margin-top: 1.2mm;
+  font-family: var(--body);
+  font-size: var(--t-meta);
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--c-ink-2);
+}

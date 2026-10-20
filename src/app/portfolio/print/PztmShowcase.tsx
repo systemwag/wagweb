@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import styles from './print.module.css';
-import d from './design/design.module.css';
+import d from './case.module.css';
 import BrandQr from './BrandQr';
 
 /* ─────────────────────────────────────────────────────────────────
@@ -192,11 +192,11 @@ export default function PztmShowcase({
   const c = COPY[locale];
   return (
     <>
-      {/* ── Page 1 · выполненные работы (light) ─────────────────────── */}
-      <section className={`${styles.page} ${styles.pageLight}`}>
-        <Chrome pageNum={pageStart} total={total} stamp={stamp} dark={false} />
-        <div className={styles.pageInner}>
-          <div className={styles.eyebrow}>{c.eyebrow1}</div>
+      {/* ── Page 1 · выполненные работы (dark: the ПЗТМ spread has one tone) ── */}
+      <section className={`${styles.page} ${styles.pageDark}`}>
+        <Chrome pageNum={pageStart} total={total} stamp={stamp} dark />
+        <div className={`${styles.pageInner} ${d.sheetDark}`}>
+          <div className={`${styles.eyebrow} ${styles.eyebrowDark}`}>{c.eyebrow1}</div>
           <h2 className={d.sheetTitle}>{c.title1}</h2>
           <div className={d.sheetMeta}>
             <span className={d.sheetMetaClient}>{c.metaClient}</span>

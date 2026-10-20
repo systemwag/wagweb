@@ -1,20 +1,20 @@
 /* ─────────────────────────────────────────────────────────────────
-   Copy that exists only in the v2 layout (case header labels, the
+   Copy that the brochure layout adds itself (case header labels, the
    testimonials QR card). Everything else comes from
-   ../content/{ru,en}.tsx unchanged. Keep RU and EN in sync.
+   content/{ru,en}.tsx unchanged. Keep RU and EN in sync.
    ───────────────────────────────────────────────────────────────── */
 
-export type V2Copy = {
+export type LayoutCopy = {
   caseStamp: {
-    scope: string;           // «СОСТАВ РАБОТ» — was hard-coded Russian in v1, also in EN
+    scope: string;           // «СОСТАВ РАБОТ» / «SCOPE OF WORK»
   };
   testimonials: {
-    siteKicker: string;      // QR card under the three letters → /testimonials
+    siteKicker: string;      // QR card under the featured letters → /testimonials
     siteTitle: string;
   };
 };
 
-const ru: V2Copy = {
+const ru: LayoutCopy = {
   caseStamp: {
     scope: 'СОСТАВ РАБОТ',
   },
@@ -24,7 +24,7 @@ const ru: V2Copy = {
   },
 };
 
-const en: V2Copy = {
+const en: LayoutCopy = {
   caseStamp: {
     scope: 'SCOPE OF WORK',
   },
@@ -34,4 +34,4 @@ const en: V2Copy = {
   },
 };
 
-export const V2_COPY = { ru, en };
+export const LAYOUT_COPY = { ru, en };

@@ -4,8 +4,8 @@ import { join, normalize } from 'node:path';
 import sharp from 'sharp';
 
 /* ─────────────────────────────────────────────────────────────────
-   Print-only image toning for the v2 brochure:
-     /portfolio/print/v2/img?src=/portfolio/design/x.png&tone=blueprint
+   Print-only image toning for the brochure:
+     /portfolio/print/img?src=/portfolio/design/x.png&tone=blueprint
    Drawings lose their white paper and take the page's own background, so
    they sit on the page without a frame:
      blueprint  — light lines on the dark page, red (проектируемые) lines

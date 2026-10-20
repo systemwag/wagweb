@@ -1,6 +1,6 @@
 import { Fragment, type ReactNode } from 'react';
 import { getProjects, getMaintenanceProjects, getDesignProjects } from '@/lib/data';
-import styles from '../print.module.css';
+import styles from './brochure.module.css';
 import d from './design.module.css';
 import type { AnnexFigure, DesignBrochureContent, DesignProjectSheet } from './content/types';
 import type { PrintTestimonial } from '../content/types';

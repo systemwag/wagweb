@@ -1,4 +1,4 @@
-import styles from '../../print.module.css';
+import styles from '../brochure.module.css';
 import type { DesignBrochureContent } from './types';
 
 /* Russian copy for the standalone DESIGN brochure. Verbatim marketing +

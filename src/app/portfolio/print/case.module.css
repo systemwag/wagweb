@@ -1,9 +1,8 @@
 /* ═══════════════════════════════════════════════════════════════════
-   WAG · DESIGN-WORKS BROCHURE — sheet-specific styles (8 pages · A4).
-   Shell/typography primitives are reused from ../print.module.css; this
-   module only adds what the design brochure needs: the intro competencies
-   + case index, and the per-project sheet layout (header rail + a
-   full-width framed drawing). Render via `npm run build:pdf:design`.
+   WAG PORTFOLIO · PROJECT CASE SHEETS (CaseSheet.tsx, PztmShowcase.tsx).
+   Shell/typography primitives come from ./print.module.css; this module
+   adds the per-project sheet layout: header with the status seal, metrics,
+   drawings toned to the page, scope list and stage line.
    ═══════════════════════════════════════════════════════════════════ */
 
 /* ═══ 03–06 · PROJECT SHEETS ═════════════════════════════════════════ */
@@ -106,7 +105,7 @@
   line-height: 1.3;
 }
 
-/* ── v2 case header: title block left, status seal right ───────────── */
+/* ── Case header: title block left, status seal right ───────────── */
 .caseHead {
   display: flex;
   align-items: flex-start;
@@ -139,7 +138,7 @@
   color: var(--teal);
 }
 
-/* ── v2 drawings: toned to the page (no frame, no paper) and sharing the
+/* ── Drawings: toned to the page (no frame, no paper) and sharing the
    leftover height, so a sheet with short copy gets bigger drawings instead
    of a hole and a long one never runs off the page. The image is
    contained in its slot; its background is the page colour, so the

@@ -78,8 +78,8 @@ async function settle(page) {
 }
 
 /* Bytes of a same-origin image: the public/ file when it is a plain static
-   asset, otherwise whatever the server answers (e.g. the v2 brochure's
-   /portfolio/print/v2/img toning route). */
+   asset, otherwise whatever the server answers (e.g. the brochure's
+   /portfolio/print/img toning route). */
 async function loadImage(url) {
   const u = new URL(url);
   const file = join(PUBLIC, decodeURIComponent(u.pathname));

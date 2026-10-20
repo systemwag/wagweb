@@ -1,4 +1,4 @@
-import styles from '../print.module.css';
+import styles from './accents.module.css';
 import type { PrintContent, PrintTestimonial } from './types';
 
 /* ─────────────────────────────────────────────────────────────────

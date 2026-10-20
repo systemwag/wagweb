@@ -4,20 +4,23 @@ import styles from './print.module.css';
 import type { PrintContent, PrintTestimonial } from './content/types';
 import CaseSheet, { CaseAnnexPage } from './CaseSheet';
 import PztmShowcase from './PztmShowcase';
+import BrandQr from './BrandQr';
+import { LAYOUT_COPY, type LayoutCopy } from './copy';
 import { WAG_TRIANGLE } from './wagTriangle';
 import PROJECT_CASES from './content/cases-ru';
 import PROJECT_CASES_EN from './content/cases-en';
 import { KZ_REGIONS, KZ_OUTLINE, VIEWBOX } from '@/lib/geo/kz-geo.generated';
-import { buildGeoIndex, KIND_META, KIND_ORDER } from '@/lib/geo/works';
+import { buildGeoIndex, KIND_ORDER, type WorkKind } from '@/lib/geo/works';
 import { hubRadius, layoutHubLabels, layoutRegionLabels, relaxHubs, tierFor } from '@/lib/geo/layout';
 
 /* ─────────────────────────────────────────────────────────────────
-   Shared print-brochure layout. All locale-specific copy comes in
-   via the `content` prop (content/ru.tsx, content/en.tsx); everything
-   here — structure, classNames, icons, images, live counts — is
-   locale-invariant. Rendered by Puppeteer (scripts/build-pdf.mjs)
-   into public/portfolio.pdf and public/portfolio/portfolio-en.pdf,
-   so any change here must be re-baked into both PDFs.
+   Print brochure layout, shared by RU and EN (redesigned 2026-10-19).
+   Copy lives in content/{ru,en}.tsx and cases-{ru,en}.tsx; strings the
+   layout itself adds are in copy.ts. Visual system: 7-step type scale,
+   one gold and one teal per page tone, one colour code (gold = design,
+   teal = construction, blue = maintenance), drawings toned to the page
+   and sharing the free height. Rendered by scripts/build-pdf.mjs into
+   public/portfolio.pdf and public/portfolio/portfolio-en.pdf.
    ───────────────────────────────────────────────────────────────── */
 
 /* WAG triangle mark — official logo (path in ./wagTriangle). */
@@ -36,13 +39,8 @@ function WagMark({ className, gradientId = 'wagGold' }: { className?: string; gr
   );
 }
 
-/* Карта разворота «масштаб» рисуется вектором из src/lib/geo — той же
-   геометрией и той же раскладкой узлов, что и карта на сайте. Растровый
-   public/portfolio/kz-map.png больше не используется. */
-
 /* ─────────────────────────────────────────────────────────────────
-   Locale-invariant assets — icons & scan images, zipped by index
-   with the matching label arrays from the content object.
+   Locale-invariant assets
    ───────────────────────────────────────────────────────────────── */
 
 const INDUSTRY_ICONS: ReactNode[] = [
@@ -95,37 +93,6 @@ const INDUSTRY_ICONS: ReactNode[] = [
   ),
 ];
 
-const PARTNER_CATEGORY_ICONS: ReactNode[] = [
-  (
-    <svg key="building" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 21h18" />
-      <path d="M2 10l10-7 10 7" />
-      <path d="M3 10h18" />
-      <path d="M5 21V10" />
-      <path d="M9 21V10" />
-      <path d="M12 21V10" />
-      <path d="M15 21V10" />
-      <path d="M19 21V10" />
-    </svg>
-  ),
-  (
-    <svg key="pipeline" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-      <line x1="2" y1="12" x2="9" y2="12" />
-      <line x1="15" y1="12" x2="22" y2="12" />
-      <circle cx="12" cy="12" r="3" />
-      <line x1="12" y1="5" x2="12" y2="9" />
-    </svg>
-  ),
-  (
-    <svg key="factory" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 21V11l5-3v3l5-3v3l5-3v13z" />
-      <line x1="7" y1="16" x2="7" y2="18" />
-      <line x1="12" y1="16" x2="12" y2="18" />
-      <line x1="17" y1="16" x2="17" y2="18" />
-    </svg>
-  ),
-];
-
 const svcIconProps = { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
 
 const SVC_DESIGN_ICONS: ReactNode[] = [
@@ -170,36 +137,75 @@ const CONTACT_ICONS: ReactNode[] = [
   ),
 ];
 
-/* Badge color classes for the four group-member legal cards, in order. */
+/* Group-member badges follow the brochure colour code: construction teal
+   (West Capital Construction), design gold (Global Construction Project),
+   supply & maintenance blue (West Altyn Kyran), logistics neutral. */
 const LEGAL_BADGE_CLASSES = [
   styles.legalCardBadgeTeal,
+  styles.legalCardBadgeGold,
   styles.legalCardBadgeBlue,
-  styles.legalCardBadgeAmber,
-  styles.legalCardBadgeViolet,
+  styles.legalCardBadgeNeutral,
 ];
 
+/* Map colours and legend labels follow the same code (the website map uses
+   its own palette; the brochure stays consistent with its own pages). */
+const KIND_COLOR: Record<WorkKind, string> = { build: '#1AC2A6', maintenance: '#4F84FF', design: '#E6BE57' };
+const KIND_LABEL: Record<'ru' | 'en', Record<WorkKind, string>> = {
+  ru: { build: 'Строительство', maintenance: 'Обслуживание', design: 'Проектирование' },
+  en: { build: 'Construction', maintenance: 'Maintenance', design: 'Design' },
+};
+
+/* Featured testimonials (indices into content testimonials, same order in
+   RU and EN): АМК — reconstruction of Rudnaya station, «Синтез Урал»
+   (Russia), «Нефтестройсервис» — all three also appear as project cases —
+   and «УКИЗ Актобе» for track maintenance. The rest are behind the QR. */
+const FEATURED_TESTIMONIALS = [3, 8, 11, 0];
+const TESTIMONIALS_URL = 'https://www.westarlangroup.kz/testimonials';
+
 /* ─────────────────────────────────────────────────────────────────
-   Reusable bits
+   Page plan — the same 38 pages as the v1 brochure.
    ───────────────────────────────────────────────────────────────── */
 
-// Pagination is derived, not hand-counted: 9 front pages (the ISO page was
-// removed 2026-07-16 — certificates expired), then case sheets from page 10
-// (a case with an annex takes two pages), then 5 tail pages
-// (QR · testimonials · partners · contacts · closing). Adding/merging a case
-// in content/cases-ru.tsx auto-updates every page number and TOTAL — no manual
-// renumber pass needed anymore.
-const QR_PAGE = 10;                          // portfolio QR registry — intro to the cases
-const PZTM_START = QR_PAGE + 1;               // bespoke ПЗТМ СМР showcase (2 pages)
-const CASE_START = PZTM_START + 2;            // first drawing-based project case page
-const CASE_SHEET_PAGES = PROJECT_CASES.length + PROJECT_CASES.filter((cs) => cs.annex).length;
-const TAIL_START = CASE_START + CASE_SHEET_PAGES;  // first tail page (testimonials)
-const TOTAL = TAIL_START + 3;               // testimonials + partners + contacts + closing
-const pageNumLabel = (n: number) => `${String(n).padStart(2, '0')} / ${TOTAL}`;
-const ISSUE_STAMP  = 'WAG · PORTFOLIO · 2026';
+const ABOUT_PAGE = 2;
+const SCALE_PAGE = 3;
+const LICENSES_START = 4;              // 3 pages
+const ACCREDITATIONS_PAGE = 7;
+const DIR_DESIGN_PAGE = 8;             // the two directions face each other
+const DIR_BUILD_PAGE = 9;
+const QR_PAGE = 10;
+const PZTM_START = 11;                 // 2 pages
+const CASE_START = 13;
+
+/* Cases are numbered in reading order (ПЗТМ is 01) without the gaps the
+   content indices carry; a client with several sheets keeps its
+   sub-numbers (02.1–02.3). */
+const CASE_INDEX: string[] = (() => {
+  const nums = new Map<string, number>();
+  return PROJECT_CASES.map((cs) => {
+    const [main, sub] = cs.index.split('.');
+    if (!nums.has(main)) nums.set(main, nums.size + 2);
+    const n = String(nums.get(main)).padStart(2, '0');
+    return sub ? `${n}.${sub}` : n;
+  });
+})();
+
+const CASE_PAGES: number[] = (() => {
+  let p = CASE_START;
+  return PROJECT_CASES.map((cs) => { const page = p; p += cs.annex ? 2 : 1; return page; });
+})();
+const CASE_SHEET_PAGES = PROJECT_CASES.reduce((n, cs) => n + (cs.annex ? 2 : 1), 0);
+const TESTIMONIALS_PAGE = CASE_START + CASE_SHEET_PAGES;
+const PARTNERS_PAGE = TESTIMONIALS_PAGE + 1;
+const CONTACTS_PAGE = TESTIMONIALS_PAGE + 2;
+const CLOSING_PAGE = TESTIMONIALS_PAGE + 3;
+const TOTAL = CLOSING_PAGE;
+
+const pad = (n: number) => String(n).padStart(2, '0');
+const pageNumLabel = (n: number) => `${pad(n)} / ${TOTAL}`;
+const ISSUE_STAMP = 'WAG · PORTFOLIO · 2026';
 
 // SVG presentation attributes don't take var(), so the map text repeats the
-// --body / --heading stacks from print.module.css (static fonts, Cyrillic +
-// Kazakh fallbacks).
+// --body / --heading stacks from print.module.css.
 const SVG_FONT_BODY    = "'WagOnest', 'WagNoto', 'WagSymbols', sans-serif";
 const SVG_FONT_HEADING = "'WagGrotesk', 'WagOnest', 'WagNoto', 'WagSymbols', sans-serif";
 
@@ -236,61 +242,36 @@ export default async function PrintBrochure({
 }: {
   content: PrintContent;
   buttons: ReactNode;
-  /* Case sheets + ПЗТМ showcase carry their own per-locale copy. The EN case
-     list is a structural twin of the RU one (same count, same annexes), so
-     the module-level pagination computed from cases-ru holds for both. */
+  /* The EN case list is a structural twin of the RU one (same count, same
+     annexes), so the module-level page plan computed from cases-ru holds. */
   locale?: 'ru' | 'en';
 }) {
+  const v: LayoutCopy = LAYOUT_COPY[locale];
   const CASES = locale === 'en' ? PROJECT_CASES_EN : PROJECT_CASES;
-  // Live counts pulled from the same data layer the website uses:
-  //   projects            → СМР, строительство (/projects)
-  //   maintenance_projects → обслуживание и ремонт (/maintenance)
-  //   design_projects      → проектные работы / ПД (/design)
-  // Fallbacks keep the layout sane if a fetch returns empty (seed-less env).
+
   const [projects, maintenance, design] = await Promise.all([
     getProjects(),
     getMaintenanceProjects(),
     getDesignProjects(),
   ]);
 
-  // Фоллбэки сверены с прод-БД 26.07.2026 (миграции supabase/migrations/2026072605*).
-  // Если правишь реестр — обнови и эти числа, иначе без Supabase брошюра соврёт.
-  const COUNT_SMR_BUILD = projects.length || 32;       // new construction объекты
-  const COUNT_MAINTENANCE = maintenance.length || 20;  // maintenance / обслуживание объекты
-  const COUNT_SMR = COUNT_SMR_BUILD + COUNT_MAINTENANCE; // total СМР, used elsewhere
+  // Фоллбэки сверены с прод-БД 26.07.2026 — см. ../PrintBrochure.tsx.
+  const COUNT_SMR_BUILD = projects.length || 32;
+  const COUNT_MAINTENANCE = maintenance.length || 20;
   const COUNT_PD = design.length || 100;
-  const COUNT_REGISTRY = COUNT_SMR + COUNT_PD;
+  const COUNT_REGISTRY = COUNT_SMR_BUILD + COUNT_MAINTENANCE + COUNT_PD;
 
-  /* Карта разворота «масштаб»: тот же geo-индекс и та же раскладка узлов,
-     что на сайте, — брошюра и сайт не должны показывать разную географию. */
   const geo = buildGeoIndex(projects, maintenance, design);
   const geoHubs = relaxHubs(geo.hubs);
   const geoRegionCount = new Map(geo.regions.map((r) => [r.code, r.total]));
   const geoRegionLabels = layoutRegionLabels(geo.regions, geoHubs);
   const geoHubLabels = layoutHubLabels(geoHubs, null, geoRegionLabels.map((l) => l.box));
-  // «16 регионов» не подтверждается реестром (аудит 2026-07-16) — вместо него
-  // показываем документированный стаж: годы от первичной выдачи лицензий (2010).
   const COUNT_YEARS = new Date().getFullYear() - 2010;
   const COUNT_COUNTRIES = 2;
 
-  // QR codes are pre-baked by scripts/bake-qr-codes.mjs to PNGs under
-  // /public/portfolio/. Saves render time and keeps the build deterministic.
-  // Both the printed labels below and the QR PNGs use www.westarlangroup.kz —
-  // re-bake in bake-qr-codes.mjs if the destination changes.
+  const items = c.testimonials.items;
+  const featured = FEATURED_TESTIMONIALS.map((i) => items[i]).filter(Boolean);
 
-  // One testimonial per client company — keep the first letter from each,
-  // drop the rest (e.g. the 3 АМК quotes collapse to 1, the 2 Зерде to 1).
-  // The full archive lives on the website.
-  const seenClients = new Set<string>();
-  const filteredTestimonials = c.testimonials.items.filter((t) => {
-    if (seenClients.has(t.client)) return false;
-    seenClients.add(t.client);
-    return true;
-  });
-
-  /* Read by scripts/build-pdf.mjs: the PDF must have exactly data-pages pages,
-     and the printed counts must match the row counts of these tables in
-     Supabase — otherwise the brochure was rendered from the stale seed. */
   const dbCounts = JSON.stringify({
     projects: COUNT_SMR_BUILD,
     maintenance_projects: COUNT_MAINTENANCE,
@@ -301,82 +282,52 @@ export default async function PrintBrochure({
     <main className={styles.book} data-pages={TOTAL} data-db-counts={dbCounts}>
       {buttons}
 
-      {/* ═══ 01 · COVER ═══════════════════════════════════════════ */}
+      {/* ═══ COVER — one focus: mark, name, rule; credentials as a quiet line ═══ */}
       <section className={`${styles.page} ${styles.pageDark} ${styles.cover}`}>
         <CornerL pos="tl" />
         <CornerL pos="tr" />
         <CornerL pos="bl" />
         <CornerL pos="br" />
-        <div className={styles.coverEyebrow}>{c.cover.eyebrow}</div>
-        <div className={styles.coverIssue}>{c.cover.issue}</div>
-        <div className={styles.coverMarkWrap}>
+        <div className={styles.coverTop}>
+          <div className={styles.coverEyebrow}>{c.cover.eyebrow}</div>
+          <div className={styles.coverIssue}>{c.cover.issue}</div>
+        </div>
+        <div className={styles.coverCenter}>
           <WagMark className={styles.coverMark} gradientId="wagCover" />
+          <h1 className={styles.coverTitle}>
+            WEST ARLAN<br />
+            <span className={styles.coverTitleAccent}>GROUP</span>
+          </h1>
+          <div className={styles.coverTitleRule} />
         </div>
-        <h1 className={styles.coverTitle}>
-          WEST ARLAN<br />
-          <span className={styles.coverTitleAccent}>GROUP</span>
-        </h1>
-        <div className={styles.coverTitleRule} />
-        <div className={styles.coverChips}>
-          {c.cover.badges.map((b) => (
-            <div key={b.area} className={styles.coverBadge}>
-              <div className={styles.coverBadgeLevel}>{b.level}</div>
-              <div className={styles.coverBadgeArea}>{b.area}</div>
-            </div>
-          ))}
-        </div>
-        <div className={styles.coverTagline}>
-          {c.cover.tagline.map((t, i) => (
-            <Fragment key={t.main}>
-              {i > 0 && <span className={styles.coverTaglineSep}>·</span>}
-              <div className={styles.coverTaglineItem}>
-                <span className={styles.coverTaglineRu}>{t.main}</span>
-                {t.sub != null && <span className={styles.coverTaglineEn}>{t.sub}</span>}
+        <div className={styles.coverFoot}>
+          <div className={styles.coverCreds}>
+            {c.cover.badges.map((b) => (
+              <div key={b.area} className={styles.coverCred}>
+                <span className={styles.coverCredLevel}>{b.level}</span>
+                <span className={styles.coverCredArea}>{b.area}</span>
               </div>
-            </Fragment>
-          ))}
-        </div>
-        <div className={styles.coverBottom}>
-          <div className={styles.coverBottomCol}>
-            <div className={styles.coverBottomLabel}>{c.cover.binLabel}</div>
-            <div className={styles.coverBottomValue}>100340009758</div>
+            ))}
           </div>
-          <div className={styles.coverBottomCol}>
-            <div className={styles.coverBottomIcon} aria-hidden>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-              </svg>
-            </div>
-            <div className={styles.coverBottomValue}>+7 7132 538-288</div>
-          </div>
-          <div className={styles.coverBottomCol}>
-            <div className={styles.coverBottomIcon} aria-hidden>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="2" y1="12" x2="22" y2="12" />
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-              </svg>
-            </div>
-            <div className={styles.coverBottomValue}>www.westarlangroup.kz</div>
-          </div>
+          <div className={styles.coverSite}>www.westarlangroup.kz</div>
         </div>
       </section>
 
-      {/* ═══ 02 · ABOUT ═══════════════════════════════════════════ */}
+      {/* ═══ ABOUT ════════════════════════════════════════════════ */}
       <section className={`${styles.page} ${styles.pageLight}`}>
-        <PageChrome pageNum={2} />
+        <PageChrome pageNum={ABOUT_PAGE} />
         <div className={styles.pageInner}>
           <div className={styles.eyebrow}>{c.about.eyebrow}</div>
           <div className={styles.titleRow}>
             <h2 className={styles.titleH1}>{c.about.title}</h2>
-            <div className={styles.inlineStats}>
-              <div className={styles.inlineStat}><span className={styles.inlineStatNum}>{COUNT_SMR}</span><span className={styles.inlineStatLabel}>{c.about.statSmrLabel}</span></div>
-              <div className={styles.inlineStatDiv} />
-              <div className={styles.inlineStat}><span className={styles.inlineStatNum}>{COUNT_PD}</span><span className={styles.inlineStatLabel}>{c.about.statPdLabel}</span></div>
-              <div className={styles.inlineStatDiv} />
-              <div className={styles.inlineStat}><span className={styles.inlineStatNum}>5</span><span className={styles.inlineStatLabel}>{c.about.statSectorsLabel}</span></div>
-              <div className={styles.inlineStatDiv} />
-              <div className={styles.inlineStat}><span className={styles.inlineStatNum}>{COUNT_YEARS}</span><span className={styles.inlineStatLabel}>{c.about.statRegionsLabel}</span></div>
+            {/* Credentials moved here from the cover (the cover keeps one line). */}
+            <div className={styles.credGrid}>
+              {c.cover.badges.map((b) => (
+                <div key={b.area} className={styles.cred}>
+                  <div className={styles.credLevel}>{b.level}</div>
+                  <div className={styles.credArea}>{b.area}</div>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -393,8 +344,6 @@ export default async function PrintBrochure({
               ))}
             </div>
           </div>
-
-          <div className={styles.dashedDivider} />
 
           <div className={styles.aboutTwoCol}>
             <div className={styles.aboutCol}>
@@ -425,32 +374,27 @@ export default async function PrintBrochure({
           </div>
 
           <div className={styles.legalNote}>{c.about.legalNote}</div>
-
-          <WagMark className={styles.aboutWatermark} gradientId="wagAbout" />
         </div>
       </section>
 
-      {/* ═══ 03 · SCALE + GEOGRAPHY (merged from old 03 + 04) ════════ */}
+      {/* ═══ SCALE + GEOGRAPHY — the map is the page ═══════════════ */}
       <section className={`${styles.page} ${styles.pageDark}`}>
-        <PageChrome pageNum={3} dark />
+        <PageChrome pageNum={SCALE_PAGE} dark />
         <div className={styles.pageInner}>
           <div className={`${styles.eyebrow} ${styles.eyebrowDark}`}>{c.scale.eyebrow}</div>
           <h2 className={`${styles.titleH1} ${styles.titleH1Dark}`}>{c.scale.title}</h2>
-
           <div className={`${styles.leadBox} ${styles.leadBoxDark} ${styles.leadBoxScale}`}>{c.scale.lead}</div>
 
-          {/* Top row — group metrics, pulled live from the data layer.
-              СМР is shown split into new construction vs. maintenance. */}
           <div className={`${styles.statBar} ${styles.statBar5}`}>
-            <div className={`${styles.statBarItem} ${styles.statBarGold}`}>
+            <div className={`${styles.statBarItem} ${styles.statBarTeal}`}>
               <div className={styles.statBarNum}>{COUNT_SMR_BUILD}</div>
               <div className={styles.statBarLabel}>{c.scale.statBuildLabel}</div>
             </div>
-            <div className={`${styles.statBarItem} ${styles.statBarTeal}`}>
+            <div className={`${styles.statBarItem} ${styles.statBarBlue}`}>
               <div className={styles.statBarNum}>{COUNT_MAINTENANCE}</div>
               <div className={styles.statBarLabel}>{c.scale.statMaintenanceLabel}</div>
             </div>
-            <div className={`${styles.statBarItem} ${styles.statBarBlue}`}>
+            <div className={`${styles.statBarItem} ${styles.statBarGold}`}>
               <div className={styles.statBarNum}>{COUNT_PD}</div>
               <div className={styles.statBarLabel}>{c.scale.statPdLabel}</div>
             </div>
@@ -464,13 +408,7 @@ export default async function PrintBrochure({
             </div>
           </div>
 
-          {/* Map visualises the geography. */}
           <div className={styles.mapFrame}>
-            <span className={styles.mapCornerCoord} style={{ top: '4mm', left: '4mm' }}>N 55° · E 045°</span>
-            <span className={styles.mapCornerCoord} style={{ bottom: '4mm', right: '4mm' }}>N 040° · E 087°</span>
-            {/* Векторная карта — та же геометрия и та же раскладка узлов, что на
-                сайте (src/lib/geo). Раньше здесь лежал растровый kz-map.png с
-                точками по x_map/y_map: 21 объект из 152 и другая проекция. */}
             <svg
               viewBox={`0 0 ${VIEWBOX.w} ${VIEWBOX.h}`}
               className={styles.mapSvg}
@@ -507,7 +445,7 @@ export default async function PrintBrochure({
                     <circle r={ring - 2} fill="rgba(4,6,12,0.94)" />
                     <g transform="rotate(-90)">
                       {segs.map((s) => (
-                        <circle key={s.k} r={ring} fill="none" stroke={KIND_META[s.k].color}
+                        <circle key={s.k} r={ring} fill="none" stroke={KIND_COLOR[s.k]}
                           strokeWidth="4" strokeDasharray={`${s.len} ${circ - s.len}`} strokeDashoffset={s.off} />
                       ))}
                     </g>
@@ -542,14 +480,13 @@ export default async function PrintBrochure({
             <div className={styles.mapLegend}>
               {KIND_ORDER.map((k) => (
                 <span key={k} className={styles.mapLegendItem}>
-                  <i style={{ background: KIND_META[k].color }} />
-                  {KIND_META[k].short} · {geo.totals[k]}
+                  <i style={{ background: KIND_COLOR[k] }} />
+                  {KIND_LABEL[locale][k]} · {geo.totals[k]}
                 </span>
               ))}
             </div>
           </div>
 
-          {/* People behind the work — team composition. */}
           <h3 className={styles.peopleTitle}>{c.scale.peopleTitle}</h3>
           <div className={styles.peopleGrid}>
             {c.scale.people.map((p) => (
@@ -563,132 +500,18 @@ export default async function PrintBrochure({
         </div>
       </section>
 
-      {/* ISO page removed 2026-07-16 — certificates (GCP, СТ РК ISO 9001/14001/45001)
-          expired 19.06.2023; restore after recertification. */}
+      <LicensePage pageNum={LICENSES_START} numberPrefix={c.licNumberPrefix} {...c.licenses[0]} />
+      <LicensePage pageNum={LICENSES_START + 1} numberPrefix={c.licNumberPrefix} {...c.licenses[1]} />
+      <LicensePage pageNum={LICENSES_START + 2} numberPrefix={c.licNumberPrefix} {...c.licenses[2]} />
+      <AccreditationsPage pageNum={ACCREDITATIONS_PAGE} content={c.accreditations} />
 
-      {/* ═══ 04 · LICENSE СМР ═════════════════════════════════════ */}
-      <LicensePage pageNum={4} numberPrefix={c.licNumberPrefix} {...c.licenses[0]} />
+      {/* ═══ DIRECTIONS — a facing pair: design (gold) | construction (teal) ═══ */}
+      <DirectionPage pageNum={DIR_DESIGN_PAGE} d={c.dirDesign} accent="gold" count={COUNT_PD}
+        icons={SVC_DESIGN_ICONS} entity="Global Construction Project" path="/design" />
+      <DirectionPage pageNum={DIR_BUILD_PAGE} d={c.dirBuild} accent="teal" count={COUNT_SMR_BUILD}
+        icons={SVC_BUILD_ICONS} entity="West Capital Construction LLP" path="/projects" />
 
-      {/* ═══ 05 · LICENSE ПД ══════════════════════════════════════ */}
-      <LicensePage pageNum={5} numberPrefix={c.licNumberPrefix} {...c.licenses[1]} />
-
-      {/* ═══ 06 · LICENSE ОС ══════════════════════════════════════ */}
-      <LicensePage pageNum={6} numberPrefix={c.licNumberPrefix} {...c.licenses[2]} />
-
-      {/* ═══ 07 · ACCREDITATIONS (2×2 grid, 2026 certificates) ════ */}
-      <AccreditationsPage pageNum={7} content={c.accreditations} />
-
-      {/* ═══ 08 · DIRECTION 01 — DESIGN ═══════════════════════════ */}
-      <section className={`${styles.page} ${styles.pageDark}`}>
-        <PageChrome pageNum={8} dark />
-        <div className={styles.pageInner}>
-          <div className={`${styles.eyebrow} ${styles.eyebrowDark}`}>{c.dirDesign.eyebrow}</div>
-          <div className={styles.titleRow}>
-            <h2 className={`${styles.titleH1} ${styles.titleH1Dark}`}>{c.dirDesign.title}</h2>
-            <div className={`${styles.outlinedBadge} ${styles.outlinedBadgeGold}`}>
-              <div className={styles.outlinedBadgeTop}>{c.dirDesign.badgeTop}</div>
-              <div className={styles.outlinedBadgeBottom}>{c.dirDesign.badgeBottom}</div>
-            </div>
-          </div>
-
-          <div className={`${styles.leadBox} ${styles.leadBoxDark}`}>{c.dirDesign.lead}</div>
-
-          <div className={styles.svcGrid}>
-            {c.dirDesign.svcs.map((s, i) => (
-              <div key={s.num} className={styles.svcItem}>
-                <div className={`${styles.svcIcon} ${styles.svcIconGold}`}>{SVC_DESIGN_ICONS[i]}</div>
-                <div className={styles.svcBody}>
-                  <div className={styles.svcTitle}>{s.title}</div>
-                  <div className={styles.svcDesc}>{s.desc}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className={styles.processLabel}>
-            <span className={styles.aboutColRule} />
-            {c.dirDesign.processLabel}
-          </div>
-          <div className={styles.processFlow}>
-            {c.dirDesign.process.map((step, i) => (
-              <div key={step.roman} className={styles.processGroup}>
-                <div className={`${styles.processStep} ${styles.processStepGold}`}>
-                  <div className={styles.processRoman}>{step.roman}</div>
-                  <div className={styles.processTitle}>{step.title}</div>
-                  <div className={styles.processMeta}>{step.meta}</div>
-                </div>
-                {i < c.dirDesign.process.length - 1 && <div className={styles.processArrow} aria-hidden><svg viewBox="0 0 24 24"><path d="M3 12h17M14 6l6 6-6 6" /></svg></div>}
-              </div>
-            ))}
-          </div>
-
-          <div className={styles.dirFooter}>
-            <span className={styles.dirFooterNum}>{COUNT_PD}</span>
-            <span className={styles.dirFooterLabel}>{c.dirDesign.footerLabel}</span>
-            <span className={styles.dirFooterSep}>·</span>
-            <span className={styles.dirFooterText}>GLOBAL CONSTRUCTION PROJECT</span>
-            <span className={styles.dirFooterSep}>·</span>
-            <span className={styles.dirFooterText}>www.westarlangroup.kz / design</span>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ 09 · DIRECTION 02 — BUILD ════════════════════════════ */}
-      <section className={`${styles.page} ${styles.pageDark}`}>
-        <PageChrome pageNum={9} dark />
-        <div className={styles.pageInner}>
-          <div className={`${styles.eyebrow} ${styles.eyebrowDark}`}>{c.dirBuild.eyebrow}</div>
-          <div className={styles.titleRow}>
-            <h2 className={`${styles.titleH1} ${styles.titleH1Dark}`}>{c.dirBuild.title}</h2>
-            <div className={`${styles.outlinedBadge} ${styles.outlinedBadgeTeal}`}>
-              <div className={styles.outlinedBadgeTop}>{c.dirBuild.badgeTop}</div>
-              <div className={styles.outlinedBadgeBottom}>{c.dirBuild.badgeBottom}</div>
-            </div>
-          </div>
-
-          <div className={`${styles.leadBox} ${styles.leadBoxDark}`}>{c.dirBuild.lead}</div>
-
-          <div className={styles.svcGrid}>
-            {c.dirBuild.svcs.map((s, i) => (
-              <div key={s.num} className={styles.svcItem}>
-                <div className={`${styles.svcIcon} ${styles.svcIconTeal}`}>{SVC_BUILD_ICONS[i]}</div>
-                <div className={styles.svcBody}>
-                  <div className={styles.svcTitle}>{s.title}</div>
-                  <div className={styles.svcDesc}>{s.desc}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className={styles.processLabel}>
-            <span className={styles.aboutColRule} />
-            {c.dirBuild.processLabel}
-          </div>
-          <div className={styles.processFlow}>
-            {c.dirBuild.process.map((step, i) => (
-              <div key={step.roman} className={styles.processGroup}>
-                <div className={`${styles.processStep} ${styles.processStepTeal}`}>
-                  <div className={styles.processRoman}>{step.roman}</div>
-                  <div className={styles.processTitle}>{step.title}</div>
-                  <div className={styles.processMeta}>{step.meta}</div>
-                </div>
-                {i < c.dirBuild.process.length - 1 && <div className={styles.processArrow} aria-hidden><svg viewBox="0 0 24 24"><path d="M3 12h17M14 6l6 6-6 6" /></svg></div>}
-              </div>
-            ))}
-          </div>
-
-          <div className={styles.dirFooter}>
-            <span className={`${styles.dirFooterNum} ${styles.dirFooterNumTeal}`}>{COUNT_SMR_BUILD}</span>
-            <span className={styles.dirFooterLabel}>{c.dirBuild.footerLabel}</span>
-            <span className={styles.dirFooterSep}>·</span>
-            <span className={styles.dirFooterText}>WEST CAPITAL CONSTRUCTION LLP</span>
-            <span className={styles.dirFooterSep}>·</span>
-            <span className={styles.dirFooterText}>www.westarlangroup.kz / projects</span>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ 11 · PORTFOLIO QR — registry + intro to the project cases ═══ */}
+      {/* ═══ PORTFOLIO QR — registry ══════════════════════════════ */}
       <section className={`${styles.page} ${styles.pageLight}`}>
         <PageChrome pageNum={QR_PAGE} />
         <div className={styles.pageInner}>
@@ -704,45 +527,25 @@ export default async function PrintBrochure({
           <div className={styles.leadBox}>{c.qr.lead}</div>
 
           <div className={styles.qrGrid}>
-            <div className={`${styles.qrCard} ${styles.qrCardTeal}`}>
-              <div className={styles.qrCardHeader}>
-                <span className={styles.qrCardNum}>01</span>
-                <span className={styles.qrCardTitle}>{c.qr.cards[0].title}</span>
-              </div>
-              <div className={styles.qrCount}>
-                <span className={styles.qrCountNum}>{COUNT_SMR_BUILD}</span>
-                <span className={styles.qrCountLabel}>{c.qr.cards[0].countLabel}</span>
-              </div>
-              <img src="/portfolio/qr-projects.png" alt="" className={styles.qrCodeWrap} aria-hidden />
-              <div className={styles.qrUrl}>www.westarlangroup.kz<wbr />/projects</div>
-              <div className={styles.qrHint}>{c.qr.cards[0].hint}</div>
-            </div>
-            <div className={`${styles.qrCard} ${styles.qrCardBlue}`}>
-              <div className={styles.qrCardHeader}>
-                <span className={styles.qrCardNum}>02</span>
-                <span className={styles.qrCardTitle}>{c.qr.cards[1].title}</span>
-              </div>
-              <div className={styles.qrCount}>
-                <span className={styles.qrCountNum}>{COUNT_MAINTENANCE}</span>
-                <span className={styles.qrCountLabel}>{c.qr.cards[1].countLabel}</span>
-              </div>
-              <img src="/portfolio/qr-maintenance.png" alt="" className={styles.qrCodeWrap} aria-hidden />
-              <div className={styles.qrUrl}>www.westarlangroup.kz<wbr />/maintenance</div>
-              <div className={styles.qrHint}>{c.qr.cards[1].hint}</div>
-            </div>
-            <div className={`${styles.qrCard} ${styles.qrCardGold}`}>
-              <div className={styles.qrCardHeader}>
-                <span className={styles.qrCardNum}>03</span>
-                <span className={styles.qrCardTitle}>{c.qr.cards[2].title}</span>
-              </div>
-              <div className={styles.qrCount}>
-                <span className={styles.qrCountNum}>{COUNT_PD}</span>
-                <span className={styles.qrCountLabel}>{c.qr.cards[2].countLabel}</span>
-              </div>
-              <img src="/portfolio/qr-design.png" alt="" className={styles.qrCodeWrap} aria-hidden />
-              <div className={styles.qrUrl}>www.westarlangroup.kz<wbr />/design</div>
-              <div className={styles.qrHint}>{c.qr.cards[2].hint}</div>
-            </div>
+            {[
+              { cls: styles.qrCardTeal, n: '01', count: COUNT_SMR_BUILD, qr: '/portfolio/qr-projects.png', path: '/projects' },
+              { cls: styles.qrCardBlue, n: '02', count: COUNT_MAINTENANCE, qr: '/portfolio/qr-maintenance.png', path: '/maintenance' },
+              { cls: styles.qrCardGold, n: '03', count: COUNT_PD, qr: '/portfolio/qr-design.png', path: '/design' },
+            ].map((q, i) => (
+              <a key={q.n} href={`https://www.westarlangroup.kz${q.path}`} className={`${styles.qrCard} ${q.cls}`}>
+                <div className={styles.qrCardHeader}>
+                  <span className={styles.qrCardNum}>{q.n}</span>
+                  <span className={styles.qrCardTitle}>{c.qr.cards[i].title}</span>
+                </div>
+                <div className={styles.qrCount}>
+                  <span className={styles.qrCountNum}>{q.count}</span>
+                  <span className={styles.qrCountLabel}>{c.qr.cards[i].countLabel}</span>
+                </div>
+                <img src={q.qr} alt="" className={styles.qrCodeWrap} aria-hidden />
+                <div className={styles.qrUrl}>www.westarlangroup.kz<wbr />{q.path}</div>
+                <div className={styles.qrHint}>{c.qr.cards[i].hint}</div>
+              </a>
+            ))}
           </div>
 
           <div className={`${styles.processLabel} ${styles.processLabelLight}`}><span />{c.qr.infoLabel}</div>
@@ -757,7 +560,7 @@ export default async function PrintBrochure({
 
           {c.qr.remark && (
             <div className={styles.qrRemarkBand}>
-              <span className={styles.qrRemarkArrow} aria-hidden>↓</span>
+              <svg className={styles.qrRemarkArrow} viewBox="0 0 24 24" aria-hidden><path d="M12 3v17M6 14l6 6 6-6" /></svg>
               <span className={styles.qrRemarkText}>{c.qr.remark}</span>
               {c.qr.remarkTag && <span className={styles.qrRemarkTag}>{c.qr.remarkTag}</span>}
             </div>
@@ -765,72 +568,62 @@ export default async function PrintBrochure({
         </div>
       </section>
 
-      {/* ═══ 12–13 · ПЗТМ LTD · bespoke СМР showcase (works + site photos) ═ */}
       <PztmShowcase pageStart={PZTM_START} total={TOTAL} stamp={ISSUE_STAMP} locale={locale} />
 
-      {/* ═══ 14+ · PROJECT CASES · running page counter ════════════════════
-          A case with an annex consumes two pages. Aktobe, Ural, the Жинишке
-          cluster, КазГеоруд and КСГК each carry a merged annex page. */}
-      {(() => {
-        let cp = CASE_START;
-        return CASES.map((cs, i) => {
-          const dark = i % 2 === 0;
-          const sheetPage = cp++;
-          const annexPage = cs.annex ? cp++ : null;
-          return (
-            <Fragment key={cs.index}>
-              <CaseSheet p={cs} pageNum={sheetPage} total={TOTAL} stamp={ISSUE_STAMP} dark={dark} />
-              {cs.annex && annexPage != null && (
-                <CaseAnnexPage annex={cs.annex} pageNum={annexPage} total={TOTAL} stamp={ISSUE_STAMP} dark={dark} />
-              )}
-            </Fragment>
-          );
-        });
-      })()}
+      {/* A case and its annex share one tone; the tone alternates per case. */}
+      {CASES.map((cs, i) => {
+        const dark = i % 2 === 0;
+        return (
+          <Fragment key={cs.index}>
+            <CaseSheet p={cs} index={CASE_INDEX[i]} pageNum={CASE_PAGES[i]} total={TOTAL} stamp={ISSUE_STAMP}
+              dark={dark} labels={v.caseStamp} />
+            {cs.annex && (
+              <CaseAnnexPage annex={cs.annex} index={CASE_INDEX[i]} pageNum={CASE_PAGES[i] + 1} total={TOTAL}
+                stamp={ISSUE_STAMP} dark={dark} />
+            )}
+          </Fragment>
+        );
+      })}
 
-      {/* ═══ TAIL · TESTIMONIALS ══════════════════════════════════ */}
+      {/* ═══ TESTIMONIALS — three letters in full, the rest on the site ═══ */}
       <section className={`${styles.page} ${styles.pageLight}`}>
-        <PageChrome pageNum={TAIL_START} />
+        <PageChrome pageNum={TESTIMONIALS_PAGE} />
         <div className={styles.pageInner}>
           <div className={styles.eyebrow}>{c.testimonials.eyebrow}</div>
-          <div className={styles.titleRow}>
-            <h2 className={styles.titleH1}>{c.testimonials.title}</h2>
-          </div>
-
+          <h2 className={styles.titleH1}>{c.testimonials.title}</h2>
           <div className={styles.leadBox}>{c.testimonials.lead}</div>
 
-          <div className={`${styles.testGrid} ${styles.testGridAll}`}>
-            {filteredTestimonials.map((t, i) => (
-              <TestimonialCard key={`t-${i}`} t={t} quoteOpen={c.testimonials.quoteOpen} quoteClose={c.testimonials.quoteClose} />
+          <div className={styles.featList}>
+            {featured.map((tm) => (
+              <FeaturedLetter key={`${tm.client}-${tm.date}`} t={tm} quoteOpen={c.testimonials.quoteOpen} quoteClose={c.testimonials.quoteClose} />
             ))}
           </div>
+
+          {/* QR card to /testimonials — the whole card is also a link in the PDF. */}
+          <a href={TESTIMONIALS_URL} className={styles.testiSite}>
+            <BrandQr url={TESTIMONIALS_URL} gradientId="testimonialsQr" className={styles.testiSiteQr} />
+            <span className={styles.testiSiteText}>
+              <span className={styles.testiSiteKicker}>{v.testimonials.siteKicker}</span>
+              <span className={styles.testiSiteTitle}>{v.testimonials.siteTitle}</span>
+              <span className={styles.testiSiteUrl}>{TESTIMONIALS_URL.replace('https://', '')}</span>
+            </span>
+          </a>
         </div>
       </section>
 
-      {/* ═══ TAIL · PARTNERS ══════════════════════════════════════ */}
-      <section className={`${styles.page} ${styles.pageLight}`}>
-        <PageChrome pageNum={TAIL_START + 1} />
+      {/* ═══ PARTNERS — dark, logos in one light tone ═════════════ */}
+      <section className={`${styles.page} ${styles.pageDark}`}>
+        <PageChrome pageNum={PARTNERS_PAGE} dark />
         <div className={styles.pageInner}>
-          <div className={styles.eyebrow}>{c.partners.eyebrow}</div>
-          <div className={styles.titleRow}>
-            <h2 className={styles.titleH1}>{c.partners.title}</h2>
-            <div className={styles.categoryCardColumn}>
-              {c.partners.categories.map((label, i) => (
-                <div key={label} className={styles.categoryCard}>
-                  <div className={styles.categoryCardIcon}>{PARTNER_CATEGORY_ICONS[i]}</div>
-                  <div className={styles.categoryCardLabel}>{label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className={styles.leadBox}>{c.partners.lead}</div>
+          <div className={`${styles.eyebrow} ${styles.eyebrowDark}`}>{c.partners.eyebrow}</div>
+          <h2 className={`${styles.titleH1} ${styles.titleH1Dark}`}>{c.partners.title}</h2>
+          <div className={`${styles.leadBox} ${styles.leadBoxDark}`}>{c.partners.lead}</div>
 
           <div className={styles.partnersGrid}>
             {c.partners.items.map((pa) => (
               <div key={pa.file} className={styles.partnerCard}>
                 <div className={styles.partnerLogoWrap}>
-                  <img src={`/partners/${pa.file}`} alt={pa.name} className={styles.partnerLogo} />
+                  <img src={`/portfolio/print/img?src=${encodeURIComponent(`/partners/${pa.file}`)}&tone=mono-light`} alt={pa.name} className={styles.partnerLogo} />
                 </div>
                 <div className={styles.partnerName}>{pa.name}</div>
               </div>
@@ -851,9 +644,9 @@ export default async function PrintBrochure({
         </div>
       </section>
 
-      {/* ═══ TAIL · CONTACTS ══════════════════════════════════════ */}
+      {/* ═══ CONTACTS ═════════════════════════════════════════════ */}
       <section className={`${styles.page} ${styles.pageDark}`}>
-        <PageChrome pageNum={TAIL_START + 2} dark />
+        <PageChrome pageNum={CONTACTS_PAGE} dark />
         <div className={styles.pageInner}>
           <div className={`${styles.eyebrow} ${styles.eyebrowDark}`}>{c.contacts.eyebrow}</div>
           <div className={styles.titleRow}>
@@ -885,12 +678,12 @@ export default async function PrintBrochure({
           </div>
 
           <div className={styles.teamGrid}>
-            {c.contacts.team.map((t) => (
-              <div key={t.num} className={styles.teamCard}>
-                <div className={styles.teamNum}>{t.num}</div>
-                <div className={styles.teamRole}>{t.role}</div>
-                <div className={styles.teamName}>{t.name}</div>
-                {t.phone ? <div className={styles.teamPhone}>{t.phone}</div> : null}
+            {c.contacts.team.map((tm) => (
+              <div key={tm.num} className={styles.teamCard}>
+                <div className={styles.teamNum}>{tm.num}</div>
+                <div className={styles.teamRole}>{tm.role}</div>
+                <div className={styles.teamName}>{tm.name}</div>
+                {tm.phone ? <div className={styles.teamPhone}>{tm.phone}</div> : null}
               </div>
             ))}
           </div>
@@ -915,16 +708,17 @@ export default async function PrintBrochure({
               <div className={styles.contactsFooterLabel}>
                 <span className={styles.aboutColRule} />{c.contacts.siteLabel}
               </div>
-              <div className={styles.contactsSite}>www.westarlangroup.kz</div>
+              <a href="https://www.westarlangroup.kz" className={styles.contactsSite}>www.westarlangroup.kz</a>
             </div>
-            <WagMark className={styles.contactsMark} gradientId="wagContacts" />
+            {/* Branded QR to the site — the WAG triangle sits in its centre. */}
+            <BrandQr url="https://www.westarlangroup.kz" gradientId="contactsQr" className={styles.contactsQr} />
           </div>
         </div>
       </section>
 
-      {/* ═══ TAIL · CLOSING MANIFESTO ═════════════════════════════ */}
+      {/* ═══ CLOSING MANIFESTO — back cover ═══════════════════════ */}
       <section className={`${styles.page} ${styles.pageDark} ${styles.closing}`}>
-        <PageChrome pageNum={TAIL_START + 3} dark />
+        <PageChrome pageNum={CLOSING_PAGE} dark />
         <div className={styles.closingInner}>
           <div className={styles.closingEyebrow}>{c.closing.eyebrow}</div>
           <h2 className={styles.closingQuote}>{c.closing.quote}</h2>
@@ -943,6 +737,73 @@ export default async function PrintBrochure({
    Sub-components
    ───────────────────────────────────────────────────────────────── */
 
+/* Direction page: the registry count is the headline proof, the six
+   services each lead with their icon, and the four stages run along one
+   line. Design and construction mirror each other across
+   the spread, each in its own accent. */
+function DirectionPage({
+  pageNum,
+  d,
+  accent,
+  count,
+  icons,
+  entity,
+  path,
+}: {
+  pageNum: number;
+  d: PrintContent['dirDesign'];
+  accent: 'gold' | 'teal';
+  count: number;
+  icons: ReactNode[];
+  entity: string;
+  path: string;
+}) {
+  return (
+    <section className={`${styles.page} ${styles.pageDark} ${accent === 'teal' ? styles.dirTeal : styles.dirGold}`}>
+      <PageChrome pageNum={pageNum} dark />
+      <div className={styles.pageInner}>
+        <div className={`${styles.eyebrow} ${styles.eyebrowDark}`}>{d.eyebrow}</div>
+        <div className={styles.dirHead}>
+          <h2 className={`${styles.titleH1} ${styles.titleH1Dark}`}>{d.title}</h2>
+          <div className={styles.dirKpi}>
+            <div className={styles.dirKpiNum}>{count}</div>
+            <div className={styles.dirKpiLabel}>{d.footerLabel}</div>
+          </div>
+        </div>
+
+        <p className={styles.dirLead}>{d.lead}</p>
+
+        <div className={styles.dirSvcs}>
+          {d.svcs.map((sv, i) => (
+            <div key={sv.num} className={styles.dirSvc}>
+              <div className={styles.dirSvcIcon}>{icons[i]}</div>
+              <div className={styles.dirSvcTitle}>{sv.title}</div>
+              <div className={styles.dirSvcDesc}>{sv.desc}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className={styles.dirStepsLabel}>{d.processLabel}</div>
+        <ol className={styles.dirTimeline}>
+          {d.process.map((step) => (
+            <li key={step.roman} className={styles.dirStep}>
+              <span className={styles.dirStepNode}>{step.roman}</span>
+              <span className={styles.dirStepTitle}>{step.title}</span>
+              <span className={styles.dirStepMeta}>{step.meta}</span>
+            </li>
+          ))}
+        </ol>
+
+        <div className={styles.dirSign}>
+          <span>{entity}</span>
+          <span className={styles.dirSignSep}>·</span>
+          <a href={`https://www.westarlangroup.kz${path}`}>www.westarlangroup.kz{path}</a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function LicensePage({
   pageNum,
   eyebrow,
@@ -958,8 +819,6 @@ function LicensePage({
 }: {
   pageNum: number;
   eyebrow: string;
-  /* '№ ' (RU) / 'No. ' (EN) — includes the trailing space so the SSR
-     text-node split matches the original `№ {number} · {date}` JSX. */
   numberPrefix: string;
   number: string;
   date: string;
@@ -974,10 +833,6 @@ function LicensePage({
     <section className={`${styles.page} ${styles.pageLight}`}>
       <PageChrome pageNum={pageNum} />
       <div className={styles.pageInner}>
-        {/* Section kicker (like page 04), then the number/date line; the
-            category badge moves down into the title row as a bigBadge,
-            mirroring page 08, so it no longer collides with the top-right
-            page number. */}
         <div className={styles.eyebrow}>{eyebrow}</div>
         <div className={styles.licNumber}>{numberPrefix}{number}{' · '}{date}</div>
         <div className={styles.titleRow}>
@@ -1063,20 +918,14 @@ function renderQuoteWithLegacyName(text: string) {
   );
 }
 
-function TestimonialCard({ t, quoteOpen, quoteClose }: { t: PrintTestimonial; quoteOpen: string; quoteClose: string }) {
+function FeaturedLetter({ t, quoteOpen, quoteClose }: { t: PrintTestimonial; quoteOpen: string; quoteClose: string }) {
   return (
-    <article className={styles.testCard}>
-      {/* Header is always rendered (even when date is absent) so the
-          decorative « doesn't collide with the client name. */}
-      <div className={styles.testCardHeader}>
-        {t.date && <span className={styles.testCardDate}>{t.date}</span>}
-      </div>
-      <h3 className={styles.testCardClient}>{t.client}</h3>
-      <p className={styles.testCardQuote}>{quoteOpen}{renderQuoteWithLegacyName(t.quote)}{quoteClose}</p>
-      <div className={styles.testCardSig}>
-        <div className={styles.testCardSigName}>{t.signatory}</div>
-        <div className={styles.testCardSigRole}>{t.role}</div>
-      </div>
-    </article>
+    <figure className={styles.featCard}>
+      <blockquote className={styles.featQuote}>{quoteOpen}{renderQuoteWithLegacyName(t.quote)}{quoteClose}</blockquote>
+      <figcaption className={styles.featCaption}>
+        <span className={styles.featClient}>{t.client}</span>
+        <span className={styles.featSig}>{t.signatory} · {t.role}{t.date ? ` · ${t.date}` : ''}</span>
+      </figcaption>
+    </figure>
   );
 }

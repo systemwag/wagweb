@@ -1,6 +1,6 @@
 'use client';
 
-import styles from '../print.module.css';
+import styles from './brochure.module.css';
 
 /* Floating screen-only print controls for the design brochure. Mirrors
    ../PrintButtons.tsx (reuses the same print.module.css classes); kept

@@ -1,26 +1,52 @@
 import styles from './print.module.css';
-import d from './design/design.module.css';
+import d from './case.module.css';
 import type { AnnexFigure, DesignProjectSheet } from './design/content/types';
+import type { LayoutCopy } from './copy';
 
 type CaseAnnex = NonNullable<DesignProjectSheet['annex']>;
 
 /* ─────────────────────────────────────────────────────────────────
-   Shared project case sheet — the one-project-per-page layout born in
-   the design-works brochure, extracted so the MAIN portfolio can render
-   project cases in the same visual system. Content shape is
-   DesignProjectSheet (design/content/types); styles come from
-   print.module.css (shell) + design/design.module.css (sheet grid).
-
-   Chrome (corners, page number, issue stamp) is self-contained here and
-   parameterised by `total` and `stamp`, since each brochure has its own
-   pagination and masthead.
+   Project case sheet (+ optional annex page):
+   · drawings are toned to the page (./img/route.ts) and sit on it without
+     a frame, taking whatever height is left — a sheet never overflows or
+     leaves a hole;
+   · the status sits as a seal in the header;
+   · the index is the display number from PrintBrochure (cases are
+     renumbered in reading order), not the one stored in content.
    ───────────────────────────────────────────────────────────────── */
 
-function FramedFigure({ fig, band = false, compactHero = false }: { fig: AnnexFigure; band?: boolean; compactHero?: boolean }) {
+/* Drawing URL toned for the page: blueprint on dark, paper on light. */
+const toned = (src: string, dark: boolean) =>
+  `/portfolio/print/img?src=${encodeURIComponent(src)}&tone=${dark ? 'blueprint' : 'paper'}`;
+
+function CheckIcon() {
   return (
-    <figure className={`${d.figure} ${band ? d.figBandExtra : ''} ${compactHero ? d.figCompact : ''}`}>
-      <div className={`${styles.licScanFrame} ${d.figFrame}`}>
-        <img src={fig.drawing} alt={fig.caption} className={styles.licScanImg} />
+    <svg viewBox="0 0 12 12" aria-hidden className={d.sealIcon}>
+      <path d="M2 6.4l2.6 2.5L10 3.4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function Chrome({ pageNum, total, stamp, dark }: { pageNum: number; total: number; stamp: string; dark: boolean }) {
+  return (
+    <>
+      <span className={`${styles.cornerL} ${styles.cornerTL}`} aria-hidden />
+      <span className={`${styles.cornerL} ${styles.cornerTR}`} aria-hidden />
+      <span className={`${styles.cornerL} ${styles.cornerBL}`} aria-hidden />
+      <span className={`${styles.cornerL} ${styles.cornerBR}`} aria-hidden />
+      <div className={`${styles.pageNum} ${dark ? styles.pageNumDark : ''}`}>
+        {String(pageNum).padStart(2, '0')} / {total}
+      </div>
+      <div className={`${styles.pageStamp} ${dark ? styles.pageStampDark : ''}`}>{stamp}</div>
+    </>
+  );
+}
+
+function Figure({ fig, dark, band = false }: { fig: AnnexFigure; dark: boolean; band?: boolean }) {
+  return (
+    <figure className={`${d.fig} ${band ? d.figBand : ''}`}>
+      <div className={d.plate}>
+        <img src={toned(fig.drawing, dark)} alt={fig.caption} className={d.plateImg} />
       </div>
       <figcaption className={d.figCap}>
         <span className={d.figCapText}>{fig.caption}</span>
@@ -32,36 +58,39 @@ function FramedFigure({ fig, band = false, compactHero = false }: { fig: AnnexFi
 
 export default function CaseSheet({
   p,
+  index,
   pageNum,
   total,
   stamp,
   dark,
+  labels,
 }: {
   p: DesignProjectSheet;
+  index: string;
   pageNum: number;
   total: number;
   stamp: string;
   dark: boolean;
+  labels: LayoutCopy['caseStamp'];
 }) {
   return (
     <section className={`${styles.page} ${dark ? styles.pageDark : styles.pageLight}`}>
-      <span className={`${styles.cornerL} ${styles.cornerTL}`} aria-hidden />
-      <span className={`${styles.cornerL} ${styles.cornerTR}`} aria-hidden />
-      <span className={`${styles.cornerL} ${styles.cornerBL}`} aria-hidden />
-      <span className={`${styles.cornerL} ${styles.cornerBR}`} aria-hidden />
-      <div className={`${styles.pageNum} ${dark ? styles.pageNumDark : ''}`}>
-        {String(pageNum).padStart(2, '0')} / {total}
-      </div>
-      <div className={`${styles.pageStamp} ${dark ? styles.pageStampDark : ''}`}>{stamp}</div>
+      <Chrome pageNum={pageNum} total={total} stamp={stamp} dark={dark} />
 
-      <div className={`${styles.pageInner} ${dark ? d.sheetDark : ''} ${p.extraDrawing ? d.sheetCompact : ''}`}>
-        <div className={`${styles.eyebrow} ${dark ? styles.eyebrowDark : ''}`}>{p.index} · {p.category}</div>
-        <h2 className={d.sheetTitle}>{p.title}</h2>
-        <div className={d.sheetMeta}>
-          <span className={d.sheetMetaClient}>{p.client}</span>
-          <span className={d.sheetMetaSep}>·</span>
-          <span>{p.location}</span>
-          <span className={d.sheetStatus}>{p.status}</span>
+      <div className={`${styles.pageInner} ${dark ? d.sheetDark : ''}`}>
+        <div className={d.caseHead}>
+          <div className={d.caseHeadMain}>
+            <div className={`${styles.eyebrow} ${dark ? styles.eyebrowDark : ''}`}>{index} · {p.category}</div>
+            <h2 className={d.sheetTitle}>{p.title}</h2>
+            <div className={d.sheetMeta}>
+              <span className={d.sheetMetaClient}>{p.client}</span>
+              <span className={d.sheetMetaSep}>·</span>
+              <span>{p.location}</span>
+            </div>
+          </div>
+          <div className={d.seal}>
+            <div className={d.sealStatus}><CheckIcon />{p.status}</div>
+          </div>
         </div>
 
         <p className={d.sheetLead}>{p.lead}</p>
@@ -78,14 +107,13 @@ export default function CaseSheet({
           ))}
         </div>
 
-        <FramedFigure
-          fig={{ drawing: p.drawing, caption: p.drawingCaption, kind: p.drawingKind }}
-          compactHero={p.extraDrawing != null}
-        />
-        {p.extraDrawing && <FramedFigure fig={p.extraDrawing} band />}
+        <div className={d.figs}>
+          <Figure fig={{ drawing: p.drawing, caption: p.drawingCaption, kind: p.drawingKind }} dark={dark} />
+          {p.extraDrawing && <Figure fig={p.extraDrawing} dark={dark} band />}
+        </div>
 
         <div className={d.scopeWrap}>
-          <div className={d.scopeLabel}>СОСТАВ РАБОТ</div>
+          <div className={d.scopeLabel}>{labels.scope}</div>
           <div className={d.scopeGrid}>
             {p.scope.map((s) => (
               <div key={s} className={d.scopeItem}>{s}</div>
@@ -99,48 +127,33 @@ export default function CaseSheet({
   );
 }
 
-/* Optional follow-up page of extra project drawings — mirrors the design
-   brochure's AnnexPage but wears the main-portfolio case chrome. Used when a
-   case carries more drawings than the sheet's hero + band can hold (e.g. the
-   merged «Уральская Сталь» project: сети 0,4 кВ + пост ЭЦ). */
+/* Follow-up page of extra drawings; shares the sheet's tone and index. */
 export function CaseAnnexPage({
   annex,
+  index,
   pageNum,
   total,
   stamp,
   dark,
 }: {
   annex: CaseAnnex;
+  index: string;
   pageNum: number;
   total: number;
   stamp: string;
   dark: boolean;
 }) {
+  const eyebrow = annex.eyebrow.replace(/^\s*[\d.]+\s*·\s*/, `${index} · `);
   return (
     <section className={`${styles.page} ${dark ? styles.pageDark : styles.pageLight}`}>
-      <span className={`${styles.cornerL} ${styles.cornerTL}`} aria-hidden />
-      <span className={`${styles.cornerL} ${styles.cornerTR}`} aria-hidden />
-      <span className={`${styles.cornerL} ${styles.cornerBL}`} aria-hidden />
-      <span className={`${styles.cornerL} ${styles.cornerBR}`} aria-hidden />
-      <div className={`${styles.pageNum} ${dark ? styles.pageNumDark : ''}`}>
-        {String(pageNum).padStart(2, '0')} / {total}
-      </div>
-      <div className={`${styles.pageStamp} ${dark ? styles.pageStampDark : ''}`}>{stamp}</div>
+      <Chrome pageNum={pageNum} total={total} stamp={stamp} dark={dark} />
 
       <div className={`${styles.pageInner} ${dark ? d.sheetDark : ''}`}>
-        <div className={`${styles.eyebrow} ${dark ? styles.eyebrowDark : ''}`}>{annex.eyebrow}</div>
+        <div className={`${styles.eyebrow} ${dark ? styles.eyebrowDark : ''}`}>{eyebrow}</div>
         <h2 className={d.sheetTitle}>{annex.title}</h2>
-        <div className={d.annexFigs}>
+        <div className={`${d.figs} ${d.figsAnnex}`}>
           {annex.figures.map((f) => (
-            <div key={f.drawing} className={`${d.annexFig} ${f.band ? d.annexFigBand : ''} ${f.side ? d.annexFigSide : ''}`}>
-              <div className={`${styles.licScanFrame} ${d.annexFigFrame}`}>
-                <img src={f.drawing} alt={f.caption} className={styles.licScanImg} />
-              </div>
-              <figcaption className={d.figCap}>
-                <span className={d.figCapText}>{f.caption}</span>
-                <span className={d.figKind}>{f.kind}</span>
-              </figcaption>
-            </div>
+            <Figure key={f.drawing} fig={f} dark={dark} band={f.band} />
           ))}
         </div>
         {annex.metrics && (
