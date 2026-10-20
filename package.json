@@ -10,7 +10,12 @@
     "test": "vitest run",
     "build:pdf": "cross-env PDF_TITLE=\"Портфолио West Arlan Group · 2026\" node scripts/build-pdf.mjs",
     "build:pdf:en": "cross-env OUT_PDF=public/portfolio/portfolio-en.pdf PRINT_URL=http://localhost:3000/portfolio/print/en PDF_TITLE=\"West Arlan Group — Portfolio 2026\" node scripts/build-pdf.mjs",
-    "build:pdf:design": "cross-env OUT_PDF=public/portfolio/portfolio-design.pdf PRINT_URL=http://localhost:3000/portfolio/print/design PDF_TITLE=\"Проектирование инженерных сетей — West Arlan Group · 2026\" node scripts/build-pdf.mjs"
+    "build:pdf:design": "cross-env OUT_PDF=public/portfolio/portfolio-design.pdf PRINT_URL=http://localhost:3000/portfolio/print/design PDF_TITLE=\"Проектирование инженерных сетей — West Arlan Group · 2026\" node scripts/build-pdf.mjs",
+    "build:pdf:card": "cross-env OUT_PDF=public/company-card.pdf PRINT_URL=http://localhost:3000/portfolio/print/card PDF_TITLE=\"Карточка компании — West Arlan Group\" node scripts/build-pdf.mjs",
+    "build:pdf:card:light": "cross-env OUT_PDF=public/company-card-light.pdf PRINT_URL=http://localhost:3000/portfolio/print/card/light PDF_TITLE=\"Карточка компании — West Arlan Group (для печати)\" node scripts/build-pdf.mjs",
+    "build:pdf:v2": "cross-env PDF_OUTLINE=1 OUT_PDF=versions/portfolio-v2.pdf PRINT_URL=http://localhost:3000/portfolio/print/v2 PDF_TITLE=\"Портфолио West Arlan Group · 2026\" node scripts/build-pdf.mjs",
+    "build:pdf:v2:en": "cross-env PDF_OUTLINE=1 OUT_PDF=versions/portfolio-v2-en.pdf PRINT_URL=http://localhost:3000/portfolio/print/v2/en PDF_TITLE=\"West Arlan Group — Portfolio 2026\" node scripts/build-pdf.mjs",
+    "build:pdf:memo": "cross-env OUT_PDF=public/memo-canton-fair-2026.pdf PRINT_URL=http://localhost:3000/portfolio/print/memo PDF_TITLE=\"Меморандум: Canton Fair 2026 — West Arlan Group\" node scripts/build-pdf.mjs"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -38,7 +43,9 @@
     "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "^16.2.9",
+    "opentype.js": "^2.0.0",
     "puppeteer": "^25.0.4",
+    "sharp": "^0.34.5",
     "typescript": "^5",
     "vitest": "^4.1.8"
   }

@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import styles from './print.module.css';
 import d from './design/design.module.css';
+import BrandQr from './BrandQr';
 
 /* ─────────────────────────────────────────────────────────────────
    ПЗТМ LTD — bespoke СМР (construction) showcase, 2 pages, opening the
@@ -24,6 +25,9 @@ type PztmCopy = {
   eyebrow2: string;
   title2: string;
   portLabel: string;
+  videoLabel: string;
+  videoKicker: string;
+  videos: string[];  // titles, same order as PZTM_VIDEOS
   netTitle: string;
   networks: { value: string; label: string }[];
 };
@@ -67,6 +71,12 @@ const COPY: Record<'ru' | 'en', PztmCopy> = {
     eyebrow2: '01 · ПЗТМ LTD · СТРОИТЕЛЬНАЯ ПЛОЩАДКА',
     title2: 'Строительно-монтажные работы на площадке',
     portLabel: 'СЕТИ И ЭЛЕКТРОСНАБЖЕНИЕ',
+    videoLabel: 'ВИДЕО С ОБЪЕКТА · НАВЕДИТЕ КАМЕРУ ТЕЛЕФОНА',
+    videoKicker: 'ВИДЕО',
+    videos: [
+      'Ход строительства рельсосварочного предприятия',
+      'Железнодорожный путь завода · аэросъёмка, октябрь 2026',
+    ],
     netTitle: 'ПЕРЕУСТРОЙСТВО ИНЖЕНЕРНЫХ СЕТЕЙ · 8,3 КМ',
     networks: [
       { value: '1 612 м', label: 'Дальсвязь · оптокабель в ПЭ трубе' },
@@ -113,6 +123,12 @@ const COPY: Record<'ru' | 'en', PztmCopy> = {
     eyebrow2: '01 · PZTM LTD · CONSTRUCTION SITE',
     title2: 'Construction works on site',
     portLabel: 'NETWORKS AND POWER SUPPLY',
+    videoLabel: 'VIDEO FROM THE SITE · POINT YOUR PHONE CAMERA',
+    videoKicker: 'VIDEO',
+    videos: [
+      'Construction of the rail welding plant',
+      'The plant’s railway track · aerial footage, October 2026',
+    ],
     netTitle: 'UTILITY NETWORK RELOCATIONS · 8.3 KM',
     networks: [
       { value: '1,612 m', label: 'Dalsvyaz · fibre cable in PE duct' },
@@ -122,6 +138,13 @@ const COPY: Record<'ru' | 'en', PztmCopy> = {
     ],
   },
 };
+
+/* Construction videos on the company YouTube channel. Short youtu.be links
+   without the ?si= share token: the QR stays small and easy to scan. */
+const PZTM_VIDEOS = [
+  'https://youtu.be/7EKiLv8AG2c',
+  'https://youtu.be/TY2lyMrE9Vg',
+];
 
 /* Landscape site photos — shown first, in landscape cells (never cropped
    into a vertical frame). */
@@ -234,6 +257,24 @@ export default function PztmShowcase({
               <div key={src} className={styles.pztmPhoto}>
                 <img src={src} alt="" className={styles.pztmPhotoImg} />
               </div>
+            ))}
+          </div>
+
+          {/* Video QR cards — the whole card is also a link in the PDF. */}
+          <div className={styles.pztmPortLabel}>{c.videoLabel}</div>
+          <div className={styles.pztmVideoRow}>
+            {PZTM_VIDEOS.map((url, i) => (
+              <a key={url} href={url} className={styles.pztmVideo}>
+                <BrandQr url={url} gradientId={`pztmVideoQr${i}`} className={styles.pztmVideoQr} />
+                <span className={styles.pztmVideoText}>
+                  <span className={styles.pztmVideoKicker}>
+                    <svg viewBox="0 0 10 10" aria-hidden><path d="M2 1l7 4-7 4z" /></svg>
+                    {c.videoKicker} {String(i + 1).padStart(2, '0')} · YouTube
+                  </span>
+                  <span className={styles.pztmVideoTitle}>{c.videos[i]}</span>
+                  <span className={styles.pztmVideoUrl}>{url.replace('https://', '')}</span>
+                </span>
+              </a>
             ))}
           </div>
 

@@ -486,7 +486,7 @@ const EN_CONTENT: PrintContent = {
       { num: '01', role: 'General Director',          name: 'Aronov Ayan Sadirzhanovich' },
       { num: '02', role: 'Director, Engineering Group', name: 'Valeyev Aleksey Sergeyevich',    phone: '+7 (775) 645-90-51' },
       { num: '03', role: 'Production Director',       name: 'Pruss Albert Ruslanovich',      phone: '+7 (747) 135-14-92' },
-      { num: '04', role: 'Chief Project Engineer',    name: 'Shturmilov Valentin Petrovich', phone: '+7 (771) 229-38-78' },
+      { num: '04', role: 'Chief Project Engineer',    name: 'Martynyuk Aleksandr Anatolyevich', phone: '+7 (701) 566-24-54' },
     ],
     legalLabel: 'LEGAL ENTITY',
     legalValue: 'West Arlan Group LLP · BIN 100340009758',

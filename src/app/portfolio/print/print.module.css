@@ -5,6 +5,37 @@
 
 @page { size: A4 portrait; margin: 0; }
 
+/* ── Fonts: static TTF only ─────────────────────────────────────────
+   next/font отдаёт вариативные шрифты, а их Chromium вшивает в PDF как
+   Type3 — глифы-рисунки без хинтинга, которые медленнее рисуются и хуже
+   печатаются. Поэтому брошюра берёт статические начертания из
+   public/fonts/print (те же, что подбирает next/font: Onest v11 400–700,
+   Space Grotesk 400–700, Outfit 700–900).
+   В Space Grotesk и Outfit нет кириллицы, в Onest — казахских букв и ₸,
+   поэтому в каждом стеке есть Onest и Noto: без них текст уходил в Arial.
+   build-pdf.mjs роняет сборку, если в PDF снова появятся Type3 или Arial. */
+@font-face { font-family: 'WagOnest'; src: url('/fonts/print/onest-v11-cyrillic_latin-regular.ttf') format('truetype'); font-weight: 400; font-display: block; }
+@font-face { font-family: 'WagOnest'; src: url('/fonts/print/onest-v11-cyrillic_latin-500.ttf') format('truetype'); font-weight: 500; font-display: block; }
+@font-face { font-family: 'WagOnest'; src: url('/fonts/print/onest-v11-cyrillic_latin-600.ttf') format('truetype'); font-weight: 600; font-display: block; }
+@font-face { font-family: 'WagOnest'; src: url('/fonts/print/onest-v11-cyrillic_latin-700.ttf') format('truetype'); font-weight: 700; font-display: block; }
+@font-face { font-family: 'WagGrotesk'; src: url('/fonts/print/space-grotesk-v22-latin-regular.ttf') format('truetype'); font-weight: 400; font-display: block; }
+@font-face { font-family: 'WagGrotesk'; src: url('/fonts/print/space-grotesk-v22-latin-500.ttf') format('truetype'); font-weight: 500; font-display: block; }
+@font-face { font-family: 'WagGrotesk'; src: url('/fonts/print/space-grotesk-v22-latin-600.ttf') format('truetype'); font-weight: 600; font-display: block; }
+@font-face { font-family: 'WagGrotesk'; src: url('/fonts/print/space-grotesk-v22-latin-700.ttf') format('truetype'); font-weight: 700; font-display: block; }
+@font-face { font-family: 'WagOutfit'; src: url('/fonts/print/outfit-v15-latin-700.ttf') format('truetype'); font-weight: 700; font-display: block; }
+@font-face { font-family: 'WagOutfit'; src: url('/fonts/print/outfit-v15-latin-800.ttf') format('truetype'); font-weight: 800; font-display: block; }
+@font-face { font-family: 'WagOutfit'; src: url('/fonts/print/outfit-v15-latin-900.ttf') format('truetype'); font-weight: 900; font-display: block; }
+@font-face { font-family: 'WagNoto'; src: url('/fonts/noto/NotoSans-Regular.ttf') format('truetype'); font-weight: 400; font-display: block; }
+@font-face { font-family: 'WagNoto'; src: url('/fonts/noto/NotoSans-Medium.ttf') format('truetype'); font-weight: 500; font-display: block; }
+@font-face { font-family: 'WagNoto'; src: url('/fonts/noto/NotoSans-SemiBold.ttf') format('truetype'); font-weight: 600; font-display: block; }
+@font-face { font-family: 'WagNoto'; src: url('/fonts/noto/NotoSans-Bold.ttf') format('truetype'); font-weight: 700; font-display: block; }
+@font-face { font-family: 'WagNoto'; src: url('/fonts/noto/NotoSans-ExtraBold.ttf') format('truetype'); font-weight: 800; font-display: block; }
+@font-face { font-family: 'WagNoto'; src: url('/fonts/noto/NotoSans-Black.ttf') format('truetype'); font-weight: 900; font-display: block; }
+/* Arrows and math operators (≤ ≈ →): in neither Onest nor Noto Sans. */
+@font-face { font-family: 'WagSymbols'; src: url('/fonts/mono/JetBrainsMono-Regular.ttf') format('truetype'); font-weight: 400; unicode-range: U+2190-21FF, U+2200-22FF; font-display: block; }
+@font-face { font-family: 'WagSymbols'; src: url('/fonts/mono/JetBrainsMono-Medium.ttf') format('truetype'); font-weight: 500; unicode-range: U+2190-21FF, U+2200-22FF; font-display: block; }
+@font-face { font-family: 'WagSymbols'; src: url('/fonts/mono/JetBrainsMono-Bold.ttf') format('truetype'); font-weight: 700; unicode-range: U+2190-21FF, U+2200-22FF; font-display: block; }
+
 /* ── Color tokens (local to print) ──────────────────────────────── */
 .book {
   --c-dark:        #04060C;
@@ -44,10 +75,15 @@
   --fs-body:        9.5pt;
   --fs-meta:        7.5pt;
 
+  /* Font stacks — see the @font-face block above. */
+  --body:    'WagOnest', 'WagNoto', 'WagSymbols', sans-serif;
+  --heading: 'WagGrotesk', 'WagOnest', 'WagNoto', 'WagSymbols', sans-serif;
+  --display: 'WagOutfit', 'WagOnest', 'WagNoto', 'WagSymbols', sans-serif;
+
   min-height: 100vh;
   padding: 30px 0;
   background: #2a2a2a;
-  font-family: 'Onest', system-ui, sans-serif;
+  font-family: var(--body);
   color: var(--c-ink);
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
@@ -67,7 +103,7 @@
   display: inline-flex; align-items: center; justify-content: center;
   gap: 8px;
   padding: 12px 18px;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -161,7 +197,7 @@
 .pageNum {
   position: absolute;
   top: 18mm; right: 16mm;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 9pt;
   font-weight: 500;
   letter-spacing: 0.10em;
@@ -176,7 +212,7 @@
   position: absolute;
   bottom: 8mm;
   left: 16mm;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 6.5pt;
   letter-spacing: 0.22em;
   color: rgba(74,64,50,0.45);
@@ -196,7 +232,7 @@
   flex-direction: column;
 }
 .closingEyebrow {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: var(--fs-meta);
   font-weight: 600;
   letter-spacing: 0.30em;
@@ -205,7 +241,7 @@
   margin-bottom: 8mm;
 }
 .closingQuote {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-weight: 700;
   font-size: 36pt;
   line-height: 1.08;
@@ -215,7 +251,7 @@
   max-width: 160mm;
 }
 .closingByline {
-  font-family: 'Onest', sans-serif;
+  font-family: var(--body);
   font-size: 11pt;
   line-height: 1.55;
   color: rgba(240,242,248,0.65);
@@ -239,7 +275,7 @@
   display: inline-flex;
   align-items: center;
   gap: 2.5mm;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: var(--fs-meta);
   font-weight: 600;
   letter-spacing: 0.22em;
@@ -248,7 +284,7 @@
   margin-bottom: 1.5mm;
 }
 .closingFooterValue {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 9pt;
   letter-spacing: 0.20em;
   color: rgba(240,242,248,0.75);
@@ -266,7 +302,7 @@
   position: absolute;
   top: 16mm;
   left: 22mm;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 8.5pt;
   font-weight: 500;
   letter-spacing: 0.30em;
@@ -279,7 +315,7 @@
   position: absolute;
   top: 16mm;
   right: 22mm;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 8.5pt;
   font-weight: 500;
   letter-spacing: 0.20em;
@@ -303,7 +339,7 @@
   left: 0;
   right: 0;
   text-align: center;
-  font-family: 'Outfit', 'Space Grotesk', sans-serif;
+  font-family: var(--display);
   font-weight: 900;
   font-size: 44pt;
   line-height: 0.95;
@@ -322,12 +358,15 @@
   transform: translateX(-50%);
   width: 64mm;
   height: 0.6mm;
+  /* Fades into the cover background with opaque stops, pre-mixed with
+     --c-dark: over a solid background this is pixel-identical to fading the
+     alpha, but an alpha gradient becomes a PDF soft mask (slow in viewers). */
   background: linear-gradient(90deg,
-    rgba(201,148,31,0)    0%,
-    rgba(230,190,87,0.95) 25%,
-    rgba(240,200,90,1)    50%,
-    rgba(230,190,87,0.95) 75%,
-    rgba(201,148,31,0)    100%);
+    var(--c-dark)                                          0%,
+    color-mix(in srgb, rgb(230,190,87) 95%, var(--c-dark)) 25%,
+    rgb(240,200,90)                                        50%,
+    color-mix(in srgb, rgb(230,190,87) 95%, var(--c-dark)) 75%,
+    var(--c-dark)                                          100%);
 }
 
 /* Tagline reworked as a competency declaration — uppercase, tracked,
@@ -342,7 +381,7 @@
   align-items: flex-start;
   justify-content: center;
   gap: 6mm;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
 }
 .coverTaglineItem {
   display: flex;
@@ -395,7 +434,7 @@
   text-align: center;
 }
 .coverBadgeLevel {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 8.5pt;
   font-weight: 700;
   letter-spacing: 0.18em;
@@ -404,7 +443,7 @@
   white-space: nowrap;
 }
 .coverBadgeArea {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 6pt;
   font-weight: 500;
   letter-spacing: 0.10em;
@@ -450,14 +489,14 @@
   height: 5mm;
   display: flex;
   align-items: center;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 7.5pt;
   font-weight: 600;
   letter-spacing: 0.28em;
   color: rgba(201,148,31,0.78);
 }
 .coverBottomValue {
-  font-family: 'Onest', sans-serif;
+  font-family: var(--body);
   font-size: 11pt;
   font-weight: 500;
   color: rgba(240,242,248,0.95);
@@ -469,7 +508,7 @@
 /* Eyebrow: neutral grey, NOT gold. Bigger differentiation between meta
    labels and brand-significant text. */
 .eyebrow {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: var(--fs-meta);
   font-weight: 600;
   letter-spacing: 0.30em;
@@ -480,7 +519,7 @@
 
 .titleH1 {
   /* Outfit lacks Cyrillic glyphs — must use Space Grotesk for Russian text */
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-weight: 700;
   font-size: var(--fs-h1);
   line-height: 1.02;
@@ -544,7 +583,7 @@
 }
 
 .miniLabel {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: var(--fs-meta);
   font-weight: 600;
   letter-spacing: 0.22em;
@@ -572,14 +611,14 @@
   gap: 1mm;
 }
 .inlineStatNum {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--display);
   font-weight: 800;
   font-size: 24pt;
   color: var(--c-gold);
   line-height: 1;
 }
 .inlineStatLabel {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 6.5pt;
   font-weight: 600;
   letter-spacing: 0.14em;
@@ -633,7 +672,7 @@
   display: block;
 }
 .industryCardLabel {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 8.5pt;
   font-weight: 600;
   color: var(--c-ink);
@@ -642,7 +681,7 @@
 .industryCardSub {
   display: block;
   margin-top: 1.2mm;
-  font-family: 'Onest', sans-serif;
+  font-family: var(--body);
   font-size: 6pt;
   font-weight: 500;
   line-height: 1.4;
@@ -685,7 +724,7 @@
   display: flex;
   align-items: center;
   gap: 2.5mm;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 9pt;
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -704,7 +743,7 @@
   display: flex;
   align-items: center;
   gap: 3mm;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 7.5pt;
   font-weight: 600;
   letter-spacing: 0.24em;
@@ -761,7 +800,7 @@
   right: 4mm;
   transform: translateY(-50%);
   padding: 1mm 2.5mm;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 7pt;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -774,7 +813,7 @@
 .legalCardBadgeViolet { background: #7C6FE0; color: #fff; }
 
 .legalCardName {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 10pt;
   font-weight: 700;
   letter-spacing: -0.005em;
@@ -793,7 +832,7 @@
   margin-top: 2.5mm;
   padding-top: 2mm;
   border-top: 0.1mm solid var(--line-cream);
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 7pt;
   letter-spacing: 0.06em;
   color: var(--c-muted);
@@ -845,7 +884,7 @@
 .scaleBlue .scaleBar { background: var(--c-blue); }
 .scaleBody { display: flex; flex-direction: column; gap: 2mm; padding-top: 2mm; }
 .scaleNum {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--display);
   font-weight: 900;
   font-size: 58pt;
   line-height: 0.9;
@@ -855,7 +894,7 @@
 .scaleTeal .scaleNum { color: var(--c-teal-soft); }
 .scaleBlue .scaleNum { color: var(--c-blue); }
 .scaleLabel {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 10pt;
   font-weight: 700;
   letter-spacing: 0.10em;
@@ -881,14 +920,14 @@
   border-left: 0.4mm solid var(--c-gold);
 }
 .regionsBadgeNum {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--display);
   font-weight: 900;
   font-size: 32pt;
   color: var(--c-gold);
   line-height: 1;
 }
 .regionsBadgeLabel {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 7pt;
   font-weight: 600;
   letter-spacing: 0.20em;
@@ -906,7 +945,7 @@
 }
 .mapCornerCoord {
   position: absolute;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 7pt;
   letter-spacing: 0.18em;
   color: rgba(240,242,248,0.4);
@@ -921,7 +960,7 @@
   bottom: 0;
   display: flex;
   gap: 8mm;
-  font-family: 'Onest', sans-serif;
+  font-family: var(--body);
   font-size: 7.5pt;
   color: rgba(240,242,248,0.55);
   z-index: 2;
@@ -936,7 +975,7 @@
 
 /* «Люди, которые строят» — team composition under the map. */
 .peopleTitle {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 17pt;
   font-weight: 700;
   letter-spacing: -0.015em;
@@ -955,7 +994,7 @@
   border-radius: 1.5mm;
 }
 .peopleNum {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 22pt;
   font-weight: 700;
   line-height: 1;
@@ -963,7 +1002,7 @@
   letter-spacing: -0.02em;
 }
 .peopleLabel {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 6.5pt;
   font-weight: 600;
   letter-spacing: 0.14em;
@@ -1010,7 +1049,7 @@
 .statBarItem:first-child { border-left: 0; }
 .statBarGold, .statBarTeal, .statBarBlue { /* legacy modifier classes — no-op now */ }
 .statBarNum {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-weight: 700;
   font-size: 22pt;
   line-height: 1;
@@ -1023,7 +1062,7 @@
 .statBarTeal .statBarNum { color: var(--c-teal-soft); }
 .statBarBlue .statBarNum { color: var(--c-blue); }
 .statBarLabel {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: var(--fs-meta);
   font-weight: 500;
   letter-spacing: 0.14em;
@@ -1053,7 +1092,7 @@
   align-items: center;
   padding: 1.2mm 3.5mm;
   border-radius: 999px;
-  font-family: 'Onest', sans-serif;
+  font-family: var(--body);
   font-size: 8pt;
   font-weight: 500;
 }
@@ -1066,7 +1105,7 @@
   background: rgba(201,148,31,0.18);
   border: 0.15mm solid rgba(201,148,31,0.5);
   color: var(--c-ink-2);
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 7.5pt;
   font-weight: 700;
   letter-spacing: 0.16em;
@@ -1113,7 +1152,7 @@
   display: block;
 }
 .categoryCardLabel {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 8.5pt;
   font-weight: 600;
   color: var(--c-ink);
@@ -1131,14 +1170,14 @@
   border-left: 0.4mm solid var(--c-gold);
 }
 .bigBadgeNum {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--display);
   font-weight: 900;
   font-size: 32pt;
   color: var(--c-gold);
   line-height: 1;
 }
 .bigBadgeLabel {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 7pt;
   font-weight: 600;
   letter-spacing: 0.20em;
@@ -1176,7 +1215,7 @@
   gap: 1.5mm;
 }
 .isoName {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 9.5pt;
   font-weight: 700;
   color: var(--c-ink);
@@ -1218,7 +1257,7 @@
   gap: 1.6mm;
 }
 .accrNumber {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 8.5pt;
   font-weight: 700;
   letter-spacing: 0.01em;
@@ -1240,7 +1279,7 @@
   margin-top: 0.4mm;
 }
 .accrTag {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 6.4pt;
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -1259,7 +1298,7 @@
   align-items: center;
   gap: 2mm;
   margin-top: 0.4mm;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 7pt;
   font-weight: 600;
   letter-spacing: 0.03em;
@@ -1277,7 +1316,7 @@
 }
 .isoFooterItem { /* gold-rule pattern now lives inside via .aboutColTitle */ }
 .isoFooterLabel {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 7pt;
   font-weight: 600;
   letter-spacing: 0.20em;
@@ -1297,7 +1336,7 @@
    ═══════════════════════════════════════════════════════════════════ */
 .licNumber {
   margin-top: 2.5mm;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: var(--fs-meta);
   font-weight: 500;
   letter-spacing: 0.16em;
@@ -1305,7 +1344,7 @@
   text-transform: uppercase;
 }
 .licTitle {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-weight: 700;
   font-size: var(--fs-h1);
   line-height: 1.05;
@@ -1331,14 +1370,16 @@
   max-height: 185mm;
   object-fit: contain;
   background: #fff;
-  /* Uniform soft elevation + thin border masks the inevitable variation
+  /* Uniform elevation + thin border masks the inevitable variation
      between scan files (different cameras, different paper tints, edge
      artifacts). All 4 licenses now read as "documents on display" with
-     identical visual treatment. */
+     identical visual treatment.
+     The shadow is deliberately unblurred: Chromium turns every blurred
+     box-shadow into a raster image with a soft mask (95 of them across the
+     brochure), which slows every PDF viewer. A crisp offset reads the same
+     at print size and stays plain vector. */
   border: 0.1mm solid rgba(74,64,50,0.18);
-  box-shadow:
-    0 0.5mm 1.8mm rgba(74,64,50,0.16),
-    0 0.15mm 0.6mm rgba(74,64,50,0.10);
+  box-shadow: 0 0.45mm 0 rgba(74,64,50,0.10);
 }
 /* License meta — single divider above, no per-item gold border. */
 .licMetaGrid {
@@ -1363,7 +1404,7 @@
   width: 3.5mm;
 }
 .licMetaLabel {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: var(--fs-meta);
   font-weight: 500;
   letter-spacing: 0.18em;
@@ -1391,7 +1432,7 @@
   height: 26mm;
   border-radius: 1mm;
   padding: 2mm;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
 }
 .outlinedBadgeGold { border: 0.4mm solid var(--c-gold); background: rgba(201,148,31,0.06); }
 .outlinedBadgeTeal { border: 0.4mm solid var(--c-teal); background: rgba(0,168,142,0.08); }
@@ -1418,7 +1459,7 @@
 }
 .outlinedBadgeTeal .outlinedBadgeBottom { color: rgba(0,168,142,0.85); }
 .outlinedBadgeNumBig {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--display);
   font-weight: 900;
   font-size: 26pt;
   line-height: 1;
@@ -1428,7 +1469,7 @@
   gap: 1mm;
 }
 .outlinedBadgeNumBig span {
-  font-family: 'Onest', sans-serif;
+  font-family: var(--body);
   font-size: 8pt;
   font-weight: 600;
   letter-spacing: 0.10em;
@@ -1456,7 +1497,7 @@
    reads as a quiet ordinal marker. */
 .svcNum {
   flex-shrink: 0;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--display);
   font-weight: 500;
   font-size: 12pt;
   line-height: 1;
@@ -1478,7 +1519,7 @@
 .svcIconTeal { color: var(--c-teal-soft); }
 .svcBody { display: flex; flex-direction: column; gap: 1.5mm; }
 .svcTitle {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 10pt;
   font-weight: 700;
   color: #F0F2F8;
@@ -1501,7 +1542,7 @@
   display: flex;
   align-items: center;
   gap: 3mm;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: var(--fs-meta);
   font-weight: 600;
   letter-spacing: 0.22em;
@@ -1549,7 +1590,7 @@
 .processStepGold { border-left-color: var(--c-gold); }
 .processStepTeal { border-left-color: var(--c-teal); }
 .processRoman {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-weight: 600;
   font-size: 9pt;
   letter-spacing: 0.20em;
@@ -1559,7 +1600,7 @@
 .processStepGold .processRoman { color: var(--c-meta-dark); }
 .processStepTeal .processRoman { color: var(--c-meta-dark); }
 .processTitle {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 11pt;
   font-weight: 700;
   color: #F0F2F8;
@@ -1575,9 +1616,18 @@
   justify-content: center;
   flex-shrink: 0;
   width: 4mm;
-  font-family: 'Outfit', sans-serif;
-  font-size: 14pt;
   color: rgba(201,148,31,0.7);
+}
+/* SVG, not the «→» character: none of the brand fonts has U+2192, so the
+   glyph fell back to Arial. */
+.processArrow svg {
+  width: 4mm;
+  height: 4mm;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .dirFooter {
@@ -1590,7 +1640,7 @@
   flex-wrap: wrap;
 }
 .dirFooterNum {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--display);
   font-weight: 900;
   font-size: 18pt;
   color: var(--c-gold);
@@ -1598,7 +1648,7 @@
 }
 .dirFooterNumTeal { color: var(--c-teal-soft); }
 .dirFooterLabel {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 7.5pt;
   font-weight: 600;
   letter-spacing: 0.20em;
@@ -1607,7 +1657,7 @@
 }
 .dirFooterSep { color: rgba(240,242,248,0.3); }
 .dirFooterText {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 7.5pt;
   font-weight: 500;
   letter-spacing: 0.18em;
@@ -1643,14 +1693,14 @@
    even when "Строительные работы" wraps and the others stay on one line. */
 .qrCardHeader { display: flex; align-items: flex-start; gap: 2.5mm; min-height: 10mm; }
 .qrCardNum {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--display);
   font-weight: 800;
   font-size: 12pt;
   color: var(--c-gold);
   line-height: 1;
 }
 .qrCardTitle {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-weight: 700;
   font-size: 11pt;
   line-height: 1.2;
@@ -1658,7 +1708,7 @@
 }
 .qrCount { display: flex; align-items: baseline; gap: 2.5mm; margin-top: 1mm; }
 .qrCountNum {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--display);
   font-weight: 900;
   font-size: 28pt;
   line-height: 1;
@@ -1667,7 +1717,7 @@
 .qrCardGold .qrCountNum { color: var(--c-gold); }
 .qrCardBlue .qrCountNum { color: var(--c-blue); }
 .qrCountLabel {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 6.5pt;
   font-weight: 600;
   letter-spacing: 0.16em;
@@ -1686,7 +1736,7 @@
 }
 .qrUrl {
   text-align: center;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 10pt;
   font-weight: 700;
   color: var(--c-ink);
@@ -1715,7 +1765,7 @@
   display: flex;
   align-items: center;
   gap: 2mm;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 9pt;
   font-weight: 700;
   color: var(--c-ink);
@@ -1744,7 +1794,7 @@
   margin-bottom: 5mm;
 }
 .testContdRight {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 8pt;
   font-weight: 600;
   letter-spacing: 0.20em;
@@ -1810,7 +1860,7 @@
   position: absolute;
   top: -2mm;
   left: 2mm;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 24pt;
   font-weight: 700;
   color: rgba(201,148,31,0.28);
@@ -1829,7 +1879,7 @@
   display: flex;
   align-items: center;
   gap: 2mm;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 6.5pt;
   font-weight: 600;
   letter-spacing: 0.10em;
@@ -1839,13 +1889,13 @@
   flex-shrink: 1;
 }
 .testCardDate {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 7pt;
   letter-spacing: 0.12em;
   color: var(--c-muted);
 }
 .testCardClient {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 9pt;
   font-weight: 700;
   color: var(--c-ink);
@@ -1881,13 +1931,13 @@
   border-top: 0.1mm dashed var(--line-cream);
 }
 .testCardSigName {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 7.5pt;
   font-weight: 700;
   color: var(--c-ink);
 }
 .testCardSigRole {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 6.5pt;
   letter-spacing: 0.10em;
   color: var(--c-muted);
@@ -1933,7 +1983,7 @@
   filter: none;
 }
 .partnerName {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 8pt;
   font-weight: 600;
   color: var(--c-ink);
@@ -1951,7 +2001,7 @@
 }
 .partnerFooterLeft { display: flex; align-items: baseline; gap: 3mm; }
 .partnerFooterNum {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--display);
   font-weight: 900;
   font-size: 26pt;
   color: var(--c-gold);
@@ -1962,7 +2012,7 @@
   display: inline-flex;
   align-items: center;
   gap: 2.5mm;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 8pt;
   font-weight: 600;
   letter-spacing: 0.22em;
@@ -1973,7 +2023,7 @@
   display: inline-flex;
   align-items: center;
   gap: 2.5mm;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 8pt;
   font-weight: 500;
   letter-spacing: 0.18em;
@@ -2009,7 +2059,7 @@
 }
 .contactRowBody { display: flex; flex-direction: column; gap: 1mm; }
 .contactRowLabel {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 7pt;
   font-weight: 600;
   letter-spacing: 0.20em;
@@ -2017,7 +2067,7 @@
   text-transform: uppercase;
 }
 .contactRowValue {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 10pt;
   font-weight: 600;
   color: #F0F2F8;
@@ -2044,14 +2094,14 @@
   position: absolute;
   top: 3mm;
   left: 3mm;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--display);
   font-weight: 500;
   font-size: 10pt;
   color: var(--c-gold);
   line-height: 1;
 }
 .teamRole {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 6.5pt;
   font-weight: 600;
   letter-spacing: 0.18em;
@@ -2060,14 +2110,14 @@
   margin-bottom: 1mm;
 }
 .teamName {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 9pt;
   font-weight: 700;
   color: #F0F2F8;
   margin-bottom: 1mm;
 }
 .teamPhone {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 9pt;
   font-weight: 500;
   color: var(--c-gold-soft);
@@ -2090,7 +2140,7 @@
   display: inline-flex;
   align-items: center;
   gap: 2.5mm;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 7pt;
   font-weight: 600;
   letter-spacing: 0.22em;
@@ -2112,7 +2162,7 @@
 }
 .contactsBottomLeft { display: flex; flex-direction: column; gap: 2mm; }
 .contactsSite {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--display);
   font-weight: 900;
   font-size: 28pt;
   color: var(--c-gold);
@@ -2138,14 +2188,14 @@
 }
 .qrRemarkArrow {
   flex-shrink: 0;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--display);
   font-size: 24pt;
   line-height: 1;
   color: var(--c-gold-soft);
 }
 .qrRemarkText {
   flex: 1;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 12.5pt;
   font-weight: 700;
   letter-spacing: -0.005em;
@@ -2154,7 +2204,7 @@
 }
 .qrRemarkTag {
   flex-shrink: 0;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--heading);
   font-size: 7.5pt;
   font-weight: 700;
   letter-spacing: 0.16em;
@@ -2185,27 +2235,51 @@
 }
 .pztmLandGrid .pztmPhoto { aspect-ratio: 3 / 2; }
 .pztmPortLabel {
-  margin-top: 4mm; font-family: 'Space Grotesk', sans-serif; font-size: 7pt;
+  margin-top: 4mm; font-family: var(--heading); font-size: 7pt;
   font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;
   color: var(--c-gold-soft);
 }
 .pztmPortRow {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 3mm; margin-top: 2.5mm;
 }
-.pztmPortRow .pztmPhoto { aspect-ratio: 2 / 3; }
+/* 3:4, not 2:3 — frees ~10 mm for the video QR cards below; two of the
+   three portrait shots are 3:4 originals anyway. */
+.pztmPortRow .pztmPhoto { aspect-ratio: 3 / 4; }
+.pztmVideoRow {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 3mm; margin-top: 2.5mm;
+}
+.pztmVideo {
+  display: flex; align-items: center; gap: 4mm; padding: 3mm;
+  border-radius: 1.5mm; border: 0.15mm solid rgba(255,255,255,0.14);
+  background: var(--c-dark-2);
+  color: inherit; text-decoration: none;
+}
+.pztmVideoQr { display: block; flex: 0 0 25mm; width: 25mm; height: 25mm; }
+.pztmVideoText { display: flex; flex-direction: column; gap: 1.8mm; min-width: 0; }
+.pztmVideoKicker {
+  display: flex; align-items: center; gap: 1.5mm;
+  font-family: var(--heading); font-size: 6.5pt; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--c-gold-soft);
+}
+.pztmVideoKicker svg { width: 2.2mm; height: 2.2mm; fill: currentColor; flex-shrink: 0; }
+.pztmVideoTitle {
+  font-family: var(--heading); font-size: 9.5pt; font-weight: 700;
+  color: #F0F2F8; line-height: 1.25;
+}
+.pztmVideoUrl { font-size: 7pt; color: rgba(240,242,248,0.6); letter-spacing: 0.02em; }
 .pztmCap { margin-top: 2mm; font-size: 7.5pt; color: rgba(240,242,248,0.6); }
 .pztmNetBand {
   margin-top: auto; padding: 5mm 6mm; background: var(--c-dark);
   border-left: 1mm solid var(--c-gold); border-radius: 1mm;
 }
 .pztmNetTitle {
-  font-family: 'Space Grotesk', sans-serif; font-size: 9pt; font-weight: 700;
+  font-family: var(--heading); font-size: 9pt; font-weight: 700;
   color: #F0F2F8; margin-bottom: 3.5mm; letter-spacing: 0.01em;
 }
 .pztmNetGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm 5mm; }
 .pztmNetItem { display: flex; flex-direction: column; gap: 1mm; }
 .pztmNetVal {
-  font-family: 'Space Grotesk', sans-serif; font-size: 12.5pt; font-weight: 700;
+  font-family: var(--heading); font-size: 12.5pt; font-weight: 700;
   color: var(--c-gold-soft); line-height: 1;
 }
 .pztmNetLbl { font-size: 7pt; color: rgba(240,242,248,0.72); line-height: 1.28; }

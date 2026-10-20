@@ -362,7 +362,7 @@ export default async function DesignBrochure({ content: c, buttons }: { content:
                   <div className={styles.processTitle}>{step.title}</div>
                   <div className={styles.processMeta}>{step.meta}</div>
                 </div>
-                {i < c.direction.process.length - 1 && <div className={styles.processArrow}>→</div>}
+                {i < c.direction.process.length - 1 && <div className={styles.processArrow} aria-hidden><svg viewBox="0 0 24 24"><path d="M3 12h17M14 6l6 6-6 6" /></svg></div>}
               </div>
             ))}
           </div>

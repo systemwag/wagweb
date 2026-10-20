@@ -1,0 +1,1676 @@
+/* ═══════════════════════════════════════════════════════════════════
+   WAG PORTFOLIO · PRINT BROCHURE (16 pages · A4 portrait)
+   Targets public/portfolio.pdf — render via scripts/build-pdf.mjs
+   ═══════════════════════════════════════════════════════════════════ */
+
+@page { size: A4 portrait; margin: 0; }
+
+/* ── Fonts: static TTF only ─────────────────────────────────────────
+   next/font отдаёт вариативные шрифты, а их Chromium вшивает в PDF как
+   Type3 — глифы-рисунки без хинтинга, которые медленнее рисуются и хуже
+   печатаются. Поэтому брошюра берёт статические начертания из
+   public/fonts/print (те же, что подбирает next/font: Onest v11 400–700,
+   Space Grotesk 400–700, Outfit 700–900).
+   В Space Grotesk и Outfit нет кириллицы, в Onest — казахских букв и ₸,
+   поэтому в каждом стеке есть Onest и Noto: без них текст уходил в Arial.
+   build-pdf.mjs роняет сборку, если в PDF снова появятся Type3 или Arial. */
+@font-face { font-family: 'WagOnest'; src: url('/fonts/print/onest-v11-cyrillic_latin-regular.ttf') format('truetype'); font-weight: 400; font-display: block; }
+@font-face { font-family: 'WagOnest'; src: url('/fonts/print/onest-v11-cyrillic_latin-500.ttf') format('truetype'); font-weight: 500; font-display: block; }
+@font-face { font-family: 'WagOnest'; src: url('/fonts/print/onest-v11-cyrillic_latin-600.ttf') format('truetype'); font-weight: 600; font-display: block; }
+@font-face { font-family: 'WagOnest'; src: url('/fonts/print/onest-v11-cyrillic_latin-700.ttf') format('truetype'); font-weight: 700; font-display: block; }
+@font-face { font-family: 'WagGrotesk'; src: url('/fonts/print/space-grotesk-v22-latin-regular.ttf') format('truetype'); font-weight: 400; font-display: block; }
+@font-face { font-family: 'WagGrotesk'; src: url('/fonts/print/space-grotesk-v22-latin-500.ttf') format('truetype'); font-weight: 500; font-display: block; }
+@font-face { font-family: 'WagGrotesk'; src: url('/fonts/print/space-grotesk-v22-latin-600.ttf') format('truetype'); font-weight: 600; font-display: block; }
+@font-face { font-family: 'WagGrotesk'; src: url('/fonts/print/space-grotesk-v22-latin-700.ttf') format('truetype'); font-weight: 700; font-display: block; }
+@font-face { font-family: 'WagOutfit'; src: url('/fonts/print/outfit-v15-latin-700.ttf') format('truetype'); font-weight: 700; font-display: block; }
+@font-face { font-family: 'WagOutfit'; src: url('/fonts/print/outfit-v15-latin-800.ttf') format('truetype'); font-weight: 800; font-display: block; }
+@font-face { font-family: 'WagOutfit'; src: url('/fonts/print/outfit-v15-latin-900.ttf') format('truetype'); font-weight: 900; font-display: block; }
+@font-face { font-family: 'WagNoto'; src: url('/fonts/noto/NotoSans-Regular.ttf') format('truetype'); font-weight: 400; font-display: block; }
+@font-face { font-family: 'WagNoto'; src: url('/fonts/noto/NotoSans-Medium.ttf') format('truetype'); font-weight: 500; font-display: block; }
+@font-face { font-family: 'WagNoto'; src: url('/fonts/noto/NotoSans-SemiBold.ttf') format('truetype'); font-weight: 600; font-display: block; }
+@font-face { font-family: 'WagNoto'; src: url('/fonts/noto/NotoSans-Bold.ttf') format('truetype'); font-weight: 700; font-display: block; }
+@font-face { font-family: 'WagNoto'; src: url('/fonts/noto/NotoSans-ExtraBold.ttf') format('truetype'); font-weight: 800; font-display: block; }
+@font-face { font-family: 'WagNoto'; src: url('/fonts/noto/NotoSans-Black.ttf') format('truetype'); font-weight: 900; font-display: block; }
+/* Arrows and math operators (≤ ≈ →): in neither Onest nor Noto Sans. */
+@font-face { font-family: 'WagSymbols'; src: url('/fonts/mono/JetBrainsMono-Regular.ttf') format('truetype'); font-weight: 400; unicode-range: U+2190-21FF, U+2200-22FF; font-display: block; }
+@font-face { font-family: 'WagSymbols'; src: url('/fonts/mono/JetBrainsMono-Medium.ttf') format('truetype'); font-weight: 500; unicode-range: U+2190-21FF, U+2200-22FF; font-display: block; }
+@font-face { font-family: 'WagSymbols'; src: url('/fonts/mono/JetBrainsMono-Bold.ttf') format('truetype'); font-weight: 700; unicode-range: U+2190-21FF, U+2200-22FF; font-display: block; }
+
+/* ── Color tokens (local to print) ──────────────────────────────── */
+.book {
+  --c-dark:        #04060C;
+  --c-dark-2:      #0A1124;
+  --c-cream:       #EFE2CB;
+  --c-cream-card:  #F8EFE0;
+  --c-cream-card-2:#F2E6CF;
+  --c-ink:         #1A1A1A;
+  --c-ink-2:       #4A4032;
+  --c-muted:       #8A7B5C;
+
+  /* Brand gold — RESERVED for headline accents and one decisive moment per
+     page. Everything else (eyebrows, dividers, meta labels) uses the muted
+     palette so the gold actually means something when you see it. */
+  --c-gold:        #C9941F;
+  --c-gold-2:      #B07F1C;
+  --c-gold-soft:   #E6BE57;
+  --c-teal:        #00A88E;
+  --c-teal-soft:   #1AC2A6;
+  --c-blue:        #4F84FF;
+
+  /* Neutral palette for hairlines, eyebrows, secondary labels. Replaces
+     the previous flood of gold accents. */
+  --c-meta:        #6E6555;
+  --c-meta-soft:   #9D9181;
+  --c-meta-dark:        rgba(240,242,248,0.55);
+  --c-meta-dark-soft:   rgba(240,242,248,0.35);
+
+  --line-gold:     rgba(201,148,31,0.45);
+  --line-cream:    rgba(74,64,50,0.12);
+  --line-dark:     rgba(240,242,248,0.08);
+
+  /* Type scale — 7 steps, nothing else. 7.5pt is the floor for print
+     (map labels are the only exception, set in SVG units). */
+  --t-display:     44pt;   /* cover wordmark, divider titles, manifesto */
+  --t-h1:          28pt;   /* page titles, key figures */
+  --t-h2:          20pt;   /* case titles, metric values, stat numbers */
+  --t-h3:          12pt;   /* card / step titles */
+  --t-lead:        10pt;   /* lead paragraphs, emphasised values */
+  --t-body:         8.5pt; /* running text, lists */
+  --t-meta:         7.5pt; /* labels, captions, eyebrows, footers */
+
+  /* Font stacks — see the @font-face block above. */
+  --body:    'WagOnest', 'WagNoto', 'WagSymbols', sans-serif;
+  --heading: 'WagGrotesk', 'WagOnest', 'WagNoto', 'WagSymbols', sans-serif;
+  --display: 'WagOutfit', 'WagOnest', 'WagNoto', 'WagSymbols', sans-serif;
+
+  min-height: 100vh;
+  padding: 30px 0;
+  background: #2a2a2a;
+  font-family: var(--body);
+  color: var(--c-ink);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* ── Page wrapper ───────────────────────────────────────────────── */
+.page {
+  width: 210mm;
+  height: 297mm;
+  margin: 0 auto 18px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  page-break-after: always;
+  break-after: page;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.page:last-child { page-break-after: auto; break-after: auto; }
+@media print {
+  .book { padding: 0; min-height: 0; background: transparent; }
+  .page { box-shadow: none; margin: 0; }
+}
+
+/* Accent colours follow the page tone: one gold and one teal per tone
+   instead of four golds picked per rule (contrast on cream vs on near-black).
+   Brochure-wide colour code: gold = проектирование, teal = строительство,
+   blue = обслуживание. */
+.pageDark  { background: var(--c-dark); color: #F0F2F8; --gold: #E6BE57; --teal: #1AC2A6; --plate: #0A1124; }
+.pageLight { background: var(--c-cream); color: var(--c-ink); --gold: #B07F1C; --teal: #00A88E; --plate: var(--c-cream); }
+
+/* Headings never leave a one-word tail; paragraphs avoid orphans. */
+.page h1, .page h2, .page h3 { text-wrap: balance; }
+.page p { text-wrap: pretty; }
+
+.pageInner {
+  padding: 18mm 16mm 14mm;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;            /* hard-clip any layout overflow so we never spill past page margins */
+}
+
+/* ── Decorative L-corner brackets (4 per page) ──────────────────── */
+.cornerL {
+  position: absolute;
+  width: 7mm;
+  height: 7mm;
+  border-color: var(--gold);
+  border-style: solid;
+  border-width: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+.cornerTL { top: 6mm; left: 6mm;    border-top-width: 0.4mm; border-left-width:  0.4mm; }
+.cornerTR { top: 6mm; right: 6mm;   border-top-width: 0.4mm; border-right-width: 0.4mm; }
+.cornerBL { bottom: 6mm; left: 6mm; border-bottom-width: 0.4mm; border-left-width:  0.4mm; }
+.cornerBR { bottom: 6mm; right: 6mm;border-bottom-width: 0.4mm; border-right-width: 0.4mm; }
+
+/* Cover uses larger, more prominent brackets */
+.cover .cornerL { width: 11mm; height: 11mm; }
+
+.pageNum {
+  position: absolute;
+  top: 18mm; right: 16mm;
+  font-family: var(--heading);
+  font-size: var(--t-body);
+  font-weight: 500;
+  letter-spacing: 0.10em;
+  color: rgba(74,64,50,0.6);
+  z-index: 6;
+}
+.pageNumDark { color: rgba(240,242,248,0.5); }
+
+/* Issue stamp footer — appears on every content page as a tiny monospace
+   line bottom-left, like a magazine masthead repeat. */
+.pageStamp {
+  position: absolute;
+  bottom: 8mm;
+  left: 16mm;
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  letter-spacing: 0.22em;
+  color: rgba(74,64,50,0.45);
+  text-transform: uppercase;
+  z-index: 6;
+}
+.pageStampDark { color: rgba(240,242,248,0.30); }
+
+/* ═══════════════════════════════════════════════════════════════════
+   17 · CLOSING MANIFESTO
+   ═══════════════════════════════════════════════════════════════════ */
+.closing { }
+.closingInner {
+  padding: 26mm 22mm 22mm;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.closingEyebrow {
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 600;
+  letter-spacing: 0.30em;
+  color: var(--c-meta-dark);
+  text-transform: uppercase;
+  margin-bottom: 8mm;
+}
+.closingQuote {
+  font-family: var(--heading);
+  font-weight: 700;
+  font-size: var(--t-display);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  color: #F0F2F8;
+  margin: auto 0 8mm 0;
+  max-width: 160mm;
+}
+.closingByline {
+  font-family: var(--body);
+  font-size: var(--t-h3);
+  line-height: 1.55;
+  color: rgba(240,242,248,0.65);
+  margin: 0 0 14mm;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphenate-limit-chars: auto 4 3;
+  -webkit-hyphenate-limit-chars: auto 4 3;
+}
+.closingFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: auto;
+  padding-top: 6mm;
+  border-top: 0.2mm solid var(--line-dark);
+}
+
+.closingFooterValue {
+  font-family: var(--heading);
+  font-size: var(--t-body);
+  letter-spacing: 0.20em;
+  color: rgba(240,242,248,0.75);
+}
+.closingMark { width: 32mm; height: 30mm; opacity: 0.8; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   01 · COVER — one focal point: mark, name, rule. Credentials stay as a
+   quiet line at the foot; the boxed badges, directions and BIN/phone row
+   moved to the About page and the contacts.
+   ═══════════════════════════════════════════════════════════════════ */
+.cover {
+  display: flex;
+  flex-direction: column;
+  padding: 16mm 22mm 20mm;
+}
+.coverTop { display: flex; justify-content: space-between; align-items: baseline; }
+.coverEyebrow {
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 500;
+  letter-spacing: 0.30em;
+  color: rgba(240,242,248,0.55);
+  text-transform: uppercase;
+}
+.coverIssue {
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 500;
+  letter-spacing: 0.20em;
+  color: var(--gold);
+}
+.coverCenter {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.coverMark { width: 66mm; height: 58mm; display: block; margin-bottom: 20mm; }
+.coverTitle {
+  text-align: center;
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: var(--t-display);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: #F0F2F8;
+  margin: 0;
+}
+.coverTitleAccent { color: #F0F2F8; }
+/* Tapered gold underscore under the wordmark. */
+.coverTitleRule {
+  margin-top: 11mm;
+  width: 64mm;
+  height: 0.6mm;
+  /* Fades into the cover background with opaque stops, pre-mixed with
+     --c-dark: over a solid background this is pixel-identical to fading the
+     alpha, but an alpha gradient becomes a PDF soft mask (slow in viewers). */
+  background: linear-gradient(90deg,
+    var(--c-dark)                                          0%,
+    color-mix(in srgb, rgb(230,190,87) 95%, var(--c-dark)) 25%,
+    rgb(240,200,90)                                        50%,
+    color-mix(in srgb, rgb(230,190,87) 95%, var(--c-dark)) 75%,
+    var(--c-dark)                                          100%);
+}
+.coverFoot {
+  display: flex;
+  flex-direction: column;
+  gap: 7mm;
+  padding-top: 6mm;
+  border-top: 0.2mm solid rgba(240,242,248,0.14);
+}
+.coverCreds { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6mm; }
+.coverCred { display: flex; flex-direction: column; gap: 1.3mm; }
+.coverCredLevel {
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.coverCredArea {
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: rgba(240,242,248,0.62);
+  line-height: 1.35;
+}
+.coverSite {
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(240,242,248,0.5);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   TYPOGRAPHY PRIMITIVES (used on multiple pages)
+   ═══════════════════════════════════════════════════════════════════ */
+/* Eyebrow: neutral grey, NOT gold. Bigger differentiation between meta
+   labels and brand-significant text. */
+.eyebrow {
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 600;
+  letter-spacing: 0.30em;
+  color: var(--c-meta);
+  text-transform: uppercase;
+}
+.eyebrowDark { color: var(--c-meta-dark); }
+
+.titleH1 {
+  /* Outfit lacks Cyrillic glyphs — must use Space Grotesk for Russian text */
+  font-family: var(--heading);
+  font-weight: 700;
+  font-size: var(--t-h1);
+  line-height: 1.02;
+  letter-spacing: -0.018em;
+  color: var(--c-ink);
+  margin: 6mm 0 4mm;
+}
+.titleH1Dark { color: #F0F2F8; }
+.titleAccent     { color: var(--gold);     font-weight: 700; }
+
+.titleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8mm;
+  margin: 4mm 0 8mm;
+}
+/* H1 inside a titleRow uses the row's spacing — its own margins would
+   compound (flex doesn't collapse) and create a double gap from the
+   eyebrow above and the lead below. */
+.titleRow .titleH1 {
+  margin: 0;
+}
+/* Same reason as .titleH1 above — the license title carries its own
+   margins for the standalone (non-row) layout; zero them inside a row. */
+.titleRow .licTitle {
+  margin: 0;
+}
+
+/* Lead text: no left border, no tinted background. Just larger body with
+   a margin to set it apart. The previous gold-border treatment had become
+   visual noise on every page. */
+.leadBox {
+  margin: 0 0 7mm;
+  padding: 0;
+  font-size: var(--t-lead);
+  line-height: 1.55;
+  color: var(--c-ink-2);
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  /* Require 4 chars before the hyphen — kills ugly "объ-екта" / "гео-дезисты"
+     breaks that Chrome's Russian hyphenation otherwise lets through. */
+  hyphenate-limit-chars: auto 4 3;
+  -webkit-hyphenate-limit-chars: auto 4 3;
+}
+.leadBoxDark {
+  background: rgba(240,242,248,0.025);
+  color: rgba(240,242,248,0.85);
+  border-left: 0.5mm solid var(--gold);
+  padding: 4mm 5mm;
+}
+/* Page 03 scale intro — smaller italic lede with tighter leading. */
+.leadBoxScale {
+  font-size: var(--t-body);
+  line-height: 1.4;
+  font-style: italic;
+}
+
+/* Industry section — label sits ABOVE the card grid as a column header,
+   matching the mission/approach section style below. */
+.industrySection {
+  margin: 4mm 0 0;
+}
+/* 5 equal-width cards in one row — same cream-card design language as the
+   legal entities row below, smaller scale + simpler content (icon + label
+   only, no badges or meta lines). */
+.industryCards {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 3mm;
+  margin-top: 1mm;
+}
+.industryCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5mm;
+  padding: 4mm 2.5mm;
+  background: var(--c-cream-card);
+  border: 0.15mm solid var(--line-cream);
+  border-radius: 1.5mm;
+  text-align: center;
+}
+.industryCardIcon {
+  width: 7mm;
+  height: 7mm;
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.industryCardIcon > svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.industryCardLabel {
+  font-family: var(--heading);
+  font-size: var(--t-body);
+  font-weight: 600;
+  color: var(--c-ink);
+  line-height: 1.3;
+}
+
+.aboutTwoCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8mm;
+  margin: 2mm 0 5mm;
+}
+.aboutCol p {
+  font-size: var(--t-lead);
+  line-height: 1.55;
+  color: var(--c-ink-2);
+  margin: 0;
+  text-align: left;  /* narrow column: ragged right, no rivers */
+  text-align-last: left;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphenate-limit-chars: auto 4 3;
+  -webkit-hyphenate-limit-chars: auto 4 3;
+}
+
+/* Section titles paired with a short gold rule — same accent device as the
+   cover wordmark underline, so the whole brochure carries one motif. */
+.aboutColTitle {
+  display: flex;
+  align-items: center;
+  gap: 2.5mm;
+  font-family: var(--heading);
+  font-size: var(--t-body);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--gold);
+  margin-bottom: 2.5mm;
+  text-transform: uppercase;
+}
+.aboutColRule {
+  display: inline-block;
+  width: 5mm;
+  height: 0.4mm;
+  background: var(--gold);
+}
+
+.legalBlockLabel {
+  display: flex;
+  align-items: center;
+  gap: 3mm;
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  color: var(--gold);
+  margin-top: 0;
+  margin-bottom: 5mm;
+}
+.legalBlockLabel span {
+  display: inline-block;
+  width: 12mm;
+  height: 0.2mm;
+  background: var(--gold);
+}
+
+.legalCards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3mm;
+}
+.legalCard {
+  position: relative;
+  padding: 5mm 3.5mm 4mm;
+  background: var(--c-cream-card);
+  border: 0.15mm solid var(--line-cream);
+  border-radius: 1.5mm;
+  min-height: 20mm;
+}
+
+/* HQ card — full-width horizontal bar above the subsidiaries */
+.legalHqCard {
+  display: flex;
+  align-items: baseline;
+  gap: 5mm;
+  min-height: auto;
+  padding: 4mm 5mm;
+  margin-bottom: 4mm;
+}
+.legalHqCard .legalCardName { margin-bottom: 0; color: var(--gold); }
+.legalHqCard .legalCardRole { margin-bottom: 0; flex: 1; }
+.legalHqCard .legalCardMeta {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+  white-space: nowrap;
+}
+.legalCardDark {
+  background: var(--c-dark);
+  color: rgba(240,242,248,0.92);
+  border-color: rgba(255,255,255,0.05);
+}
+.legalCardBadge {
+  position: absolute;
+  top: 0;
+  right: 4mm;
+  transform: translateY(-50%);
+  padding: 1mm 2.5mm;
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  border-radius: 1mm;
+}
+.legalCardBadgeGold   { background: var(--gold); color: var(--c-dark); }
+.legalCardBadgeTeal   { background: var(--teal); color: var(--c-dark); }
+.legalCardBadgeBlue   { background: var(--c-blue); color: #fff; }
+
+.legalCardBadgeNeutral { background: var(--c-meta); color: #F8EFE0; }
+
+.legalCardName {
+  font-family: var(--heading);
+  font-size: var(--t-lead);
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  margin-bottom: 1.5mm;
+  color: inherit;
+}
+.legalCards .legalCardName { font-size: var(--t-body); }
+.legalCardRole {
+  font-size: var(--t-body);
+  color: var(--c-muted);
+  margin-bottom: 2mm;
+}
+.legalCards .legalCardRole { font-size: var(--t-meta); }
+.legalCardDark .legalCardRole { color: rgba(240,242,248,0.55); }
+.legalCardMeta {
+  margin-top: 2.5mm;
+  padding-top: 2mm;
+  border-top: 0.1mm solid var(--line-cream);
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  letter-spacing: 0.06em;
+  color: var(--c-muted);
+}
+.legalCardDark .legalCardMeta {
+  border-top-color: rgba(255,255,255,0.06);
+  color: rgba(240,242,248,0.50);
+}
+
+.legalNote {
+  margin-top: 3mm;
+  font-style: italic;
+  font-size: var(--t-body);
+  line-height: 1.5;
+  color: var(--c-muted);
+}
+
+.mapFrame {
+  /* The map is the page: it takes all height left between the stats and
+     the people row. */
+  position: relative;
+  border: none;
+  flex: 1 1 0;
+  min-height: 110mm;
+  margin: 0 0 5mm;
+}
+
+.mapSvg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* Легенда по типам работ под картой разворота */
+.mapLegend {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  gap: 8mm;
+  font-family: var(--body);
+  font-size: var(--t-meta);
+  color: rgba(240,242,248,0.55);
+  z-index: 2;
+}
+.mapLegendItem { display: inline-flex; align-items: center; gap: 2mm; }
+.mapLegendItem i {
+  width: 2.4mm;
+  height: 2.4mm;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* «Люди, которые строят» — team composition under the map. */
+.peopleTitle {
+  font-family: var(--heading);
+  font-size: var(--t-h2);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: #F0F2F8;
+  margin: 0 0 4mm;
+}
+.peopleGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5mm;
+}
+.peopleCard {
+  padding-top: 3mm;
+  border-top: 0.2mm solid color-mix(in srgb, var(--gold) 40%, transparent);
+}
+.peopleNum {
+  font-family: var(--heading);
+  font-size: var(--t-h2);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--gold);
+  letter-spacing: -0.02em;
+}
+.peopleLabel {
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-meta-dark);
+  margin-top: 3mm;
+}
+.peopleDesc {
+  font-size: var(--t-meta);
+  line-height: 1.35;
+  color: rgba(240,242,248,0.6);
+  margin-top: 1.5mm;
+}
+
+/* Stat bar — bare text columns separated by thin vertical hairlines.
+   Was a row of mini boxes; now reads like an editorial info-row. */
+.statBar {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 0;
+  margin: 5mm 0 4mm;
+  padding: 3mm 0;
+  border-top:    0.2mm solid var(--line-dark);
+  border-bottom: 0.2mm solid var(--line-dark);
+}
+
+/* 5-col modifier — СМР split (Строительство / Обслуживание / Проектные / Регионов / Страны) */
+.statBar5 {
+  grid-template-columns: repeat(5, 1fr);
+}
+.statBarItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 2mm;
+  padding: 0 3mm;
+  border-left: 0.2mm solid var(--line-dark);
+}
+.statBarItem:first-child { border-left: 0; }
+.statBarGold, .statBarTeal, .statBarBlue { /* legacy modifier classes — no-op now */ }
+.statBarNum {
+  font-family: var(--heading);
+  font-weight: 700;
+  font-size: var(--t-h2);
+  line-height: 1;
+  color: #F0F2F8;
+  letter-spacing: -0.02em;
+}
+/* Status colour is reserved for the FIRST stat (the hero one, e.g. "43 завершено")
+   so colour means progress, not decoration. */
+.statBarGold .statBarNum { color: var(--gold); }
+.statBarTeal .statBarNum { color: var(--teal); }
+.statBarBlue .statBarNum { color: var(--c-blue); }
+.statBarLabel {
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: var(--c-meta-dark);
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-align: center;
+  line-height: 1.35;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   05 · ISO
+   ═══════════════════════════════════════════════════════════════════ */
+.bigBadge {
+  display: flex;
+  align-items: center;
+  gap: 3mm;
+  padding: 3mm 5mm 3mm 4mm;
+  border-left: 0.4mm solid var(--gold);
+}
+.bigBadgeNum {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: var(--t-h1);
+  color: var(--gold);
+  line-height: 1;
+}
+.bigBadgeLabel {
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 600;
+  letter-spacing: 0.20em;
+  color: var(--c-muted);
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+/* ── 08 · Accreditations grid (2×2 of the 2026 certificates) ──────── */
+.accrGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4mm;
+  margin: 3mm 0 4mm;
+}
+.accrCard {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5mm;
+  background: var(--c-cream-card);
+  border: 0.15mm solid var(--line-cream);
+  border-radius: 1mm;
+  padding: 3.5mm;
+}
+.accrImg {
+  width: 100%;
+  height: 58mm;
+  object-fit: contain;
+  background: #fff;
+  border: 0.15mm solid rgba(74,64,50,0.22);
+  border-radius: 0.8mm;
+}
+.accrMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6mm;
+}
+.accrNumber {
+  font-family: var(--heading);
+  font-size: var(--t-body);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--gold);
+}
+.accrScope {
+  font-size: var(--t-meta);
+  line-height: 1.34;
+  color: var(--c-ink);
+  text-align: left;  /* narrow column: ragged right, no rivers */
+  text-align-last: left;
+  hyphens: auto;
+  hyphenate-limit-chars: auto 4 3;
+}
+.accrTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5mm;
+  margin-top: 0.4mm;
+}
+.accrTag {
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--c-muted);
+  background: color-mix(in srgb, var(--gold) 8%, transparent);
+  border: 0.12mm solid var(--line-cream);
+  border-radius: 0.6mm;
+  padding: 0.7mm 1.6mm;
+}
+.accrTagHolder {
+  color: var(--c-ink);
+  background: rgba(0,168,142,0.09);
+}
+.accrValid {
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+  margin-top: 0.4mm;
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   06-09 · LICENSE PAGES
+   ═══════════════════════════════════════════════════════════════════ */
+.licNumber {
+  margin-top: 2.5mm;
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  color: var(--c-meta);
+  text-transform: uppercase;
+}
+.licTitle {
+  font-family: var(--heading);
+  font-weight: 700;
+  font-size: var(--t-h1);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  color: var(--c-ink);
+  margin: 1mm 0 5mm;
+}
+.licScanFrame {
+  /* No white board around the scan any more: the document itself (white,
+     hairline border, crisp shadow) sits on the cream page. */
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6mm;
+}
+.licScanImg {
+  max-width: 100%;
+  max-height: 185mm;
+  object-fit: contain;
+  background: #fff;
+  /* Uniform elevation + thin border masks the inevitable variation
+     between scan files (different cameras, different paper tints, edge
+     artifacts). All 4 licenses now read as "documents on display" with
+     identical visual treatment.
+     The shadow is deliberately unblurred: Chromium turns every blurred
+     box-shadow into a raster image with a soft mask (95 of them across the
+     brochure), which slows every PDF viewer. A crisp offset reads the same
+     at print size and stays plain vector. */
+  border: 0.1mm solid rgba(74,64,50,0.18);
+  box-shadow: 0 0.45mm 0 rgba(74,64,50,0.10);
+}
+/* License meta — single divider above, no per-item gold border. */
+.licMetaGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 6mm;
+  padding-top: 3.5mm;
+  border-top: 0.2mm solid var(--line-cream);
+}
+.licMetaItem { padding-left: 0; }
+/* Tighter aboutColTitle treatment in license meta — 4-col grid columns
+   are narrow, so default 9pt + 0.06em tracking wraps "ПЕРВИЧНАЯ ВЫДАЧА"
+   to 2 lines and breaks the row's baseline. */
+.licMetaItem .aboutColTitle {
+  font-size: var(--t-meta);
+  letter-spacing: 0.04em;
+  gap: 2mm;
+  white-space: nowrap;
+  margin-bottom: 2mm;
+}
+.licMetaItem .aboutColRule {
+  width: 3.5mm;
+}
+
+.licMetaValue {
+  font-size: var(--t-lead);
+  font-weight: 600;
+  color: var(--c-ink);
+  line-height: 1.35;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   10-11 · DIRECTION (DESIGN / BUILD)
+   ═══════════════════════════════════════════════════════════════════ */
+.outlinedBadge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1mm;
+  width: 26mm;
+  height: 26mm;
+  border-radius: 1mm;
+  padding: 2mm;
+  font-family: var(--heading);
+}
+.outlinedBadgeGold { border: 0.4mm solid var(--gold); background: color-mix(in srgb, var(--gold) 6%, transparent); }
+
+.outlinedBadgeTopSmall {
+  font-size: var(--t-meta);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: rgba(240,242,248,0.65);
+  text-transform: uppercase;
+}
+.outlinedBadgeBottom {
+  font-size: var(--t-meta);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: color-mix(in srgb, var(--gold) 85%, transparent);
+  text-transform: uppercase;
+}
+
+.outlinedBadgeNumBig {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: var(--t-h1);
+  line-height: 1;
+  color: var(--gold);
+  display: flex;
+  align-items: baseline;
+  gap: 1mm;
+}
+.outlinedBadgeNumBig span {
+  font-family: var(--body);
+  font-size: var(--t-body);
+  font-weight: 600;
+  letter-spacing: 0.10em;
+  color: rgba(240,242,248,0.75);
+  text-transform: lowercase;
+}
+
+.processLabel {
+  display: flex;
+  align-items: center;
+  gap: 3mm;
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: var(--c-meta-dark);
+  text-transform: uppercase;
+  margin: 4mm 0 6mm;
+}
+/* processLabel is tuned for dark pages; on cream pages use the ink meta color */
+.processLabelLight {
+  color: var(--c-meta);
+}
+/* span inside processLabel is now used for the gold rule prefix
+   (aboutColRule style), unified with the rest of the brochure. */
+
+/* Process flow — horizontal timeline. Thin gold line connects 4 nodes;
+   each node is a small dot + roman + label below. Replaces the boxed
+   "I][II][III][IV" arrangement which was reading as textbook diagram. */
+
+   
+
+/* ═══════════════════════════════════════════════════════════════════
+   12 · PORTFOLIO QR
+   ═══════════════════════════════════════════════════════════════════ */
+.qrGrid {
+  display: grid;
+  /* minmax(0,…) — long unbreakable URLs must not blow the tracks past the page */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4mm;
+  margin: 2mm 0 5mm;
+}
+.qrCard {
+  position: relative;
+  background: var(--c-cream-card);
+  border: 0.15mm solid var(--line-cream);
+  border-top-width: 0.5mm;
+  border-radius: 1mm;
+  padding: 5mm 4mm 4mm;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5mm;
+  color: inherit;
+  text-decoration: none;   /* the card is a link to the registry in the PDF */
+}
+.qrCardTeal { border-top-color: var(--teal); }
+.qrCardGold { border-top-color: var(--gold); }
+.qrCardBlue { border-top-color: var(--c-blue); }
+/* min-height accommodates a 2-line title so cards align across the row
+   even when "Строительные работы" wraps and the others stay on one line. */
+.qrCardHeader { display: flex; align-items: flex-start; gap: 2.5mm; min-height: 10mm; }
+.qrCardNum {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--t-h3);
+  color: var(--gold);
+  line-height: 1;
+}
+.qrCardTitle {
+  font-family: var(--heading);
+  font-weight: 700;
+  font-size: var(--t-h3);
+  line-height: 1.2;
+  color: var(--c-ink);
+}
+.qrCount { display: flex; align-items: baseline; gap: 2.5mm; margin-top: 1mm; }
+.qrCountNum {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: var(--t-h1);
+  line-height: 1;
+}
+.qrCardTeal .qrCountNum { color: var(--teal); }
+.qrCardGold .qrCountNum { color: var(--gold); }
+.qrCardBlue .qrCountNum { color: var(--c-blue); }
+.qrCountLabel {
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--c-muted);
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+.qrCodeWrap {
+  margin: 2mm auto;
+  display: block;
+  width: 34mm;
+  height: 34mm;
+  background: var(--c-cream-card);
+  padding: 1.5mm;
+  object-fit: contain;
+}
+.qrUrl {
+  text-align: center;
+  font-family: var(--heading);
+  font-size: var(--t-lead);
+  font-weight: 700;
+  color: var(--c-ink);
+  padding-top: 2mm;
+  border-top: 0.1mm dashed var(--line-cream);
+}
+.qrHint {
+  text-align: center;
+  font-size: var(--t-meta);
+  color: var(--c-muted);
+}
+
+.qrInfoRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4mm;
+  margin-top: 3mm;
+}
+.qrInfoChip {
+  padding: 3mm 4mm;
+  background: var(--c-cream-card);
+  border-left: 0.4mm solid var(--gold);
+  border-radius: 0.5mm;
+}
+.qrInfoChipTitle {
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+  font-family: var(--heading);
+  font-size: var(--t-body);
+  font-weight: 700;
+  color: var(--c-ink);
+  margin-bottom: 1mm;
+}
+.qrInfoDot {
+  display: inline-block;
+  width: 1.4mm;
+  height: 1.4mm;
+  background: var(--gold);
+  border-radius: 50%;
+}
+.qrInfoChipDesc {
+  font-size: var(--t-body);
+  color: var(--c-muted);
+  line-height: 1.4;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   15 · PARTNERS
+   ═══════════════════════════════════════════════════════════════════ */
+.partnersGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3mm;
+  margin: 3mm 0;
+  flex: 1;
+}
+/* Subtle cream-card frame around each logo — unifies presentation across
+   the wildly varying logo styles (clean text vs. heavy background vs.
+   thin emblem). Each cell now reads as part of one system instead of
+   a collage of unrelated assets. */
+.partnerCard {
+  display: flex;
+  flex-direction: column;
+  background: var(--plate);
+  border: 0.15mm solid color-mix(in srgb, var(--gold) 18%, transparent);
+  border-radius: 1.5mm;
+  padding: 4mm 2mm 3mm;
+  align-items: center;
+  gap: 2.5mm;
+  min-height: 32mm;
+}
+.partnerLogoWrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 22mm;
+}
+.partnerLogo {
+  max-width: 88%;
+  max-height: 20mm;
+  object-fit: contain;
+}
+.partnerName {
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 600;
+  color: rgba(240,242,248,0.72);
+  text-align: center;
+  line-height: 1.25;
+}
+
+.partnerFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 4mm;
+  border-top: 0.15mm solid var(--line-dark);
+  margin-top: 2mm;
+}
+.partnerFooterLeft { display: flex; align-items: baseline; gap: 3mm; }
+.partnerFooterNum {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: var(--t-h1);
+  color: var(--gold);
+  line-height: 1;
+}
+/* inline-flex so the aboutColRule prefix sits before the text */
+.partnerFooterText {
+  display: inline-flex;
+  align-items: center;
+  gap: 2.5mm;
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: rgba(240,242,248,0.8);
+  text-transform: uppercase;
+}
+.partnerFooterRight {
+  display: inline-flex;
+  align-items: center;
+  gap: 2.5mm;
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  color: var(--c-meta-dark);
+  text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   16 · CONTACTS
+   ═══════════════════════════════════════════════════════════════════ */
+.contactRowGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5mm 8mm;
+  margin: 4mm 0 6mm;
+}
+.contactRow {
+  display: flex;
+  gap: 4mm;
+  padding: 4mm 0;
+  border-bottom: 0.1mm dashed rgba(240,242,248,0.10);
+}
+.contactRowIcon {
+  width: 8mm;
+  height: 8mm;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--gold) 10%, transparent);
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.contactRowBody { display: flex; flex-direction: column; gap: 1mm; }
+.contactRowLabel {
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 600;
+  letter-spacing: 0.20em;
+  color: color-mix(in srgb, var(--gold) 75%, transparent);
+  text-transform: uppercase;
+}
+.contactRowValue {
+  font-family: var(--heading);
+  font-size: var(--t-h3);
+  font-weight: 600;
+  color: #F0F2F8;
+  line-height: 1.35;
+}
+
+.teamGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4mm 6mm;
+  margin-bottom: 4mm;
+}
+.teamCard {
+  position: relative;
+  padding: 6mm 5mm 6mm 11mm;
+  background: rgba(13,18,34,0.5);
+  border: 0.15mm solid rgba(240,242,248,0.06);
+  border-left: 0.5mm solid var(--gold);
+  border-radius: 1mm;
+}
+/* Rebalanced — number used to dominate over role/name. Lighter weight +
+   slightly smaller so the role title is the visual focus. */
+.teamNum {
+  position: absolute;
+  top: 3mm;
+  left: 3mm;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: var(--t-lead);
+  color: var(--gold);
+  line-height: 1;
+}
+.teamRole {
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: rgba(240,242,248,0.55);
+  text-transform: uppercase;
+  margin-bottom: 1mm;
+}
+.teamName {
+  font-family: var(--heading);
+  font-size: var(--t-lead);
+  font-weight: 700;
+  color: #F0F2F8;
+  margin: 1mm 0 1.5mm;
+}
+.teamPhone {
+  font-family: var(--heading);
+  font-size: var(--t-lead);
+  font-weight: 500;
+  color: var(--gold);
+  letter-spacing: 0.04em;
+}
+
+.contactsFooter {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5mm;
+  padding-top: 4mm;
+  border-top: 0.15mm solid var(--line-dark);
+  margin-top: auto;
+}
+/* Vertical gold bar removed — the horizontal aboutColRule prefix on the
+   label now serves the section-marker role, consistent with the rest of
+   the brochure. */
+.contactsFooterCol { padding-left: 0; }
+.contactsFooterLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 2.5mm;
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: color-mix(in srgb, var(--gold) 85%, transparent);
+  text-transform: uppercase;
+  margin-bottom: 1.5mm;
+}
+.contactsFooterValue {
+  font-size: var(--t-body);
+  color: rgba(240,242,248,0.85);
+  line-height: 1.4;
+}
+
+.contactsBottomBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 5mm;
+}
+.contactsBottomLeft { display: flex; flex-direction: column; gap: 2mm; }
+.contactsSite {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: var(--t-h1);
+  color: var(--gold);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+.contactsQr {
+  flex-shrink: 0;
+  width: 30mm;
+  height: 30mm;
+}
+
+/* ── QR-page lead-in band → points to the project cases that follow ─────── */
+.qrRemarkBand {
+  /* Dark band on a light page: it needs the dark-page gold. */
+  --gold: #E6BE57;
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 4.5mm;
+  padding: 5.5mm 6mm;
+  background: var(--c-dark);
+  border-left: 1mm solid var(--gold);
+  border-radius: 1mm;
+}
+.qrRemarkArrow {
+  flex-shrink: 0;
+  width: 7mm;
+  height: 7mm;
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.qrRemarkText {
+  flex: 1;
+  font-family: var(--heading);
+  font-size: var(--t-h3);
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  color: #F0F2F8;
+  line-height: 1.3;
+}
+.qrRemarkTag {
+  flex-shrink: 0;
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+  padding: 1.8mm 3.2mm;
+  border: 0.3mm solid rgba(230,190,87,0.75);
+  border-radius: 1mm;
+  white-space: nowrap;
+}
+
+/* ── ПЗТМ · СМР-showcase (construction photos + сети band) ──────────────── */
+/* The hero photo takes the height the works list leaves free. */
+.pztmHeroWrap { flex: 1 1 0; min-height: 45mm; margin: 3.5mm 0 1mm; }
+.pztmHeroImg {
+  display: block; width: 100%; height: 100%; object-fit: cover;
+  border-radius: 1.5mm; border: 0.15mm solid var(--line-dark);
+}
+/* Photo cells: landscape photos go in landscape (3:2) cells, portraits in
+   portrait (3:4) cells — a landscape photo is never cropped into a vertical
+   frame. object-fit: cover only trims within the same orientation. */
+.pztmPhoto {
+  border-radius: 1.5mm; overflow: hidden;
+  border: 0.15mm solid rgba(255,255,255,0.14); background: #0A1124;
+}
+.pztmPhotoImg { display: block; width: 100%; height: 100%; object-fit: cover; }
+.pztmLandGrid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 3mm; margin-top: 3.5mm;
+}
+.pztmLandGrid .pztmPhoto { aspect-ratio: 3 / 2; }
+.pztmPortLabel {
+  margin-top: 4mm; font-family: var(--heading); font-size: var(--t-meta);
+  font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gold);
+}
+.pztmPortRow {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 3mm; margin-top: 2.5mm;
+}
+/* 3:4, not 2:3 — frees ~10 mm for the video QR cards below; two of the
+   three portrait shots are 3:4 originals anyway. */
+.pztmPortRow .pztmPhoto { aspect-ratio: 3 / 4; }
+.pztmVideoRow {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 3mm; margin-top: 2.5mm;
+}
+.pztmVideo {
+  display: flex; align-items: center; gap: 4mm; padding: 3mm;
+  border-radius: 1.5mm; border: 0.15mm solid rgba(255,255,255,0.14);
+  background: var(--c-dark-2);
+  color: inherit; text-decoration: none;
+}
+.pztmVideoQr { display: block; flex: 0 0 25mm; width: 25mm; height: 25mm; }
+.pztmVideoText { display: flex; flex-direction: column; gap: 1.8mm; min-width: 0; }
+.pztmVideoKicker {
+  display: flex; align-items: center; gap: 1.5mm;
+  font-family: var(--heading); font-size: var(--t-meta); font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold);
+}
+.pztmVideoKicker svg { width: 2.2mm; height: 2.2mm; fill: currentColor; flex-shrink: 0; }
+.pztmVideoTitle {
+  font-family: var(--heading); font-size: var(--t-lead); font-weight: 700;
+  color: #F0F2F8; line-height: 1.25;
+}
+.pztmVideoUrl { font-size: var(--t-meta); color: rgba(240,242,248,0.6); letter-spacing: 0.02em; }
+
+.pztmNetBand {
+  margin-top: auto; padding: 5mm 6mm; background: var(--c-dark);
+  border-left: 1mm solid var(--gold); border-radius: 1mm;
+}
+.pztmNetTitle {
+  font-family: var(--heading); font-size: var(--t-body); font-weight: 700;
+  color: #F0F2F8; margin-bottom: 3.5mm; letter-spacing: 0.01em;
+}
+.pztmNetGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm 5mm; }
+.pztmNetItem { display: flex; flex-direction: column; gap: 1mm; }
+.pztmNetVal {
+  font-family: var(--heading); font-size: var(--t-h3); font-weight: 700;
+  color: var(--gold); line-height: 1;
+}
+.pztmNetLbl { font-size: var(--t-meta); color: rgba(240,242,248,0.72); line-height: 1.28; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   v2 ADDITIONS
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Copy in ../content/*.tsx still carries spans with classes from the v1
+   stylesheet (titleAccent, aboutColLede, industryCardSub…). Their colour
+   rules read --c-gold* / --c-teal*, so point those at the page-tone tokens
+   and the spans follow the v2 palette; their 6pt size is lifted to the
+   7.5pt floor. */
+.pageDark, .pageLight {
+  --c-gold: var(--gold);
+  --c-gold-2: var(--gold);
+  --c-gold-soft: var(--gold);
+  --c-teal: var(--teal);
+  --c-teal-soft: var(--teal);
+}
+.book [class*="__industryCardSub"] { font-size: var(--t-meta); }
+
+/* ── About: credentials (moved from the cover) ───────────────────── */
+.credGrid {
+  flex: 0 0 76mm;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3mm 5mm;
+  padding-top: 2mm;
+}
+.cred { padding-left: 2.5mm; border-left: 0.4mm solid var(--gold); }
+.credLevel {
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.credArea {
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 500;
+  color: var(--c-ink-2);
+  line-height: 1.3;
+  margin-top: 0.6mm;
+}
+
+/* ── Testimonials: three letters in full, a QR to the rest on the site ── */
+.featList { display: flex; flex-direction: column; gap: 3.5mm; margin: 0 0 6mm; }
+.featCard {
+  margin: 0;
+  padding: 4mm 5mm 4mm 6mm;
+  background: var(--c-cream-card);
+  border-left: 0.6mm solid var(--gold);
+  border-radius: 1mm;
+}
+.featQuote {
+  margin: 0;
+  font-size: var(--t-lead);
+  line-height: 1.5;
+  color: var(--c-ink);
+}
+.featQuote em { font-style: normal; font-weight: 700; color: var(--gold); }
+.featCaption { display: flex; flex-wrap: wrap; gap: 1mm 3mm; align-items: baseline; margin-top: 2mm; }
+.featClient { font-family: var(--heading); font-size: var(--t-body); font-weight: 700; color: var(--c-ink); }
+.featSig { font-size: var(--t-meta); color: var(--c-muted); }
+.testiSite {
+  margin-top: auto;
+  display: flex; align-items: center; gap: 6mm; padding: 4mm 5mm;
+  background: var(--c-cream-card);
+  border: 0.2mm solid var(--line-cream); border-radius: 1.5mm;
+  color: inherit; text-decoration: none;
+}
+.testiSiteQr { display: block; flex: 0 0 28mm; width: 28mm; height: 28mm; }
+.testiSiteText { display: flex; flex-direction: column; gap: 2mm; min-width: 0; }
+.testiSiteKicker {
+  font-family: var(--heading); font-size: var(--t-meta); font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold);
+}
+.testiSiteTitle {
+  font-family: var(--heading); font-size: var(--t-h3); font-weight: 700;
+  color: var(--c-ink); line-height: 1.25;
+}
+.testiSiteUrl { font-size: var(--t-body); color: var(--c-muted); letter-spacing: 0.02em; }
+
+/* ── Directions: design | construction, a facing pair ──────────────
+   Same layout on both pages, each in its own accent: the registry count
+   is the headline figure, each service leads with its icon, the four
+   stages sit on one line. */
+.dirGold { --accent: var(--gold); }
+.dirTeal { --accent: var(--teal); }
+.dirHead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10mm;
+  margin: 4mm 0 7mm;
+  padding-bottom: 6mm;
+  border-bottom: 0.2mm solid var(--line-dark);
+}
+.dirHead .titleH1 { margin: 0; }
+.dirKpi { flex-shrink: 0; text-align: right; }
+.dirKpiNum {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: var(--t-display);
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  color: var(--accent);
+}
+.dirKpiLabel {
+  max-width: 44mm;
+  margin: 2.5mm 0 0 auto;
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: var(--c-meta-dark);
+}
+.dirLead {
+  margin: 0;
+  max-width: 165mm;
+  font-size: var(--t-lead);
+  line-height: 1.55;
+  color: rgba(240,242,248,0.8);
+}
+.dirSvcs {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: 1fr;
+  column-gap: 10mm;
+  margin: 9mm 0 6mm;
+}
+.dirSvc {
+  padding: 4.5mm 0 3mm;
+  border-top: 0.2mm solid color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.dirSvcIcon { width: 8mm; height: 8mm; color: var(--accent); margin-bottom: 3mm; }
+.dirSvcIcon svg { display: block; width: 100%; height: 100%; }
+.dirSvcTitle {
+  font-family: var(--heading);
+  font-size: var(--t-h3);
+  font-weight: 700;
+  line-height: 1.25;
+  color: #F0F2F8;
+  margin-bottom: 1.5mm;
+}
+.dirSvcDesc { font-size: var(--t-body); line-height: 1.45; color: rgba(240,242,248,0.62); }
+.dirStepsLabel {
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 5mm;
+}
+.dirTimeline {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5mm;
+}
+/* the line the four stage nodes sit on: from the centre of node I to the
+   centre of node IV (4 columns, 3 gaps of 5 mm, nodes 8 mm wide) */
+.dirTimeline::before {
+  content: '';
+  position: absolute;
+  left: 4mm;
+  right: calc((100% - 15mm) / 4 - 4mm);
+  top: 4mm;
+  border-top: 0.3mm solid color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.dirStep { position: relative; display: flex; flex-direction: column; gap: 1.5mm; }
+.dirStepNode {
+  position: relative;
+  z-index: 1;
+  width: 8mm;
+  height: 8mm;
+  margin-bottom: 2mm;
+  border-radius: 50%;
+  border: 0.4mm solid var(--accent);
+  background: var(--c-dark);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 700;
+}
+.dirStepTitle { font-family: var(--heading); font-size: var(--t-lead); font-weight: 700; color: #F0F2F8; }
+.dirStepMeta { font-size: var(--t-meta); line-height: 1.4; color: rgba(240,242,248,0.6); }
+.dirSign {
+  margin-top: 9mm;
+  padding-top: 4mm;
+  border-top: 0.2mm solid var(--line-dark);
+  display: flex;
+  gap: 3mm;
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--c-meta-dark);
+}
+.dirSign a { color: inherit; text-decoration: none; }
+.dirSignSep { color: var(--accent); }

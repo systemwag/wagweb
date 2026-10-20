@@ -4,6 +4,7 @@ import styles from './print.module.css';
 import type { PrintContent, PrintTestimonial } from './content/types';
 import CaseSheet, { CaseAnnexPage } from './CaseSheet';
 import PztmShowcase from './PztmShowcase';
+import { WAG_TRIANGLE } from './wagTriangle';
 import PROJECT_CASES from './content/cases-ru';
 import PROJECT_CASES_EN from './content/cases-en';
 import { KZ_REGIONS, KZ_OUTLINE, VIEWBOX } from '@/lib/geo/kz-geo.generated';
@@ -19,11 +20,7 @@ import { hubRadius, layoutHubLabels, layoutRegionLabels, relaxHubs, tierFor } fr
    so any change here must be re-baked into both PDFs.
    ───────────────────────────────────────────────────────────────── */
 
-/* ─────────────────────────────────────────────────────────────────
-   WAG triangle mark — official logo from assets/logotriangle.svg
-   ───────────────────────────────────────────────────────────────── */
-const WAG_TRIANGLE = 'M613.8,437.27c-62.3-103.58-132.83-240.95-201.5-355.51L367.22,0h-16.51c-5.26,19.77-26.22,45.86-33.35,61.03-12.21,25.99-1.91,26.43,18.72,64.07l206.32,360.76,30.4,59.77-106.51.95c-9.82-18.63-13.04-29.8-27.52-49.02l-155.86-274.97c-10.29-18.78-10.26-28.99-25.78-40.4-19.27,12.94-14.27,13.44-25.87,34.79-8.93,16.45-15.27,26.27-23.65,42.54l-143.13,248.42c-77.1,142.82-94.44,127.54-.02,127,86.18-.49,172.52-.02,258.72-.02-2-24.09-9.24-28.93-19.64-46.55-33.15-56.19-11.28-41.79-156.49-41.79,3.5-13.11,16.34-33.82,24.36-47.34l91.22-145.89c4.18,18,25.71,50.9,36.21,68.58,8.16,13.76,11.9,23.61,19.08,36.06,7.25,12.59,11.91,19.4,19.91,35.23l78.91,141.69h302.74c-2.68-32.14-85.4-163.93-105.69-197.65Z';
-
+/* WAG triangle mark — official logo (path in ./wagTriangle). */
 function WagMark({ className, gradientId = 'wagGold' }: { className?: string; gradientId?: string }) {
   return (
     <svg viewBox="0 0 719.49 635.66" className={className} xmlns="http://www.w3.org/2000/svg" aria-hidden>
@@ -200,6 +197,12 @@ const TOTAL = TAIL_START + 3;               // testimonials + partners + contact
 const pageNumLabel = (n: number) => `${String(n).padStart(2, '0')} / ${TOTAL}`;
 const ISSUE_STAMP  = 'WAG · PORTFOLIO · 2026';
 
+// SVG presentation attributes don't take var(), so the map text repeats the
+// --body / --heading stacks from print.module.css (static fonts, Cyrillic +
+// Kazakh fallbacks).
+const SVG_FONT_BODY    = "'WagOnest', 'WagNoto', 'WagSymbols', sans-serif";
+const SVG_FONT_HEADING = "'WagGrotesk', 'WagOnest', 'WagNoto', 'WagSymbols', sans-serif";
+
 function CornerL({ pos }: { pos: 'tl' | 'tr' | 'bl' | 'br' }) {
   const cls = pos === 'tl' ? styles.cornerTL : pos === 'tr' ? styles.cornerTR : pos === 'bl' ? styles.cornerBL : styles.cornerBR;
   return <span className={`${styles.cornerL} ${cls}`} aria-hidden />;
@@ -285,8 +288,17 @@ export default async function PrintBrochure({
     return true;
   });
 
+  /* Read by scripts/build-pdf.mjs: the PDF must have exactly data-pages pages,
+     and the printed counts must match the row counts of these tables in
+     Supabase — otherwise the brochure was rendered from the stale seed. */
+  const dbCounts = JSON.stringify({
+    projects: COUNT_SMR_BUILD,
+    maintenance_projects: COUNT_MAINTENANCE,
+    design_projects: COUNT_PD,
+  });
+
   return (
-    <main className={styles.book}>
+    <main className={styles.book} data-pages={TOTAL} data-db-counts={dbCounts}>
       {buttons}
 
       {/* ═══ 01 · COVER ═══════════════════════════════════════════ */}
@@ -500,17 +512,20 @@ export default async function PrintBrochure({
                       ))}
                     </g>
                     <text y="3.6" textAnchor="middle" fill="#F0F2F8"
-                      fontFamily="'Space Grotesk', sans-serif" fontSize="11" fontWeight="600">
+                      fontFamily={SVG_FONT_HEADING} fontSize="11" fontWeight="600">
                       {h.total}
                     </text>
                   </g>
                 );
               })}
 
+              {/* The dark halo keeps labels legible where region borders cross
+                  them. Chromium writes outlined text as Type3 — build-pdf.mjs
+                  allows Type3 only for SVG text drawn with a stroke. */}
               {geoRegionLabels.map((l) => (
                 <text key={l.code} x={l.x} y={l.y} textAnchor="middle"
                   fill={l.has ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.22)'}
-                  fontFamily="Onest, sans-serif" fontSize="8.5" letterSpacing="1.2"
+                  fontFamily={SVG_FONT_BODY} fontSize="8.5" letterSpacing="1.2"
                   paintOrder="stroke" stroke="rgba(4,6,12,0.55)" strokeWidth="2.5" strokeLinejoin="round">
                   {l.text}
                 </text>
@@ -518,7 +533,7 @@ export default async function PrintBrochure({
               {geoHubLabels.map((l) => (
                 <text key={l.id} x={l.x} y={l.y} textAnchor={l.anchor}
                   fill={l.strong ? '#F0F2F8' : 'rgba(240,242,248,0.7)'}
-                  fontFamily="Onest, sans-serif" fontSize={l.strong ? 10.5 : 9.5}
+                  fontFamily={SVG_FONT_BODY} fontSize={l.strong ? 10.5 : 9.5}
                   paintOrder="stroke" stroke="rgba(4,6,12,0.85)" strokeWidth="3" strokeLinejoin="round">
                   {l.text}
                 </text>
@@ -602,7 +617,7 @@ export default async function PrintBrochure({
                   <div className={styles.processTitle}>{step.title}</div>
                   <div className={styles.processMeta}>{step.meta}</div>
                 </div>
-                {i < c.dirDesign.process.length - 1 && <div className={styles.processArrow}>→</div>}
+                {i < c.dirDesign.process.length - 1 && <div className={styles.processArrow} aria-hidden><svg viewBox="0 0 24 24"><path d="M3 12h17M14 6l6 6-6 6" /></svg></div>}
               </div>
             ))}
           </div>
@@ -657,7 +672,7 @@ export default async function PrintBrochure({
                   <div className={styles.processTitle}>{step.title}</div>
                   <div className={styles.processMeta}>{step.meta}</div>
                 </div>
-                {i < c.dirBuild.process.length - 1 && <div className={styles.processArrow}>→</div>}
+                {i < c.dirBuild.process.length - 1 && <div className={styles.processArrow} aria-hidden><svg viewBox="0 0 24 24"><path d="M3 12h17M14 6l6 6-6 6" /></svg></div>}
               </div>
             ))}
           </div>

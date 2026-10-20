@@ -1,0 +1,266 @@
+/* ═══════════════════════════════════════════════════════════════════
+   WAG · DESIGN-WORKS BROCHURE — sheet-specific styles (8 pages · A4).
+   Shell/typography primitives are reused from ../print.module.css; this
+   module only adds what the design brochure needs: the intro competencies
+   + case index, and the per-project sheet layout (header rail + a
+   full-width framed drawing). Render via `npm run build:pdf:design`.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ═══ 03–06 · PROJECT SHEETS ═════════════════════════════════════════ */
+.sheetTitle {
+  font-family: var(--heading);
+  font-weight: 700;
+  font-size: var(--t-h2);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  color: var(--c-ink);
+  margin: 4mm 0 3mm;
+  max-width: 168mm;
+}
+.sheetMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2.5mm;
+  font-family: var(--heading);
+  font-size: var(--t-body);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--c-muted);
+  padding-bottom: 4mm;
+  border-bottom: 0.2mm solid var(--line-cream);
+}
+.sheetMetaClient { color: var(--gold); font-weight: 700; }
+.sheetMetaSep { color: var(--c-meta-soft); }
+.sheetStatus {
+  margin-left: auto;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 2mm;
+  padding: 1.4mm 3.5mm;
+  border: 0.25mm solid var(--teal);
+  border-radius: 1mm;
+  background: rgba(0,168,142,0.08);
+  font-size: var(--t-meta);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--teal);
+  text-transform: uppercase;
+}
+.sheetStatus::before {
+  content: '';
+  width: 1.8mm;
+  height: 1.8mm;
+  border-radius: 50%;
+  background: var(--teal);
+}
+
+.sheetLead {
+  font-size: var(--t-lead);
+  line-height: 1.5;
+  color: var(--c-ink-2);
+  margin: 5mm 0 0;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphenate-limit-chars: auto 4 3;
+  -webkit-hyphenate-limit-chars: auto 4 3;
+}
+
+/* 3 key figures in a full-width row */
+.metricRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7mm;
+  margin: 6mm 0 6mm;
+}
+.metric {
+  padding: 0.5mm 0 0.5mm 4mm;
+  border-left: 0.5mm solid var(--gold);
+}
+.metricValueRow { display: flex; align-items: baseline; gap: 1.5mm; }
+.metricValue {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: var(--t-h1);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  color: var(--gold);
+}
+.metricUnit {
+  font-family: var(--heading);
+  font-size: var(--t-body);
+  font-weight: 600;
+  color: var(--gold);
+}
+.metricLabel {
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  margin-top: 1.5mm;
+  line-height: 1.3;
+}
+
+/* ── v2 case header: title block left, status seal right ───────────── */
+.caseHead {
+  display: flex;
+  align-items: flex-start;
+  gap: 8mm;
+  padding-bottom: 4mm;
+  border-bottom: 0.2mm solid var(--line-cream);
+}
+.caseHeadMain { flex: 1; min-width: 0; }
+.caseHeadMain .sheetMeta { padding-bottom: 0; border-bottom: none; }
+.seal {
+  flex: 0 0 auto;
+  max-width: 58mm;
+  margin-top: 9mm;
+  padding: 2.5mm 3.5mm;
+  border: 0.3mm solid var(--teal);
+  border-radius: 1mm;
+  display: flex;
+  flex-direction: column;
+  gap: 1mm;
+}
+.sealIcon { width: 3mm; height: 3mm; margin-right: 1.5mm; flex-shrink: 0; }
+.sealStatus {
+  display: flex;
+  align-items: center;
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--teal);
+}
+
+/* ── v2 drawings: toned to the page (no frame, no paper) and sharing the
+   leftover height, so a sheet with short copy gets bigger drawings instead
+   of a hole and a long one never runs off the page. The image is
+   contained in its slot; its background is the page colour, so the
+   letterboxing is invisible. */
+.figs {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4mm;
+  margin: 1mm 0 0;
+}
+/* Each plate starts at its drawing's natural height at full width (the
+   image's 100% height can't resolve while flex bases are computed, so it
+   falls back to the aspect ratio), then all plates shrink in proportion
+   when the page is tight and share the spare height when it isn't. */
+.fig { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; margin: 0; }
+.figBand { flex: 1 1 auto; }
+.plate {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+}
+.plateImg { display: block; width: 100%; height: 100%; object-fit: contain; }
+.figsAnnex { margin-top: 3mm; }
+
+.figCap {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4mm;
+  margin-top: 2mm;
+}
+.figCapText {
+  font-size: var(--t-meta);
+  color: var(--c-muted);
+  line-height: 1.3;
+}
+.figKind {
+  flex-shrink: 0;
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  white-space: nowrap;
+}
+
+/* Scope of works — 2×2 bullet grid under the drawing */
+.scopeWrap { margin-top: 6mm; }
+.scopeLabel {
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 3mm;
+}
+.scopeGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5mm 8mm;
+}
+.scopeItem {
+  display: flex;
+  gap: 2.5mm;
+  font-size: var(--t-body);
+  line-height: 1.35;
+  color: var(--c-ink-2);
+}
+.scopeItem::before {
+  content: '';
+  flex-shrink: 0;
+  width: 1.6mm;
+  height: 1.6mm;
+  margin-top: 1.4mm;
+  background: var(--teal);
+  transform: rotate(45deg);
+}
+.sheetStage {
+  margin-top: auto;
+  padding-top: 4mm;
+  border-top: 0.2mm solid var(--line-cream);
+  font-family: var(--heading);
+  font-size: var(--t-meta);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--c-muted);
+  line-height: 1.4;
+}
+
+/* ── Dark-sheet overrides (odd-index project sheets) ─────────────────── */
+.sheetDark .sheetTitle { color: #F0F2F8; }
+.sheetDark .sheetMeta {
+  color: rgba(240,242,248,0.6);
+  border-bottom-color: var(--line-dark);
+}
+.sheetDark .sheetMetaClient { color: var(--gold); }
+.sheetDark .sheetMetaSep { color: rgba(240,242,248,0.3); }
+.sheetDark .sheetLead { color: rgba(240,242,248,0.82); }
+.sheetDark .metricValue { color: var(--gold); }
+.sheetDark .metricUnit { color: rgba(240,200,90,0.85); }
+.sheetDark .metricLabel { color: var(--c-meta-dark); }
+.sheetDark .metric { border-left-color: var(--gold); }
+.sheetDark .scopeLabel { color: var(--gold); }
+.sheetDark .scopeItem { color: rgba(240,242,248,0.78); }
+.sheetDark .scopeItem::before { background: var(--teal); }
+.sheetDark .sheetStage {
+  color: rgba(240,242,248,0.55);
+  border-top-color: var(--line-dark);
+}
+.sheetDark .figCap { border-top-color: var(--line-dark); }
+.sheetDark .figCapText { color: rgba(240,242,248,0.6); }
+.sheetDark .figKind { color: var(--gold); }
+.sheetDark .sheetStatus {
+  color: var(--teal);
+  border-color: var(--teal);
+  background: rgba(0,196,167,0.12);
+}
+
+/* ═══ MERGED «ОТЗЫВЫ + ПАРТНЁРЫ» PAGE ════════════════════════════════ */
+
