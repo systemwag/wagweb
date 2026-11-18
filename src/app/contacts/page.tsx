@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import Footer       from '@/components/Footer/Footer';
-import ContactForm  from '@/components/ContactForm/ContactForm';
-import styles       from './contacts.module.css';
+import Footer from '@/components/Footer/Footer';
+import ContactForm from '@/components/ContactForm/ContactForm';
+import styles from './contacts.module.css';
 
 export const metadata: Metadata = {
   title: 'Контакты — офис в Актобе',
@@ -13,8 +13,8 @@ const contacts = [
   {
     icon: (
       <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
-        <path d="M12 2C8.1 2 5 5.1 5 9c0 6.5 7 13 7 13s7-6.5 7-13c0-3.9-3.1-7-7-7z" stroke="currentColor" strokeWidth="1.4"/>
-        <circle cx="12" cy="9" r="2.5" stroke="currentColor" strokeWidth="1.4"/>
+        <path d="M12 2C8.1 2 5 5.1 5 9c0 6.5 7 13 7 13s7-6.5 7-13c0-3.9-3.1-7-7-7z" stroke="currentColor" strokeWidth="1.4" />
+        <circle cx="12" cy="9" r="2.5" stroke="currentColor" strokeWidth="1.4" />
       </svg>
     ),
     label: 'Адрес',
@@ -24,7 +24,7 @@ const contacts = [
   {
     icon: (
       <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
-        <path d="M5 4h4l2 5-2.5 1.5C9.7 13.5 11 15 13.5 16.5L15 14l5 2v4c-9 1.5-17-6.5-15-16z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+        <path d="M5 4h4l2 5-2.5 1.5C9.7 13.5 11 15 13.5 16.5L15 14l5 2v4c-9 1.5-17-6.5-15-16z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
       </svg>
     ),
     label: 'Телефон',
@@ -34,19 +34,19 @@ const contacts = [
   {
     icon: (
       <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
-        <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.4"/>
-        <path d="M3 8l9 6 9-6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+        <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.4" />
+        <path d="M3 8l9 6 9-6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
       </svg>
     ),
     label: 'Email',
-    value: 'west_arlan-group@mail.ru',
-    link: 'mailto:west_arlan-group@mail.ru',
+    value: 'west_arlan_group@mail.ru',
+    link: 'mailto:west_arlan_group@mail.ru',
   },
   {
     icon: (
       <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
-        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.4"/>
-        <path d="M12 7v5l3 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.4" />
+        <path d="M12 7v5l3 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
       </svg>
     ),
     label: 'Режим работы',
@@ -56,8 +56,8 @@ const contacts = [
   {
     icon: (
       <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
-        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.4"/>
-        <path d="M2 12h20M12 3c2.5 3 4 6 4 9s-1.5 6-4 9c-2.5-3-4-6-4-9s1.5-6 4-9z" stroke="currentColor" strokeWidth="1.4"/>
+        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.4" />
+        <path d="M2 12h20M12 3c2.5 3 4 6 4 9s-1.5 6-4 9c-2.5-3-4-6-4-9s1.5-6 4-9z" stroke="currentColor" strokeWidth="1.4" />
       </svg>
     ),
     label: 'Сайт',
